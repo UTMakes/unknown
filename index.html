@@ -3,60 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Labs - Network Simulator</title>
+    <title>Upload Labs: Network Empire</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #0a0e14;
+            --panel-bg: rgba(20, 26, 35, 0.95);
+            --border-color: #2a3447;
+            --accent-color: #3b82f6;
+            --text-color: #e0e6ed;
+            --text-muted: #8b92a8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0e14;
-            color: #e0e6ed;
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
             overflow: hidden;
             user-select: none;
+            height: 100vh;
+            width: 100vw;
         }
 
-        .grid-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(30, 40, 60, 0.4) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(30, 40, 60, 0.4) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-        }
-
+        /* Layout Grid */
         .game-container {
             display: grid;
             grid-template-areas: 
                 "header header"
                 "sidebar canvas"
                 "toolbar toolbar";
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 320px 1fr;
             grid-template-rows: 70px 1fr 160px;
             height: 100vh;
-            gap: 8px;
-            padding: 8px;
+            width: 100vw;
+            gap: 0;
         }
 
         /* Header */
         .header {
             grid-area: header;
-            background: rgba(20, 26, 35, 0.95);
-            border: 1px solid #2a3447;
-            border-radius: 8px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .header-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #3b82f6;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .header-stats {
@@ -65,1616 +72,1009 @@
         }
 
         .stat-box {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #3c465a;
-            padding: 8px 15px;
-            border-radius: 6px;
+            background: rgba(10, 14, 20, 0.5);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-width: 80px;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
-        .stat-box:hover {
-            border-color: #5a6a8a;
-            transform: translateY(-2px);
-        }
+        .stat-box:hover { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.1); }
+        .stat-box:active { transform: scale(0.95); }
 
-        .stat-icon { font-size: 18px; margin-bottom: 4px; }
-        .stat-value { font-weight: bold; font-size: 16px; color: #fff; }
-        .stat-rate { font-size: 10px; color: #10b981; margin-top: 2px; }
-        .stat-label { font-size: 10px; color: #8b92a8; }
+        .stat-icon { font-size: 14px; margin-bottom: 2px; color: var(--text-muted); }
+        .stat-value { font-weight: 700; font-size: 14px; color: #fff; }
+        .stat-rate { font-size: 10px; color: var(--success); font-family: monospace; }
+        
+        .stat-box.money .stat-icon { color: #fbbf24; }
+        .stat-box.research .stat-icon { color: #8b5cf6; }
 
         /* Sidebar */
         .sidebar {
             grid-area: sidebar;
-            background: rgba(20, 26, 35, 0.95);
-            border: 1px solid #2a3447;
-            border-radius: 8px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
             padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px;
             overflow-y: auto;
+            z-index: 9;
         }
 
         .panel {
-            background: rgba(30, 37, 50, 0.6);
+            background: rgba(30, 37, 50, 0.4);
             border-radius: 8px;
-            padding: 12px;
-            border: 1px solid #3c465a;
+            padding: 15px;
+            border: 1px solid var(--border-color);
         }
 
         .panel-title {
             font-size: 11px;
-            color: #8b92a8;
+            color: var(--text-muted);
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .router-status {
+        .action-row {
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .speed-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        .speed-label { color: #8b92a8; display: flex; align-items: center; gap: 6px; }
-        .speed-value { color: #3b82f6; font-weight: bold; font-family: monospace; }
-
-        .upgrade-btn {
-            width: 100%;
-            margin-top: 8px;
-            padding: 8px;
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid #f59e0b;
-            color: #f59e0b;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .upgrade-btn:hover:not(:disabled) {
-            background: rgba(245, 158, 11, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .upgrade-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .storage-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 12px;
-        }
-
-        .storage-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 8px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-
-        .storage-bar {
-            width: 100%;
-            height: 4px;
-            background: #2a3447;
-            border-radius: 2px;
-            margin-top: 4px;
-            overflow: hidden;
-        }
-
-        .storage-fill {
-            height: 100%;
-            background: #3b82f6;
-            transition: width 0.3s;
-        }
-
-        /* Canvas */
-        .canvas-area {
-            grid-area: canvas;
-            background: rgba(15, 20, 28, 0.8);
-            border: 2px solid #2a3447;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .empty-state {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #4a5568;
-        }
-
-        .node {
-            position: absolute;
-            width: 180px;
-            background: rgba(25, 32, 45, 0.98);
-            border: 2px solid #4a5568;
-            border-radius: 10px;
-            padding: 12px;
-            cursor: grab;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            z-index: 10;
-            transition: box-shadow 0.2s, transform 0.1s;
-        }
-
-        .node:hover { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        .node.selected { border-color: #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
-        .node:active { cursor: grabbing; }
-        .node.working { animation: pulse-green 2s infinite; }
-
-        @keyframes pulse-green {
-            0%, 100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
-        }
-
-        .node-header {
-            display: flex;
-            align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #3c465a;
-            pointer-events: none;
-        }
-
-        .node-icon {
-            width: 40px; height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .node-title { font-size: 14px; font-weight: bold; }
-        .node-subtitle { font-size: 11px; color: #8b92a8; }
-
-        .node-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 11px;
-        }
-
-        .node-stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 8px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-
-        .port {
-            width: 16px; height: 16px;
-            background: #4a5568;
-            border-radius: 50%;
-            position: absolute;
-            border: 3px solid #0a0e14;
-            cursor: pointer;
-            transition: all 0.2s;
-            z-index: 20;
-        }
-
-        .port:hover { transform: scale(1.3); background: #3b82f6; }
-        .port.input { left: -8px; top: 50%; transform: translateY(-50%); }
-        .port.output { right: -8px; top: 50%; transform: translateY(-50%); }
-        .port.upload { top: -8px; left: 50%; transform: translateX(-50%); }
-        .port.download { bottom: -8px; left: 50%; transform: translateX(-50%); }
-        .port.active { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
-
-        .node-level-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #f59e0b;
-            color: #000;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 2px solid #0a0e14;
-        }
-
-        /* Connections */
-        svg.connections {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .connection {
-            stroke: #4a5568;
-            stroke-width: 3;
-            fill: none;
-            transition: all 0.3s;
-        }
-
-        .connection.active {
-            stroke: #10b981;
-            stroke-dasharray: 5,5;
-            animation: flow 1s linear infinite;
-        }
-
-        .connection.upload { stroke: #8b5cf6; }
-        .connection.download { stroke: #3b82f6; }
-
-        @keyframes flow { to { stroke-dashoffset: -10; } }
-
-        /* Toolbar */
-        .toolbar-container {
-            grid-area: toolbar;
-            background: rgba(20, 26, 35, 0.95);
-            border: 1px solid #2a3447;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tab-bar {
-            display: flex;
-            background: rgba(0,0,0,0.2);
-            border-bottom: 1px solid #2a3447;
-            padding: 5px;
-            gap: 5px;
-            overflow-x: auto;
-        }
-
-        .category-tab {
-            padding: 10px 20px;
-            background: rgba(40, 50, 70, 0.4);
-            border: 1px solid #3c465a;
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: #8b92a8;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .category-tab:hover { background: rgba(60, 70, 90, 0.6); color: #fff; }
-        .category-tab.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-
-        .nodes-display {
-            flex: 1;
-            padding: 15px;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-
-        .nodes-grid {
-            display: flex;
-            gap: 15px;
-            height: 100%;
-            align-items: center;
-        }
-
-        .nodes-grid.hidden { display: none; }
-
-        .node-card {
-            min-width: 160px;
-            height: 110px;
-            background: rgba(40, 50, 70, 0.6);
-            border: 2px solid #3c465a;
-            border-radius: 10px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .node-card:hover:not(:disabled) {
-            border-color: #3b82f6;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .node-card:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .node-card-cost {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .node-card-icon { font-size: 32px; margin-bottom: 5px; }
-        .node-card-name { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
-        .node-card-desc { font-size: 10px; color: #8b92a8; line-height: 1.3; flex: 1; }
-
-        /* Research Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-overlay.show { display: flex; }
-
-        .modal {
-            background: #1a1f2e;
-            border: 1px solid #3c465a;
-            border-radius: 12px;
-            padding: 25px;
-            max-width: 700px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #3c465a;
-        }
-
-        .modal-title { font-size: 20px; font-weight: bold; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: #8b92a8;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .research-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .research-card {
-            background: rgba(40, 50, 70, 0.6);
-            border: 2px solid #3c465a;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .research-card:hover:not(.locked):not(.owned) {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-        }
-
-        .research-card.locked {
-            opacity: 0.4;
-            filter: grayscale(1);
-            cursor: not-allowed;
-        }
-
-        .research-card.owned {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .research-icon { font-size: 40px; margin-bottom: 10px; }
-        .research-name { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
-        .research-desc { font-size: 11px; color: #8b92a8; margin-bottom: 10px; }
-        .research-cost { color: #f59e0b; font-weight: bold; font-size: 13px; }
-
-        /* Context Menu */
-        .context-menu {
-            position: absolute;
-            background: rgba(25, 32, 45, 0.98);
-            border: 1px solid #3c465a;
-            border-radius: 8px;
-            padding: 8px 0;
-            min-width: 180px;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .context-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .context-item:hover { background: rgba(60, 70, 90, 0.5); }
-        .context-item.delete { color: #ef4444; }
-        .context-item .cost { color: #f59e0b; font-size: 11px; }
-
-        /* Floating Text */
-        .floating-text {
-            position: fixed;
-            font-weight: bold;
-            font-size: 13px;
-            pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            z-index: 9999;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-        }
-
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-30px); }
+            margin-top: 10px;
         }
 
         .btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 10px 20px;
+            flex: 1;
+            padding: 8px;
             border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             transition: all 0.2s;
         }
 
-        .btn:hover { background: #2563eb; transform: translateY(-1px); }
-        .btn-secondary { background: #4a5568; margin-left: 10px; }
-        .btn-secondary:hover { background: #5a6a8a; }
+        .btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); }
+        .btn-primary { background: var(--accent-color); border-color: var(--accent-color); }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-research { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; color: #a78bfa; }
+        .btn-research:hover { background: rgba(139, 92, 246, 0.4); }
 
-        .save-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        .storage-bar-container { margin-top: 8px; }
+        .storage-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+        .storage-track { height: 4px; background: #1a202c; border-radius: 2px; overflow: hidden; }
+        .storage-fill { height: 100%; width: 0%; transition: width 0.3s; }
+
+        /* Canvas */
+        .canvas-viewport {
+            grid-area: canvas;
+            position: relative;
+            background: #0f1218;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .canvas-viewport:active { cursor: grabbing; }
+
+        .world {
+            position: absolute;
+            top: 0; left: 0;
+            transform-origin: 0 0;
         }
 
-        .hidden { display: none !important; }
+        .grid-bg {
+            position: absolute;
+            top: -5000px; left: -5000px;
+            width: 10000px; height: 10000px;
+            background-image: 
+                linear-gradient(rgba(40, 50, 70, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(40, 50, 70, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* Nodes */
+        .node {
+            position: absolute;
+            width: 180px;
+            background: rgba(20, 25, 35, 0.95);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: border-color 0.2s, opacity 0.3s;
+            z-index: 10;
+        }
+
+        /* Disconnected State */
+        .node.disconnected {
+            border-color: var(--danger) !important;
+            opacity: 0.7;
+        }
+        .node.disconnected .node-icon-box {
+            color: var(--danger) !important;
+            border-color: var(--danger) !important;
+            animation: none !important;
+        }
+        .node.disconnected::after {
+            content: "NO SIGNAL";
+            position: absolute;
+            top: -20px; left: 50%; transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .node:hover { border-color: var(--text-muted); }
+        .node.selected { 
+            border-color: var(--accent-color); 
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6);
+            z-index: 20; 
+        }
+
+        .node-header {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .node-icon-box {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .node.working .node-icon-box { animation: pulse-work 1s infinite; }
+        @keyframes pulse-work {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+
+        .node-info { flex: 1; overflow: hidden; }
+        .node-title { font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .node-lvl { font-size: 10px; color: var(--text-muted); }
+
+        .port {
+            width: 12px; height: 12px;
+            background: #2d3748;
+            border: 2px solid #718096;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 30;
+            cursor: crosshair;
+            transition: transform 0.2s;
+        }
+        .port:hover { transform: scale(1.4); background: #fff; border-color: var(--accent-color); }
+        .port.in { left: -6px; top: 50%; transform: translateY(-50%); }
+        .port.out { right: -6px; top: 50%; transform: translateY(-50%); }
+        .port.top { top: -6px; left: 50%; transform: translateX(-50%); }
+        .port.bottom { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+        /* Connections */
+        .cable {
+            fill: none;
+            stroke: #4a5568;
+            stroke-width: 3px;
+            stroke-linecap: round;
+            opacity: 0.5;
+            transition: stroke 0.3s, opacity 0.3s;
+        }
+        .cable.active {
+            stroke: var(--accent-color);
+            opacity: 1;
+            stroke-dasharray: 10;
+            animation: flow 1s linear infinite;
+        }
+        .cable.disconnected { stroke: var(--danger); opacity: 0.3; }
+
+        @keyframes flow { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+
+        /* Toolbar */
+        .toolbar {
+            grid-area: toolbar;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 10px; }
+        .tab {
+            padding: 10px 15px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #fff; }
+        .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+
+        .items-tray {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-x: auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .shop-item {
+            min-width: 140px;
+            height: 100px;
+            background: rgba(30, 37, 50, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .shop-item:hover:not(.disabled) { border-color: var(--accent-color); transform: translateY(-3px); background: rgba(40, 50, 70, 0.8); }
+        .shop-item.disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
+        
+        .item-cost { 
+            position: absolute; top: 6px; right: 6px; 
+            background: rgba(0,0,0,0.4); color: #fbbf24; 
+            font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 4px; 
+        }
+        .item-icon { font-size: 20px; margin-bottom: 6px; color: #fff; }
+        .item-name { font-size: 12px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .item-desc { font-size: 10px; color: var(--text-muted); line-height: 1.2; }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
+        }
+        
+        .modal {
+            background: #1a202c; border: 1px solid #4a5568; border-radius: 12px;
+            padding: 0; width: 700px; max-width: 90%; max-height: 85vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 20px; border-bottom: 1px solid #2d3748;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-body { padding: 20px; overflow-y: auto; }
+        
+        /* Research Tree */
+        .research-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;
+        }
+        .tech-card {
+            background: #2d3748; border: 2px solid #4a5568; border-radius: 8px; padding: 15px;
+            text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .tech-card:hover:not(.locked):not(.owned) { border-color: #8b5cf6; transform: translateY(-2px); }
+        .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        .tech-card.owned { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .tech-card.owned::after {
+            content: "✓"; position: absolute; top: 5px; right: 5px; color: var(--success); font-weight: bold;
+        }
+        
+        .tech-cost { color: #8b5cf6; font-weight: bold; font-size: 11px; margin-top: 8px; }
+
+        .floating-text {
+            position: absolute; pointer-events: none; font-weight: bold; font-size: 14px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); animation: float-up 0.8s forwards; z-index: 100;
+        }
+        @keyframes float-up { to { transform: translateY(-30px); opacity: 0; } }
+        
+        /* Context Menu */
+        #contextMenu {
+            position: fixed; background: #1a202c; border: 1px solid #4a5568; border-radius: 6px;
+            padding: 5px; z-index: 5000; display: none; min-width: 150px;
+        }
+        .ctx-item {
+            padding: 8px 12px; cursor: pointer; color: #e2e8f0; font-size: 13px;
+            display: flex; justify-content: space-between;
+        }
+        .ctx-item:hover { background: #2d3748; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-    
-    <!-- Context Menu -->
-    <div class="context-menu" id="contextMenu">
-        <div class="context-item" onclick="upgradeSelectedNode()">
-            <span>⬆️ Upgrade Level</span>
-            <span class="cost" id="upgradeCost">$0</span>
-        </div>
-        <div class="context-item delete" onclick="deleteSelectedNode()">
-            <span>🗑️ Delete Node</span>
+
+    <!-- Modals -->
+    <div id="welcomeModal" class="modal-overlay" style="display: flex;">
+        <div class="modal" style="width: 400px; padding: 20px;">
+            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v4</h2>
+            <p style="color:#cbd5e0; margin-bottom:20px; font-size:14px; line-height:1.5;">
+                Welcome to the updated Network Simulator!<br><br>
+                <strong>New Rules:</strong><br>
+                1. Nodes MUST be connected to a Router to work.<br>
+                2. Disconnected nodes turn RED.<br>
+                3. Build "Research Labs" to unlock new tech.<br><br>
+                <strong>Controls:</strong> Drag background to Pan, Scroll to Zoom.
+            </p>
+            <button class="btn btn-primary" onclick="document.getElementById('welcomeModal').style.display='none'">Initialize System</button>
         </div>
     </div>
 
-    <!-- Research Modal -->
-    <div class="modal-overlay" id="researchModal">
+    <div id="researchModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2 class="modal-title">🔬 Research Laboratory</h2>
-                <button class="modal-close" onclick="closeModal('researchModal')">×</button>
+                <h2 style="color:#fff">🔬 Research & Development</h2>
+                <button class="btn" onclick="document.getElementById('researchModal').style.display='none'">Close</button>
             </div>
-            <div class="research-grid" id="researchGrid"></div>
-        </div>
-    </div>
-
-    <!-- Save Modal -->
-    <div class="modal-overlay" id="saveModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">💾 Save / Load Game</h2>
-                <button class="modal-close" onclick="closeModal('saveModal')">×</button>
-            </div>
-            <p style="color:#8b92a8; margin-bottom:15px; font-size:13px;">Export your save to keep it safe, or import a previous save.</p>
-            <div class="save-controls">
-                <button class="btn" onclick="exportSave()">📥 Export Save</button>
-                <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📤 Import Save</button>
-                <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importSave(this)">
-            </div>
-            <div style="margin-top:15px; padding-top:15px; border-top:1px solid #3c465a;">
-                <button class="btn" onclick="saveToBrowser(); showFloatingText('💾 Saved!', window.innerWidth/2, window.innerHeight/2)" style="width:100%">💾 Quick Save to Browser</button>
+            <div class="modal-body">
+                <div style="margin-bottom:15px; color:#a78bfa; font-weight:bold;">
+                    Available RP: <span id="modalRpDisplay">0</span>
+                </div>
+                <div class="research-grid" id="researchGrid"></div>
             </div>
         </div>
     </div>
 
+    <div id="contextMenu">
+        <div class="ctx-item" onclick="upgradeSelectedNode()">
+            <span>Upgrade</span> <span style="color:#fbbf24" id="ctxCost">$0</span>
+        </div>
+        <div class="ctx-item" onclick="deleteSelectedNode()" style="color:#ef4444">
+            <span>Delete</span>
+        </div>
+    </div>
+
+    <!-- Main Game -->
     <div class="game-container">
-        <!-- Header -->
         <div class="header">
-            <div class="header-title">
-                🔓 UPLOAD LABS
-                <span style="font-size:12px; color:#8b92a8; font-weight:normal;">Network v2.0</span>
-            </div>
-            
+            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS</div>
             <div class="header-stats">
-                <div class="stat-box" onclick="clickMoney(event)" title="Click for quick cash!">
-                    <span class="stat-icon">💰</span>
-                    <span class="stat-value" id="moneyDisplay">2500</span>
-                    <span class="stat-label">Money</span>
-                    <span class="stat-rate" id="moneyRate">+$0/s</span>
+                <div class="stat-box money" onclick="addMoney(event)">
+                    <i class="fa-solid fa-coins stat-icon"></i>
+                    <div class="stat-value" id="moneyDisplay">$0</div>
+                    <div class="stat-rate" id="moneyRate">+$0/s</div>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-icon">📁</span>
-                    <span class="stat-value" id="fileDisplay">0</span>
-                    <span class="stat-label">Files</span>
-                    <span class="stat-rate" id="fileRate">0 B/s</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon">🖼️</span>
-                    <span class="stat-value" id="imageDisplay">0</span>
-                    <span class="stat-label">Images</span>
-                    <span class="stat-rate" id="imageRate">0 MB/s</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-icon">🎥</span>
-                    <span class="stat-value" id="videoDisplay">0</span>
-                    <span class="stat-label">Videos</span>
-                    <span class="stat-rate" id="videoRate">0 GB/s</span>
+                <div class="stat-box research" onclick="document.getElementById('researchModal').style.display='flex'">
+                    <i class="fa-solid fa-flask stat-icon"></i>
+                    <div class="stat-value" id="rpDisplay">0 RP</div>
+                    <div class="stat-rate" id="rpRate">+0/s</div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="panel">
+                <div class="panel-title">System Controls</div>
+                <div class="action-row">
+                    <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
+                        <i class="fa-solid fa-flask"></i> Research
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button class="btn" onclick="exportSave()"><i class="fa-solid fa-download"></i> Export</button>
+                    <button class="btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Import</button>
+                    <input type="file" id="importFile" style="display:none" onchange="importSave(this)">
+                </div>
+            </div>
+
+            <div class="panel">
                 <div class="panel-title">
-                    <span>🌐 Network Router</span>
-                    <span id="routerLevel" style="color:#f59e0b">Lvl 1</span>
+                    <span>Global Network</span>
+                    <span id="routerLvl" style="color:#f59e0b">LVL 1</span>
                 </div>
-                <div class="router-status">
-                    <div class="speed-stat">
-                        <span class="speed-label">⬇️ Download</span>
-                        <span class="speed-value" id="downloadSpeed">25 B/s</span>
-                    </div>
-                    <div class="speed-stat">
-                        <span class="speed-label">⬆️ Upload</span>
-                        <span class="speed-value" id="uploadSpeed">25 B/s</span>
-                    </div>
-                    <button class="upgrade-btn" id="routerUpgradeBtn" onclick="upgradeRouter()">
-                        Upgrade Router ($500)
-                    </button>
+                <div style="font-size:12px; margin-bottom:5px; display:flex; justify-content:space-between;">
+                    <span style="color:#8b92a8">Down Speed</span>
+                    <span style="color:#3b82f6; font-weight:bold;" id="globalDown">0 B/s</span>
                 </div>
+                <div style="font-size:12px; margin-bottom:10px; display:flex; justify-content:space-between;">
+                    <span style="color:#8b92a8">Up Speed</span>
+                    <span style="color:#10b981; font-weight:bold;" id="globalUp">0 B/s</span>
+                </div>
+                <button class="btn btn-primary" style="width:100%" id="btnUpgradeRouter" onclick="upgradeRouter()">Upgrade Router</button>
             </div>
 
             <div class="panel">
-                <div class="panel-title">💾 Storage Status</div>
-                <div class="storage-list">
-                    <div class="storage-item">
-                        <span>📁 Files (100B)</span>
-                        <span id="fileStorage">0 / ∞</span>
-                    </div>
-                    <div class="storage-bar"><div class="storage-fill" id="fileBar" style="width:0%"></div></div>
-                    
-                    <div class="storage-item" style="margin-top:8px;">
-                        <span>🖼️ Images (100MB)</span>
-                        <span id="imageStorage">0 / ∞</span>
-                    </div>
-                    <div class="storage-bar"><div class="storage-fill" id="imageBar" style="width:0%; background:#8b5cf6"></div></div>
-                    
-                    <div class="storage-item" style="margin-top:8px;">
-                        <span>🎥 Videos (1GB)</span>
-                        <span id="videoStorage">0 / ∞</span>
-                    </div>
-                    <div class="storage-bar"><div class="storage-fill" id="videoBar" style="width:0%; background:#ec4899"></div></div>
+                <div class="panel-title">Storage</div>
+                <div class="storage-bar-container">
+                    <div class="storage-label"><span>Files</span><span id="txtFiles">0</span></div>
+                    <div class="storage-track"><div class="storage-fill" id="barFiles" style="background:#3b82f6"></div></div>
                 </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">📊 Production Rates</div>
-                <div class="storage-list" id="productionRates">
-                    <div class="storage-item">
-                        <span>Download Speed</span>
-                        <span id="totalDownSpeed" style="color:#3b82f6">0 B/s</span>
-                    </div>
-                    <div class="storage-item">
-                        <span>Upload Speed</span>
-                        <span id="totalUpSpeed" style="color:#8b5cf6">0 B/s</span>
-                    </div>
-                    <div class="storage-item">
-                        <span>Income Rate</span>
-                        <span id="incomeRateDisplay" style="color:#10b981">$0/s</span>
-                    </div>
+                <div class="storage-bar-container">
+                    <div class="storage-label"><span>Images</span><span id="txtImages">0</span></div>
+                    <div class="storage-track"><div class="storage-fill" id="barImages" style="background:#a855f7"></div></div>
+                </div>
+                <div class="storage-bar-container">
+                    <div class="storage-label"><span>Videos</span><span id="txtVideos">0</span></div>
+                    <div class="storage-track"><div class="storage-fill" id="barVideos" style="background:#ec4899"></div></div>
                 </div>
             </div>
         </div>
 
-        <!-- Canvas -->
-        <div class="canvas-area" id="canvas" onclick="deselectAll(event)">
-            <div class="empty-state" id="emptyState">
-                <h2>Network Empty</h2>
-                <p>Buy a Router first, then add Downloaders and Uploaders</p>
+        <div class="canvas-viewport" id="viewport">
+            <div class="world" id="world">
+                <div class="grid-bg"></div>
+                <svg id="cables" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></svg>
+                <div id="nodes"></div>
             </div>
-            <svg class="connections" id="svgLayer"></svg>
-            <div id="nodeLayer" style="position:absolute; width:100%; height:100%;"></div>
         </div>
 
-        <!-- Toolbar -->
-        <div class="toolbar-container">
-            <div class="tab-bar">
-                <button class="category-tab active" onclick="switchTab('infrastructure', this)">🏗️ Infrastructure</button>
-                <button class="category-tab" onclick="switchTab('download', this)">⬇️ Download</button>
-                <button class="category-tab" onclick="switchTab('upload', this)">⬆️ Upload</button>
-                <button class="category-tab" onclick="switchTab('security', this)">🔒 Security</button>
-                <button class="category-tab" onclick="switchTab('advanced', this)">🚀 Advanced</button>
-                <div style="flex:1;"></div>
-                <button class="category-tab" onclick="openResearch()" style="background:rgba(139,92,246,0.2); color:#8b5cf6;">🔬 Research</button>
-                <button class="category-tab" onclick="openSave()" style="background:rgba(16,185,129,0.2); color:#10b981;">💾 Save</button>
+        <div class="toolbar">
+            <div class="tabs">
+                <div class="tab active" data-tab="infra" onclick="setTab('infra', this)">Infrastructure</div>
+                <div class="tab" data-tab="download" onclick="setTab('download', this)">Download</div>
+                <div class="tab" data-tab="upload" onclick="setTab('upload', this)">Upload & Labs</div>
             </div>
-
-            <div class="nodes-display">
-                <!-- Infrastructure -->
-                <div class="nodes-grid" id="tab-infrastructure">
-                    <button class="node-card" onclick="buyNode('router')">
-                        <span class="node-card-cost">$500</span>
-                        <div class="node-card-icon">🌐</div>
-                        <div class="node-card-name">Network Router</div>
-                        <div class="node-card-desc">Required for all network operations. Provides download/upload speed. Upgradeable x5 per level.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('server')" style="display:none" id="unlock-server">
-                        <span class="node-card-cost">$3000</span>
-                        <div class="node-card-icon">🖥️</div>
-                        <div class="node-card-name">Server Farm</div>
-                        <div class="node-card-desc">Massive infrastructure boost. +10x base speed.</div>
-                    </button>
-                </div>
-
-                <!-- Download -->
-                <div class="nodes-grid hidden" id="tab-download">
-                    <button class="node-card" onclick="buyNode('fileDownloader')">
-                        <span class="node-card-cost">$200</span>
-                        <div class="node-card-icon">📁</div>
-                        <div class="node-card-name">File Downloader</div>
-                        <div class="node-card-desc">Downloads files (100B each). Speed based on Router level.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('imageDownloader')">
-                        <span class="node-card-cost">$800</span>
-                        <div class="node-card-icon">🖼️</div>
-                        <div class="node-card-name">Image Downloader</div>
-                        <div class="node-card-desc">Downloads images (100MB each). Higher value.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('videoDownloader')" style="display:none" id="unlock-video">
-                        <span class="node-card-cost">$2500</span>
-                        <div class="node-card-icon">🎥</div>
-                        <div class="node-card-name">Video Downloader</div>
-                        <div class="node-card-desc">Downloads videos (1GB each). Highest value.</div>
-                    </button>
-                </div>
-
-                <!-- Upload -->
-                <div class="nodes-grid hidden" id="tab-upload">
-                    <button class="node-card" onclick="buyNode('uploader')">
-                        <span class="node-card-cost">$400</span>
-                        <div class="node-card-icon">⬆️</div>
-                        <div class="node-card-name">Uploader</div>
-                        <div class="node-card-desc">Uploads files/images/videos to internet for money. Uses router upload speed.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('cdn')" style="display:none" id="unlock-cdn">
-                        <span class="node-card-cost">$2000</span>
-                        <div class="node-card-icon">🚀</div>
-                        <div class="node-card-name">CDN Node</div>
-                        <div class="node-card-desc">Content Delivery Network. 3x upload efficiency.</div>
-                    </button>
-                </div>
-
-                <!-- Security -->
-                <div class="nodes-grid hidden" id="tab-security">
-                    <button class="node-card" onclick="buyNode('firewall')">
-                        <span class="node-card-cost">$300</span>
-                        <div class="node-card-icon">🛡️</div>
-                        <div class="node-card-name">Firewall</div>
-                        <div class="node-card-desc">Protects network. +50% speed to connected nodes.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('vpn')">
-                        <span class="node-card-cost">$1500</span>
-                        <div class="node-card-icon">🔒</div>
-                        <div class="node-card-name">VPN Tunnel</div>
-                        <div class="node-card-desc">Encrypts traffic. +25% global income.</div>
-                    </button>
-                </div>
-
-                <!-- Advanced -->
-                <div class="nodes-grid hidden" id="tab-advanced">
-                    <button class="node-card" onclick="buyNode('compressor')">
-                        <span class="node-card-cost">$1200</span>
-                        <div class="node-card-icon">🗜️</div>
-                        <div class="node-card-name">Compressor</div>
-                        <div class="node-card-desc">Compresses data. Files worth 2x money.</div>
-                    </button>
-                    
-                    <button class="node-card" onclick="buyNode('ai')" style="display:none" id="unlock-ai">
-                        <span class="node-card-cost">$5000</span>
-                        <div class="node-card-icon">🧠</div>
-                        <div class="node-card-name">AI Optimizer</div>
-                        <div class="node-card-desc">AI management. +100% all speeds.</div>
-                    </button>
-                </div>
-            </div>
+            <div class="items-tray" id="tray"></div>
         </div>
     </div>
 
     <script>
-        // Game State
-        const game = {
-            money: 2500,
-            files: 0, // count
-            images: 0, // count
-            videos: 0, // count
-            routerLevel: 1,
-            routerUpgradeCost: 500,
+        // --- CONFIGURATION ---
+        const NODE_DEFS = {
+            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
+            
+            // Infra
+            miner: { name: "Crypto Miner", type: "infra", cost: 300, icon: "fa-brands fa-bitcoin", color: "#f59e0b", desc: "Uses bandwidth to mine money." },
+            cache: { name: "Cache Server", type: "infra", cost: 1200, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected nodes work 50% faster." },
+            
+            // Downloaders
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 200, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files." },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Requires Tech.", req: "tech_img" },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 2500, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Requires Tech.", req: "tech_vid" },
+            
+            // Upload & Labs
+            uploader: { name: "Uploader", type: "upload", cost: 400, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money." },
+            lab: { name: "Research Lab", type: "lab", cost: 1500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
+            quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" }
+        };
+
+        const TECH_TREE = [
+            { id: "tech_img", name: "Image Compression", cost: 100, desc: "Unlock Image Downloaders" },
+            { id: "tech_vid", name: "Streaming Protocol", cost: 500, desc: "Unlock Video Downloaders" },
+            { id: "tech_sat", name: "Satellite Link", cost: 2000, desc: "+50% Global Upload Speed" },
+            { id: "tech_quantum", name: "Quantum Computing", cost: 10000, desc: "Unlock Quantum Core" }
+        ];
+
+        const RESOURCES = {
+            files: { size: 10, price: 5, rp: 1 },
+            images: { size: 50, price: 25, rp: 5 },
+            videos: { size: 200, price: 100, rp: 25 }
+        };
+
+        // --- STATE ---
+        let game = {
+            money: 2000,
+            rp: 0,
+            res: { files: 0, images: 0, videos: 0 },
             nodes: [],
-            connections: [],
-            selectedNode: null,
-            nextId: 1,
-            research: {
-                videoTech: false,
-                cdnTech: false,
-                aiTech: false,
-                serverTech: false
-            },
-            unlocked: {
-                video: false,
-                cdn: false,
-                ai: false,
-                server: false
-            }
+            conns: [],
+            routerLevel: 1,
+            unlocked: [],
+            nextId: 1
         };
 
-        // Constants
-        const SIZES = {
-            file: 100, // bytes
-            image: 100 * 1024 * 1024, // 100MB in bytes
-            video: 1024 * 1024 * 1024 // 1GB in bytes
-        };
+        let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
+        let activeNodes = new Set();
+        let history = { money: 0, rp: 0 };
+        
+        // --- CORE FUNCTIONS ---
 
-        const PRICES = {
-            file: 5,
-            image: 15,
-            video: 50
-        };
-
-        // Node Definitions
-        const NODES = {
-            router: {
-                name: 'Network Router',
-                icon: '🌐',
-                color: '#3b82f6',
-                cost: 500,
-                type: 'router',
-                description: 'Core network infrastructure'
-            },
-            fileDownloader: {
-                name: 'File Downloader',
-                icon: '📁',
-                color: '#10b981',
-                cost: 200,
-                type: 'downloader',
-                fileType: 'file',
-                description: 'Downloads small files'
-            },
-            imageDownloader: {
-                name: 'Image Downloader',
-                icon: '🖼️',
-                color: '#8b5cf6',
-                cost: 800,
-                type: 'downloader',
-                fileType: 'image',
-                description: 'Downloads images'
-            },
-            videoDownloader: {
-                name: 'Video Downloader',
-                icon: '🎥',
-                color: '#ec4899',
-                cost: 2500,
-                type: 'downloader',
-                fileType: 'video',
-                description: 'Downloads videos'
-            },
-            uploader: {
-                name: 'Uploader',
-                icon: '⬆️',
-                color: '#06b6d4',
-                cost: 400,
-                type: 'uploader',
-                description: 'Uploads to internet'
-            },
-            server: {
-                name: 'Server Farm',
-                icon: '🖥️',
-                color: '#f59e0b',
-                cost: 3000,
-                type: 'infrastructure',
-                boost: 10,
-                description: 'Massive speed boost'
-            },
-            cdn: {
-                name: 'CDN Node',
-                icon: '🚀',
-                color: '#f97316',
-                cost: 2000,
-                type: 'uploader',
-                boost: 3,
-                description: 'Fast upload node'
-            },
-            firewall: {
-                name: 'Firewall',
-                icon: '🛡️',
-                color: '#64748b',
-                cost: 300,
-                type: 'security',
-                boost: 1.5,
-                description: 'Network protection'
-            },
-            vpn: {
-                name: 'VPN',
-                icon: '🔒',
-                color: '#06b6d4',
-                cost: 1500,
-                type: 'security',
-                globalBoost: 1.25,
-                description: 'Encrypted tunnel'
-            },
-            compressor: {
-                name: 'Compressor',
-                icon: '🗜️',
-                color: '#14b8a6',
-                cost: 1200,
-                type: 'utility',
-                multiplier: 2,
-                description: 'Data compression'
-            },
-            ai: {
-                name: 'AI Optimizer',
-                icon: '🧠',
-                color: '#8b5cf6',
-                cost: 5000,
-                type: 'utility',
-                globalBoost: 2,
-                description: 'AI management'
-            }
-        };
-
-        // Calculate router speeds
-        function getRouterSpeeds() {
-            // Base: 25 bytes/sec, x5 per level
-            const baseDownload = 25 * Math.pow(5, game.routerLevel - 1);
-            const baseUpload = 25 * Math.pow(5, game.routerLevel - 1);
-            return { download: baseDownload, upload: baseUpload };
-        }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function formatSpeed(bytesPerSec) {
-            return formatBytes(bytesPerSec) + '/s';
-        }
-
-        // Game Loop
-        let lastTime = performance.now();
-        function gameLoop(now) {
-            const dt = (now - lastTime) / 1000;
-            lastTime = now;
+        function init() {
+            // Initial Render
+            spawnNode('router', 2500, 2500);
+            renderWorld();
+            updateUI();
             
-            const speeds = getRouterSpeeds();
-            let totalIncome = 0;
-            let totalDownBytes = 0;
-            let totalUpBytes = 0;
+            // Loop
+            requestAnimationFrame(gameLoop);
+            setInterval(secLoop, 1000);
             
-            // Global boosts
+            // Input Setup
+            setupInputs();
+        }
+
+        function gameLoop(time) {
+            const dt = 1/60; // Fixed step for simplicity
+            
+            // 1. Connectivity Check (BFS)
+            updateConnectivity();
+            
+            // 2. Global Stats
+            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1);
             let globalMult = 1;
-            game.nodes.forEach(n => {
-                if (n.type === 'vpn') globalMult *= 1.25;
-                if (n.type === 'ai') globalMult *= 2;
-            });
-            
-            // Process downloaders
+            if (game.unlocked.includes('tech_sat')) globalMult *= 1.5;
+            game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id)) globalMult *= 2; });
+
+            // 3. Process Nodes
             game.nodes.forEach(node => {
-                const def = NODES[node.type];
-                if (!def || def.type !== 'downloader') return;
+                if (!activeNodes.has(node.id)) return; // Strict Connectivity Rule
+
+                const def = NODE_DEFS[node.type];
+                const lvlMult = Math.pow(1.2, node.level - 1);
                 
-                // Get speed from router
-                let speed = speeds.download;
-                
-                // Apply boosts
-                let nodeMult = globalMult;
-                
-                // Check firewall connection
-                game.connections.forEach(c => {
-                    if (c.to === node.id) {
-                        const from = game.nodes.find(n => n.id === c.from);
-                        if (from && from.type === 'firewall') nodeMult *= 1.5;
-                    }
+                // Cache Boost Check
+                let localMult = 1;
+                game.conns.forEach(c => {
+                    const neighborId = c.from === node.id ? c.to : c.from;
+                    const neighbor = game.nodes.find(n => n.id === neighborId);
+                    if (neighbor && neighbor.type === 'cache' && activeNodes.has(neighborId)) localMult *= 1.5;
                 });
-                
-                // Server boost
-                game.nodes.forEach(n => {
-                    if (n.type === 'server') nodeMult *= 10;
-                });
-                
-                const bytesPerSec = speed * nodeMult;
-                totalDownBytes += bytesPerSec;
-                
-                // Download files based on bytes
-                const bytesDownloaded = bytesPerSec * dt;
-                const fileSize = SIZES[def.fileType];
-                const filesDownloaded = bytesDownloaded / fileSize;
-                
-                game[def.fileType + 's'] += filesDownloaded;
-                
-                // Visual feedback
-                if (Math.random() < 0.05) {
-                    const el = document.getElementById('node-' + node.id);
-                    if (el) {
-                        el.classList.add('working');
-                        setTimeout(() => el.classList.remove('working'), 200);
+
+                const effectiveSpeed = baseSpeed * globalMult * localMult * lvlMult * dt;
+
+                // Logic per type
+                if (def.type === 'download') {
+                    const amt = effectiveSpeed / RESOURCES[def.out].size;
+                    game.res[def.out] += amt;
+                    workAnim(node);
+                }
+                else if (def.type === 'upload') {
+                    // Sell logic (Video > Image > File)
+                    let cap = effectiveSpeed; // bytes we can upload
+                    ['videos', 'images', 'files'].forEach(k => {
+                        if (cap <= 0 || game.res[k] <= 0) return;
+                        const size = RESOURCES[k].size;
+                        const count = Math.min(game.res[k], cap / size);
+                        game.res[k] -= count;
+                        cap -= count * size;
+                        const gain = count * RESOURCES[k].price;
+                        game.money += gain;
+                        history.money += gain;
+                        workAnim(node);
+                    });
+                }
+                else if (def.type === 'lab') {
+                    // Convert Files -> RP
+                    // Labs are slower but valuable. Use effectiveSpeed as "Processing Power"
+                    let power = effectiveSpeed * 0.5; // Modifier
+                    if (game.res.files > 0) {
+                        const consumed = Math.min(game.res.files, power / RESOURCES.files.size);
+                        game.res.files -= consumed;
+                        const gain = consumed * RESOURCES.files.rp;
+                        game.rp += gain;
+                        history.rp += gain;
+                        workAnim(node);
                     }
                 }
-            });
-            
-            // Process uploaders
-            game.nodes.forEach(node => {
-                const def = NODES[node.type];
-                if (!def || def.type !== 'uploader') return;
-                
-                let speed = speeds.upload;
-                let nodeMult = globalMult;
-                
-                // CDN boost
-                if (node.type === 'cdn') nodeMult *= 3;
-                
-                // Firewall boost
-                game.connections.forEach(c => {
-                    if (c.to === node.id) {
-                        const from = game.nodes.find(n => n.id === c.from);
-                        if (from && from.type === 'firewall') nodeMult *= 1.5;
-                    }
-                });
-                
-                // Server boost
-                game.nodes.forEach(n => {
-                    if (n.type === 'server') nodeMult *= 10;
-                });
-                
-                const bytesPerSec = speed * nodeMult;
-                totalUpBytes += bytesPerSec;
-                
-                // Upload available files
-                const bytesUploaded = bytesPerSec * dt;
-                let bytesRemaining = bytesUploaded;
-                let income = 0;
-                
-                // Prioritize videos, then images, then files
-                const types = ['video', 'image', 'file'];
-                types.forEach(type => {
-                    if (bytesRemaining <= 0) return;
-                    const fileSize = SIZES[type];
-                    const available = game[type + 's'];
-                    const canUpload = Math.min(available, bytesRemaining / fileSize);
-                    
-                    if (canUpload > 0) {
-                        game[type + 's'] -= canUpload;
-                        let value = canUpload * PRICES[type];
-                        
-                        // Compressor boost
-                        game.connections.forEach(c => {
-                            if (c.from === node.id) {
-                                const to = game.nodes.find(n => n.id === c.to);
-                                if (to && to.type === 'compressor') value *= 2;
-                            }
-                        });
-                        
-                        income += value;
-                        bytesRemaining -= canUpload * fileSize;
-                    }
-                });
-                
-                game.money += income;
-                totalIncome += income / dt; // per second rate
-                
-                if (income > 0 && Math.random() < 0.1) {
-                    const el = document.getElementById('node-' + node.id);
-                    if (el) {
-                        el.classList.add('working');
-                        setTimeout(() => el.classList.remove('working'), 200);
-                        showFloatingText('+$' + Math.floor(income), node.x + 90, node.y, '#10b981');
-                    }
+                else if (def.type === 'infra' && node.type === 'miner') {
+                    const gain = effectiveSpeed * 0.05; // Low efficiency
+                    game.money += gain;
+                    history.money += gain;
+                    workAnim(node);
                 }
             });
-            
-            // Update display every 10 frames
-            if (Math.floor(now) % 10 === 0) {
-                updateDisplay(totalDownBytes, totalUpBytes, totalIncome);
-            }
-            
+
+            updateUI();
             requestAnimationFrame(gameLoop);
         }
 
-        function updateDisplay(downSpeed, upSpeed, income) {
-            // Resources
-            document.getElementById('moneyDisplay').textContent = Math.floor(game.money);
-            document.getElementById('moneyRate').textContent = '+$' + income.toFixed(0) + '/s';
-            
-            document.getElementById('fileDisplay').textContent = Math.floor(game.files);
-            document.getElementById('imageDisplay').textContent = Math.floor(game.images);
-            document.getElementById('videoDisplay').textContent = Math.floor(game.videos);
-            
-            // Rates
-            const speeds = getRouterSpeeds();
-            document.getElementById('fileRate').textContent = formatSpeed(downSpeed * (game.files > 0 ? 1 : 0));
-            document.getElementById('imageRate').textContent = formatSpeed(downSpeed * (game.images > 0 ? 1 : 0));
-            document.getElementById('videoRate').textContent = formatSpeed(downSpeed * (game.videos > 0 ? 1 : 0));
-            
-            // Router panel
-            document.getElementById('routerLevel').textContent = 'Lvl ' + game.routerLevel;
-            document.getElementById('downloadSpeed').textContent = formatSpeed(speeds.download);
-            document.getElementById('uploadSpeed').textContent = formatSpeed(speeds.upload);
-            document.getElementById('routerUpgradeBtn').textContent = `Upgrade Router ($${game.routerUpgradeCost})`;
-            
-            // Storage
-            document.getElementById('fileStorage').textContent = Math.floor(game.files);
-            document.getElementById('imageStorage').textContent = Math.floor(game.images);
-            document.getElementById('videoStorage').textContent = Math.floor(game.videos);
-            
-            // Production panel
-            document.getElementById('totalDownSpeed').textContent = formatSpeed(downSpeed);
-            document.getElementById('totalUpSpeed').textContent = formatSpeed(upSpeed);
-            document.getElementById('incomeRateDisplay').textContent = '$' + income.toFixed(0) + '/s';
+        function secLoop() {
+            document.getElementById('moneyRate').innerText = `+$${fmt(history.money)}/s`;
+            document.getElementById('rpRate').innerText = `+${fmt(history.rp)}/s`;
+            history = { money: 0, rp: 0 };
         }
 
-        // Buy Node
-        function buyNode(type) {
-            const def = NODES[type];
-            if (game.money < def.cost) {
-                showFloatingText('Need $' + def.cost, event.clientX, event.clientY, '#ef4444');
-                return;
-            }
+        function updateConnectivity() {
+            const newActive = new Set();
+            const q = [];
             
-            // Check if need router first
-            if (type !== 'router' && !game.nodes.some(n => n.type === 'router')) {
-                showFloatingText('Need Router first!', event.clientX, event.clientY, '#ef4444');
-                return;
-            }
-            
-            game.money -= def.cost;
-            
-            const node = {
-                id: game.nextId++,
-                type: type,
-                x: 150 + Math.random() * 300,
-                y: 150 + Math.random() * 200,
-                level: 1
-            };
-            
-            game.nodes.push(node);
-            renderNode(node);
-            
-            document.getElementById('emptyState').style.display = 'none';
-            showFloatingText(`-$${def.cost}`, event.clientX, event.clientY, '#ef4444');
-            saveGame();
-        }
+            // Start bfs from routers
+            game.nodes.filter(n => n.type === 'router').forEach(n => {
+                newActive.add(n.id);
+                q.push(n.id);
+            });
 
-        function renderNode(node) {
-            const def = NODES[node.type];
-            const div = document.createElement('div');
-            div.className = 'node';
-            div.id = 'node-' + node.id;
-            div.style.left = node.x + 'px';
-            div.style.top = node.y + 'px';
-            div.style.borderColor = def.color;
-            
-            // Different port configurations
-            let ports = '';
-            if (def.type === 'router') {
-                ports = `
-                    <div class="port output" onclick="handlePort(${node.id}, 'output', event)" title="Download Speed"></div>
-                    <div class="port upload" onclick="handlePort(${node.id}, 'upload', event)" title="Upload Speed"></div>
-                `;
-            } else if (def.type === 'downloader') {
-                ports = `<div class="port input" onclick="handlePort(${node.id}, 'input', event)" title="Connect from Router"></div>`;
-            } else if (def.type === 'uploader') {
-                ports = `
-                    <div class="port input" onclick="handlePort(${node.id}, 'input', event)" title="Files in"></div>
-                    <div class="port output" onclick="handlePort(${node.id}, 'output', event)" title="Money out"></div>
-                `;
-            } else {
-                ports = `
-                    <div class="port input" onclick="handlePort(${node.id}, 'input', event)"></div>
-                    <div class="port output" onclick="handlePort(${node.id}, 'output', event)"></div>
-                `;
+            while (q.length) {
+                const curr = q.shift();
+                game.conns.forEach(c => {
+                    const other = c.from === curr ? c.to : (c.to === curr ? c.from : null);
+                    if (other && !newActive.has(other)) {
+                        newActive.add(other);
+                        q.push(other);
+                    }
+                });
             }
-            
-            div.innerHTML = `
-                ${ports}
-                <div class="node-level-badge">${node.level}</div>
-                <div class="node-header">
-                    <div class="node-icon" style="background:${def.color}20; color:${def.color}">${def.icon}</div>
-                    <div>
-                        <div class="node-title">${def.name}</div>
-                        <div class="node-subtitle">Level ${node.level}</div>
-                    </div>
-                </div>
-                <div class="node-stats">
-                    <div class="node-stat-row">
-                        <span>Type</span>
-                        <span style="color:${def.color}">${def.type}</span>
-                    </div>
-                    ${getNodeStats(node, def)}
-                </div>
-            `;
-            
-            // Drag logic
-            let dragging = false, startX, startY, initX, initY;
-            div.addEventListener('mousedown', (e) => {
-                if (e.target.classList.contains('port')) return;
-                dragging = true;
-                startX = e.clientX; startY = e.clientY;
-                initX = node.x; initY = node.y;
-                selectNode(node);
-                e.stopPropagation();
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                node.x = initX + (e.clientX - startX);
-                node.y = initY + (e.clientY - startY);
-                div.style.left = node.x + 'px';
-                div.style.top = node.y + 'px';
-                updateConnections();
-            });
-            
-            document.addEventListener('mouseup', () => {
-                if (dragging) {
-                    dragging = false;
-                    saveGame();
-                }
-            });
-            
-            div.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                selectNode(node);
-                showContext(e.pageX, e.pageY, node);
-            });
-            
-            document.getElementById('nodeLayer').appendChild(div);
-        }
 
-        function getNodeStats(node, def) {
-            if (def.type === 'downloader') {
-                const speed = getRouterSpeeds().download;
-                return `<div class="node-stat-row"><span>Speed</span><span>${formatSpeed(speed)}</span></div>`;
-            } else if (def.type === 'uploader') {
-                const speed = getRouterSpeeds().upload;
-                return `<div class="node-stat-row"><span>Upload</span><span>${formatSpeed(speed)}</span></div>`;
-            } else if (def.type === 'router') {
-                const speeds = getRouterSpeeds();
-                return `
-                    <div class="node-stat-row"><span>Down</span><span>${formatSpeed(speeds.download)}</span></div>
-                    <div class="node-stat-row"><span>Up</span><span>${formatSpeed(speeds.upload)}</span></div>
-                `;
-            }
-            return '';
-        }
-
-        let portStart = null;
-        function handlePort(id, type, e) {
-            e.stopPropagation();
-            
-            if (!portStart) {
-                portStart = { id, type };
-                document.querySelector(`#node-${id} .port.${type}`).classList.add('active');
-            } else {
-                document.querySelector(`#node-${portStart.id} .port.${portStart.type}`).classList.remove('active');
+            // Update DOM states
+            if (activeNodes.size !== newActive.size || [...newActive].some(x => !activeNodes.has(x))) {
+                game.nodes.forEach(n => {
+                    const el = document.getElementById(`node-${n.id}`);
+                    if (!el) return;
+                    if (newActive.has(n.id)) el.classList.remove('disconnected');
+                    else el.classList.add('disconnected');
+                });
                 
-                if (portStart.id !== id) {
-                    // Validate connection
-                    const fromNode = game.nodes.find(n => n.id === portStart.id);
-                    const toNode = game.nodes.find(n => n.id === id);
-                    
-                    if (fromNode && toNode) {
-                        // Router output -> Downloader input
-                        if (fromNode.type === 'router' && portStart.type === 'output' && 
-                            NODES[toNode.type].type === 'downloader' && type === 'input') {
-                            connectNodes(portStart.id, id, 'download');
-                        }
-                        // Router upload -> Uploader
-                        else if (fromNode.type === 'router' && portStart.type === 'upload' && 
-                                 NODES[toNode.type].type === 'uploader' && type === 'input') {
-                            connectNodes(portStart.id, id, 'upload');
-                        }
-                        // Downloader -> Uploader
-                        else if (NODES[fromNode.type].type === 'downloader' && portStart.type === 'output' && 
-                                 NODES[toNode.type].type === 'uploader' && type === 'input') {
-                            connectNodes(portStart.id, id, 'data');
-                        }
-                        // Uploader -> Compressor
-                        else if (NODES[fromNode.type].type === 'uploader' && portStart.type === 'output' && 
-                                 toNode.type === 'compressor' && type === 'input') {
-                            connectNodes(portStart.id, id, 'money');
-                        }
-                        // General connections
-                        else if (portStart.type === 'output' && type === 'input') {
-                            connectNodes(portStart.id, id, 'active');
-                        }
+                // Update cables
+                document.querySelectorAll('.cable').forEach(c => {
+                    const [id1, id2] = c.dataset.ends.split(',').map(Number);
+                    if (newActive.has(id1) && newActive.has(id2)) {
+                        c.classList.remove('disconnected');
+                        c.classList.add('active');
+                    } else {
+                        c.classList.add('disconnected');
+                        c.classList.remove('active');
                     }
-                }
-                portStart = null;
+                });
             }
+            activeNodes = newActive;
         }
 
-        function connectNodes(from, to, type) {
-            if (game.connections.some(c => c.from === from && c.to === to)) return;
-            
-            const id = `conn-${Date.now()}`;
-            game.connections.push({ id, from, to, type });
-            
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            line.setAttribute('id', id);
-            line.setAttribute('class', 'connection ' + type);
-            document.getElementById('svgLayer').appendChild(line);
-            updateConnection(id);
-            saveGame();
+        // --- ACTIONS ---
+
+        function spawnNode(type, x, y) {
+            game.nodes.push({ id: game.nextId++, type, x, y, level: 1 });
+            renderWorld();
         }
 
-        function updateConnection(id) {
-            const c = game.connections.find(x => x.id === id);
-            if (!c) return;
-            const from = game.nodes.find(n => n.id === c.from);
-            const to = game.nodes.find(n => n.id === c.to);
-            if (!from || !to) return;
-            
-            const line = document.getElementById(id);
-            const x1 = from.x + (c.type === 'upload' ? 90 : 180);
-            const y1 = from.y + (c.type === 'upload' ? 0 : 40);
-            const x2 = to.x + (c.type === 'upload' ? 90 : 0);
-            const y2 = to.y + 40;
-            
-            // Curved line
-            const mx = (x1 + x2) / 2;
-            line.setAttribute('d', `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
-        }
-
-        function updateConnections() {
-            game.connections.forEach(c => updateConnection(c.id));
-        }
-
-        // Upgrades
-        function upgradeRouter() {
-            if (game.money < game.routerUpgradeCost) {
-                showFloatingText('Need $' + game.routerUpgradeCost, window.innerWidth/2, window.innerHeight/2, '#ef4444');
-                return;
+        function buyNode(type) {
+            const def = NODE_DEFS[type];
+            if (game.money >= def.cost) {
+                game.money -= def.cost;
+                const cx = (-view.x + window.innerWidth/2) / view.scale;
+                const cy = (-view.y + window.innerHeight/2) / view.scale;
+                spawnNode(type, cx - 90, cy - 50);
+                showFloat(`-$${fmt(def.cost)}`, window.innerWidth/2, window.innerHeight/2, 'red');
             }
-            
-            game.money -= game.routerUpgradeCost;
-            game.routerLevel++;
-            game.routerUpgradeCost *= 3; // 3x cost increase
-            
-            // Update all downloader displays
-            game.nodes.forEach(node => {
-                if (NODES[node.type].type === 'downloader' || node.type === 'router') {
-                    const el = document.getElementById('node-' + node.id);
-                    if (el) {
-                        const stats = el.querySelector('.node-stats');
-                        if (stats) stats.innerHTML = getNodeStats(node, NODES[node.type]);
-                    }
-                }
-            });
-            
-            updateDisplay(0, 0, 0);
-            saveGame();
-            showFloatingText('Router Upgraded! Speed x5', window.innerWidth/2, window.innerHeight/2, '#10b981');
         }
 
         function upgradeSelectedNode() {
-            if (!game.selectedNode) return;
-            const node = game.selectedNode;
-            const baseCost = NODES[node.type].cost;
-            const cost = Math.floor(baseCost * 0.5 * Math.pow(3, node.level - 1));
+            if (!selNodeId) return;
+            const n = game.nodes.find(x => x.id === selNodeId);
+            const def = NODE_DEFS[n.type];
+            // Router cost scaling is steeper
+            const base = n.type === 'router' ? 500 : def.cost;
+            const cost = Math.floor(base * Math.pow(1.5, n.level));
             
-            if (game.money < cost) {
-                showFloatingText('Need $' + cost, window.innerWidth/2, window.innerHeight/2, '#ef4444');
-                return;
-            }
-            
-            game.money -= cost;
-            node.level++;
-            
-            // Re-render
-            const el = document.getElementById('node-' + node.id);
-            if (el) {
-                el.querySelector('.node-level-badge').textContent = node.level;
-                el.querySelector('.node-subtitle').textContent = 'Level ' + node.level;
-                const stats = el.querySelector('.node-stats');
-                if (stats) stats.innerHTML = getNodeStats(node, NODES[node.type]);
-            }
-            
-            hideContext();
-            saveGame();
-        }
-
-        // Context Menu
-        function selectNode(node) {
-            game.selectedNode = node;
-            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
-            document.getElementById('node-' + node.id)?.classList.add('selected');
-        }
-
-        function deselectAll(e) {
-            if (e.target.id === 'canvas') {
-                game.selectedNode = null;
-                document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
-                hideContext();
+            if (game.money >= cost) {
+                game.money -= cost;
+                n.level++;
+                if (n.type === 'router') game.routerLevel = n.level;
+                renderWorld(); // Redraw to update level text
+                document.getElementById('contextMenu').style.display = 'none';
             }
         }
-
-        function showContext(x, y, node) {
-            const menu = document.getElementById('contextMenu');
-            const baseCost = NODES[node.type].cost;
-            const upgradeCost = Math.floor(baseCost * 0.5 * Math.pow(3, node.level - 1));
-            document.getElementById('upgradeCost').textContent = '$' + upgradeCost;
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
-            menu.style.display = 'block';
-        }
-
-        function hideContext() {
-            document.getElementById('contextMenu').style.display = 'none';
-        }
-
+        
         function deleteSelectedNode() {
-            if (!game.selectedNode) return;
-            const idx = game.nodes.indexOf(game.selectedNode);
-            if (idx > -1) {
-                const node = game.nodes[idx];
-                game.nodes.splice(idx, 1);
-                document.getElementById('node-' + node.id)?.remove();
-                
-                game.connections = game.connections.filter(c => {
-                    if (c.from === node.id || c.to === node.id) {
-                        document.getElementById(c.id)?.remove();
-                        return false;
-                    }
-                    return true;
-                });
-                
-                if (game.nodes.length === 0) document.getElementById('emptyState').style.display = 'block';
-                saveGame();
+             if (!selNodeId) return;
+             const n = game.nodes.find(x => x.id === selNodeId);
+             if (n.type === 'router') return; // Cannot delete router
+             
+             game.nodes = game.nodes.filter(x => x.id !== selNodeId);
+             game.conns = game.conns.filter(c => c.from !== selNodeId && c.to !== selNodeId);
+             document.getElementById('contextMenu').style.display = 'none';
+             renderWorld();
+        }
+
+        function unlockTech(id) {
+            const tech = TECH_TREE.find(t => t.id === id);
+            if (!game.unlocked.includes(id) && game.rp >= tech.cost) {
+                game.rp -= tech.cost;
+                game.unlocked.push(id);
+                renderResearch();
+                setTab(currTab); // Refresh shop
             }
-            hideContext();
         }
 
-        // UI Functions
-        function switchTab(tab, btn) {
-            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nodes-grid').forEach(g => g.classList.add('hidden'));
-            btn.classList.add('active');
-            document.getElementById('tab-' + tab).classList.remove('hidden');
+        // --- UI & RENDERING ---
+
+        function fmt(n) {
+            if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+            if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+            return Math.floor(n);
         }
 
-        function clickMoney(e) {
-            game.money += 100;
-            showFloatingText('+$100', e.clientX, e.clientY, '#10b981');
-            updateDisplay(0, 0, 0);
+        function renderWorld() {
+            const nodesDiv = document.getElementById('nodes');
+            nodesDiv.innerHTML = '';
+            
+            game.nodes.forEach(n => {
+                const def = NODE_DEFS[n.type];
+                const el = document.createElement('div');
+                el.className = `node ${activeNodes.has(n.id) ? '' : 'disconnected'}`;
+                el.id = `node-${n.id}`;
+                el.style.left = n.x + 'px';
+                el.style.top = n.y + 'px';
+                
+                // Ports
+                const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                               <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                
+                el.innerHTML = `
+                    ${ports}
+                    <div class="node-header">
+                        <div class="node-icon-box" style="color:${def.color}"><i class="${def.icon}"></i></div>
+                        <div class="node-info">
+                            <div class="node-title">${def.name}</div>
+                            <div class="node-lvl">Level ${n.level}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Events
+                el.onmousedown = (e) => {
+                    if (e.target.classList.contains('port')) return;
+                    if (e.button === 2) {
+                        e.preventDefault();
+                        showContext(n, e);
+                        return;
+                    }
+                    dragStart(n, e);
+                };
+                
+                nodesDiv.appendChild(el);
+            });
+
+            renderCables();
         }
 
-        function showFloatingText(text, x, y, color) {
+        function renderCables() {
+            const svg = document.getElementById('cables');
+            svg.innerHTML = '';
+            game.conns.forEach(c => {
+                const n1 = game.nodes.find(n => n.id === c.from);
+                const n2 = game.nodes.find(n => n.id === c.to);
+                if (!n1 || !n2) return;
+                
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.classList.add("cable");
+                path.dataset.ends = `${c.from},${c.to}`;
+                
+                const x1 = n1.x + 90, y1 = n1.y + 20;
+                const x2 = n2.x + 90, y2 = n2.y + 20;
+                const mx = (x1+x2)/2;
+                
+                path.setAttribute("d", `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
+                svg.appendChild(path);
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('moneyDisplay').innerText = '$' + fmt(game.money);
+            document.getElementById('rpDisplay').innerText = fmt(game.rp) + ' RP';
+            
+            ['Files', 'Images', 'Videos'].forEach(k => {
+                const key = k.toLowerCase();
+                const val = game.res[key];
+                document.getElementById(`txt${k}`).innerText = fmt(val);
+                // Log scale bar
+                const pct = Math.min(100, Math.log10(val + 1) * 20); 
+                document.getElementById(`bar${k}`).style.width = pct + '%';
+            });
+            
+            document.getElementById('modalRpDisplay').innerText = fmt(game.rp);
+            
+            const world = document.getElementById('world');
+            world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+            
+            // Global speed readout
+            const base = 25 * Math.pow(1.5, game.routerLevel - 1);
+            document.getElementById('globalDown').innerText = fmt(base) + ' B/s';
+            document.getElementById('globalUp').innerText = fmt(base) + ' B/s';
+            document.getElementById('routerLvl').innerText = 'LVL ' + game.routerLevel;
+        }
+
+        // --- SHOP & RESEARCH ---
+        let currTab = 'infra';
+
+        function setTab(t, el) {
+            currTab = t;
+            
+            // Update Tab UI active state
+            document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+            if (el) {
+                el.classList.add('active');
+            } else {
+                // If called programmatically without an element, find it via data-tab
+                const target = document.querySelector(`.tab[data-tab="${t}"]`);
+                if (target) target.classList.add('active');
+            }
+            
+            const tray = document.getElementById('tray');
+            tray.innerHTML = '';
+            
+            Object.keys(NODE_DEFS).forEach(k => {
+                const def = NODE_DEFS[k];
+                // Filter by tab
+                if (currTab === 'infra' && def.type !== 'infra' && def.type !== 'core') return;
+                if (currTab === 'download' && def.type !== 'download') return;
+                if (currTab === 'upload' && def.type !== 'upload' && def.type !== 'lab' && def.type !== 'special') return;
+                if (def.type === 'core') return; // Dont show router in shop
+
+                const el = document.createElement('div');
+                el.className = 'shop-item';
+                
+                // Lock check
+                const locked = def.req && !game.unlocked.includes(def.req);
+                if (locked) el.classList.add('disabled');
+                
+                el.onclick = () => { if (!locked) buyNode(k); };
+                el.innerHTML = `
+                    <div class="item-cost">$${fmt(def.cost)}</div>
+                    <div class="item-icon"><i class="${def.icon}" style="color:${def.color}"></i></div>
+                    <div class="item-name">${def.name}</div>
+                    <div class="item-desc">${locked ? "LOCKED (Research)" : def.desc}</div>
+                `;
+                tray.appendChild(el);
+            });
+        }
+        
+        function renderResearch() {
+            const grid = document.getElementById('researchGrid');
+            grid.innerHTML = '';
+            TECH_TREE.forEach(t => {
+                const el = document.createElement('div');
+                const owned = game.unlocked.includes(t.id);
+                el.className = `tech-card ${owned ? 'owned' : ''}`;
+                el.onclick = () => unlockTech(t.id);
+                el.innerHTML = `
+                    <div style="font-weight:bold; color:#fff">${t.name}</div>
+                    <div style="font-size:11px; color:#8b92a8; margin-top:5px">${t.desc}</div>
+                    ${!owned ? `<div class="tech-cost">${fmt(t.cost)} RP</div>` : ''}
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        // --- INPUT & DRAGGING ---
+        let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
+        let port = { active: false, src: null };
+        let selNodeId = null;
+
+        function setupInputs() {
+            const vp = document.getElementById('viewport');
+            
+            vp.onmousedown = (e) => {
+                if (e.target.closest('.node')) return;
+                drag.active = true;
+                drag.startX = e.clientX; drag.startY = e.clientY;
+                drag.offX = view.x; drag.offY = view.y;
+                document.getElementById('contextMenu').style.display = 'none';
+            };
+            
+            window.onmousemove = (e) => {
+                if (drag.active) {
+                    view.x = drag.offX + (e.clientX - drag.startX);
+                    view.y = drag.offY + (e.clientY - drag.startY);
+                }
+                if (drag.node) {
+                    const z = view.scale;
+                    drag.node.x = drag.node.ix + (e.clientX - drag.sx)/z;
+                    drag.node.y = drag.node.iy + (e.clientY - drag.sy)/z;
+                    
+                    const el = document.getElementById(`node-${drag.node.id}`);
+                    if (el) { el.style.left = drag.node.x+'px'; el.style.top = drag.node.y+'px'; }
+                    renderCables(); // Inefficient but works
+                }
+            };
+            
+            window.onmouseup = () => { drag.active = false; drag.node = null; };
+            
+            vp.onwheel = (e) => {
+                e.preventDefault();
+                view.scale = Math.max(0.2, Math.min(2, view.scale - e.deltaY * 0.001));
+            };
+        }
+        
+        function dragStart(node, e) {
+            drag.node = node;
+            drag.sx = e.clientX; drag.sy = e.clientY;
+            drag.node.ix = node.x; drag.node.iy = node.y;
+            
+            selNodeId = node.id;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+            document.getElementById(`node-${node.id}`).classList.add('selected');
+        }
+        
+        function portDown(id, e) {
+            e.stopPropagation();
+            port.active = true; port.src = id;
+        }
+        
+        function portUp(id) {
+            if (port.active && port.src !== id) {
+                // Connect
+                if (!game.conns.some(c => (c.from===port.src && c.to===id) || (c.from===id && c.to===port.src))) {
+                    game.conns.push({ from: port.src, to: id });
+                    renderCables();
+                    updateConnectivity(); // Instant update
+                }
+            }
+            port.active = false;
+        }
+
+        function showContext(node, e) {
+            const m = document.getElementById('contextMenu');
+            selNodeId = node.id;
+            m.style.left = e.clientX + 'px'; m.style.top = e.clientY + 'px';
+            m.style.display = 'block';
+            
+            const def = NODE_DEFS[node.type];
+            const base = node.type === 'router' ? 500 : def.cost;
+            const cost = Math.floor(base * Math.pow(1.5, node.level));
+            document.getElementById('ctxCost').innerText = '$' + fmt(cost);
+        }
+
+        function workAnim(node) {
+            const el = document.getElementById(`node-${node.id}`);
+            if (el) {
+                el.classList.remove('working');
+                void el.offsetWidth;
+                el.classList.add('working');
+            }
+        }
+        
+        function showFloat(txt, x, y, col) {
             const el = document.createElement('div');
-            el.className = 'floating-text';
-            el.textContent = text;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            if (color) el.style.color = color;
+            el.className = 'floating-text'; el.innerText = txt;
+            el.style.left = x+'px'; el.style.top = y+'px'; el.style.color = col;
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 1000);
         }
-
-        // Research
-        const RESEARCH = [
-            { id: 'videoTech', name: 'Video Streaming', icon: '🎥', cost: 1500, desc: 'Unlock Video Downloader', unlock: 'unlock-video' },
-            { id: 'cdnTech', name: 'CDN Technology', icon: '🚀', cost: 2000, desc: 'Unlock CDN Node', unlock: 'unlock-cdn' },
-            { id: 'serverTech', name: 'Server Farms', icon: '🖥️', cost: 2500, desc: 'Unlock Server Farm', unlock: 'unlock-server' },
-            { id: 'aiTech', name: 'AI Optimization', icon: '🧠', cost: 4000, desc: 'Unlock AI Core', unlock: 'unlock-ai' }
-        ];
-
-        function openResearch() {
-            const grid = document.getElementById('researchGrid');
-            grid.innerHTML = '';
-            
-            RESEARCH.forEach(r => {
-                const owned = game.research[r.id];
-                const div = document.createElement('div');
-                div.className = 'research-card ' + (owned ? 'owned' : '');
-                div.innerHTML = `
-                    <div class="research-icon">${r.icon}</div>
-                    <div class="research-name">${r.name}</div>
-                    <div class="research-desc">${r.desc}</div>
-                    <div class="research-cost">${owned ? 'OWNED' : '$' + r.cost}</div>
-                `;
-                div.onclick = () => {
-                    if (owned || game.money < r.cost) return;
-                    game.money -= r.cost;
-                    game.research[r.id] = true;
-                    document.getElementById(r.unlock).style.display = 'flex';
-                    openResearch();
-                    updateDisplay(0, 0, 0);
-                    saveGame();
-                };
-                grid.appendChild(div);
-            });
-            
-            document.getElementById('researchModal').classList.add('show');
+        
+        function addMoney(e) {
+            game.money += 5;
+            showFloat('+$5', e.clientX, e.clientY, '#10b981');
+        }
+        
+        function upgradeRouter() {
+             const r = game.nodes.find(n => n.type === 'router');
+             if(r) { selNodeId = r.id; upgradeSelectedNode(); }
         }
 
-        function openSave() {
-            document.getElementById('saveModal').classList.add('show');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('show');
-        }
-
-        // Save/Load
-        function saveGame() {
-            const data = {
-                money: game.money,
-                files: game.files,
-                images: game.images,
-                videos: game.videos,
-                routerLevel: game.routerLevel,
-                routerUpgradeCost: game.routerUpgradeCost,
-                nodes: game.nodes,
-                connections: game.connections,
-                nextId: game.nextId,
-                research: game.research,
-                version: '2.0'
-            };
-            localStorage.setItem('uploadLabs_v2', JSON.stringify(data));
-        }
-
-        function saveToBrowser() {
-            saveGame();
-            showFloatingText('Game Saved!', window.innerWidth/2, window.innerHeight/2, '#10b981');
-        }
-
+        // --- IMPORT/EXPORT ---
         function exportSave() {
-            const data = localStorage.getItem('uploadLabs_v2');
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `upload-labs-save-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showFloatingText('Exported!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+            const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game));
+            const node = document.createElement('a');
+            node.setAttribute("href", data);
+            node.setAttribute("download", "network_save.json");
+            document.body.appendChild(node);
+            node.click();
+            node.remove();
         }
-
+        
         function importSave(input) {
             const file = input.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    loadGameData(data);
-                    location.reload();
-                } catch (err) {
-                    alert('Invalid save file');
-                }
+                    game = JSON.parse(e.target.result);
+                    renderWorld();
+                    renderResearch();
+                    updateUI();
+                } catch(err) { alert("Invalid Save File"); }
             };
             reader.readAsText(file);
         }
 
-        function loadGameData(data) {
-            game.money = data.money || 2500;
-            game.files = data.files || 0;
-            game.images = data.images || 0;
-            game.videos = data.videos || 0;
-            game.routerLevel = data.routerLevel || 1;
-            game.routerUpgradeCost = data.routerUpgradeCost || 500;
-            game.nodes = data.nodes || [];
-            game.connections = data.connections || [];
-            game.nextId = data.nextId || 1;
-            game.research = data.research || {};
-        }
-
-        function loadGame() {
-            const saved = localStorage.getItem('uploadLabs_v2');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    loadGameData(data);
-                    
-                    // Restore nodes
-                    game.nodes.forEach(n => renderNode(n));
-                    game.connections.forEach(c => {
-                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        line.setAttribute('id', c.id);
-                        line.setAttribute('class', 'connection ' + (c.type || 'active'));
-                        document.getElementById('svgLayer').appendChild(line);
-                        updateConnection(c.id);
-                    });
-                    
-                    // Unlock researched
-                    Object.keys(game.research).forEach(key => {
-                        if (game.research[key]) {
-                            const r = RESEARCH.find(x => x.id === key);
-                            if (r) document.getElementById(r.unlock).style.display = 'flex';
-                        }
-                    });
-                    
-                    if (game.nodes.length > 0) document.getElementById('emptyState').style.display = 'none';
-                    return true;
-                } catch (e) {
-                    console.error('Load failed', e);
-                }
-            }
-            return false;
-        }
-
         // Init
-        window.addEventListener('load', () => {
-            if (loadGame()) {
-                updateDisplay(0, 0, 0);
-            }
-            requestAnimationFrame(gameLoop);
-        });
-
-        // Close modals on outside click
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                e.target.classList.remove('show');
-            }
-            if (!e.target.closest('.context-menu')) hideContext();
-        });
-
-        // Keyboard
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Delete' || e.key === 'Backspace') {
-                if (game.selectedNode) deleteSelectedNode();
-            }
-        });
+        init();
+        renderResearch();
+        setTab('infra');
     </script>
 </body>
 </html>
