@@ -223,7 +223,7 @@
         /* Nodes */
         .node {
             position: absolute;
-            width: 120px;
+            width: 140px;
             background: rgba(30, 37, 50, 0.95);
             border: 2px solid #4a5568;
             border-radius: 8px;
@@ -253,6 +253,12 @@
             animation: pulse-red 1s infinite;
         }
 
+        .node.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+            pointer-events: none;
+        }
+
         @keyframes pulse-green {
             0%, 100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
             50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
@@ -273,14 +279,14 @@
         }
 
         .node-icon {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             background: #3c465a;
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .node-title {
@@ -292,6 +298,7 @@
         .node-body {
             font-size: 11px;
             color: #8b92a8;
+            line-height: 1.4;
         }
 
         .node-stats {
@@ -307,6 +314,18 @@
 
         .node-level {
             color: #f59e0b;
+        }
+
+        .node-vpn-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #8b5cf6;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
         }
 
         /* Connection Lines */
@@ -328,28 +347,35 @@
             animation: dash 1s linear infinite;
         }
 
+        .connection-line.vpn {
+            stroke: #8b5cf6;
+            stroke-width: 3;
+            filter: drop-shadow(0 0 3px #8b5cf6);
+        }
+
         @keyframes dash {
             to { stroke-dashoffset: -10; }
         }
 
         /* Ports */
         .port {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background: #4a5568;
             border-radius: 50%;
             position: absolute;
             cursor: pointer;
             transition: all 0.2s;
+            border: 2px solid #1e2532;
         }
 
         .port:hover {
             background: #60a5fa;
-            transform: scale(1.2);
+            transform: scale(1.3);
         }
 
-        .port.input { left: -6px; top: 50%; transform: translateY(-50%); }
-        .port.output { right: -6px; top: 50%; transform: translateY(-50%); }
+        .port.input { left: -7px; top: 50%; transform: translateY(-50%); }
+        .port.output { right: -7px; top: 50%; transform: translateY(-50%); }
 
         /* Toolbar */
         .toolbar {
@@ -361,6 +387,7 @@
             align-items: center;
             padding: 0 20px;
             gap: 15px;
+            overflow-x: auto;
         }
 
         .tool-section {
@@ -368,6 +395,7 @@
             gap: 8px;
             padding-right: 15px;
             border-right: 1px solid #3c465a;
+            flex-shrink: 0;
         }
 
         .tool-section:last-child {
@@ -376,8 +404,8 @@
         }
 
         .tool-btn {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: rgba(40, 50, 70, 0.5);
             border: 1px solid #3c465a;
             border-radius: 6px;
@@ -389,9 +417,10 @@
             color: #8b92a8;
             font-size: 20px;
             position: relative;
+            flex-shrink: 0;
         }
 
-        .tool-btn:hover {
+        .tool-btn:hover:not(:disabled) {
             background: rgba(60, 70, 90, 0.8);
             color: #fff;
             transform: translateY(-2px);
@@ -408,12 +437,21 @@
             cursor: not-allowed;
         }
 
+        .tool-btn.locked::after {
+            content: '🔒';
+            position: absolute;
+            font-size: 12px;
+            bottom: 2px;
+            right: 2px;
+        }
+
         .tool-cost {
             position: absolute;
-            bottom: -18px;
+            bottom: -20px;
             font-size: 10px;
             color: #f59e0b;
             white-space: nowrap;
+            font-weight: 600;
         }
 
         /* Achievement Popup */
@@ -468,17 +506,20 @@
             border: 1px solid #3c465a;
             border-radius: 6px;
             padding: 5px 0;
-            min-width: 150px;
+            min-width: 160px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             display: none;
             z-index: 1000;
         }
 
         .context-item {
-            padding: 8px 15px;
+            padding: 10px 15px;
             cursor: pointer;
             font-size: 13px;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .context-item:hover {
@@ -487,6 +528,10 @@
 
         .context-item.delete {
             color: #ef4444;
+        }
+
+        .context-item.vpn {
+            color: #8b5cf6;
         }
 
         /* Floating Text */
@@ -498,6 +543,7 @@
             pointer-events: none;
             animation: floatUp 1s ease-out forwards;
             text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            z-index: 1000;
         }
 
         @keyframes floatUp {
@@ -512,11 +558,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            backdrop-filter: blur(5px);
         }
 
         .modal.show {
@@ -528,10 +575,11 @@
             border: 1px solid #3c465a;
             border-radius: 12px;
             padding: 30px;
-            max-width: 500px;
+            max-width: 800px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .modal-header {
@@ -544,16 +592,124 @@
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 24px;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .modal-close {
             background: none;
             border: none;
             color: #8b92a8;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        /* Research Tree */
+        .research-tree {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .research-tier {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tier-label {
+            color: #8b92a8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .research-node {
+            width: 120px;
+            background: rgba(40, 50, 70, 0.6);
+            border: 2px solid #3c465a;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .research-node:hover:not(.researched):not(.locked) {
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .research-node.researched {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .research-node.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .research-node.researching {
+            border-color: #f59e0b;
+            animation: pulse-research 1.5s infinite;
+        }
+
+        @keyframes pulse-research {
+            0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.8); }
+        }
+
+        .research-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .research-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .research-cost {
+            font-size: 11px;
+            color: #f59e0b;
+        }
+
+        .research-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #f59e0b;
+            transition: width 0.3s;
+        }
+
+        /* Connection lines between research nodes */
+        .research-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .upgrade-list {
@@ -599,16 +755,131 @@
             font-weight: 600;
         }
 
+        /* Save/Load Panel */
+        .save-load-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .save-slot {
+            background: rgba(40, 50, 70, 0.5);
+            border: 1px solid #3c465a;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-slot:hover {
+            border-color: #3b82f6;
+            background: rgba(60, 70, 90, 0.5);
+        }
+
+        .save-slot.empty {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        .save-date {
+            font-size: 12px;
+            color: #8b92a8;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .game-container {
                 grid-template-columns: 250px 1fr 50px;
             }
+            .research-tree {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* VPN Overlay */
+        .vpn-overlay {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            background: rgba(139, 92, 246, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        }
+
+        .vpn-overlay.active {
+            display: flex;
+            animation: pulse-vpn 2s infinite;
+        }
+
+        @keyframes pulse-vpn {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        .vpn-indicator {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
     </style>
 </head>
 <body>
     <div class="blueprint-bg"></div>
+    
+    <div class="vpn-overlay" id="vpnOverlay">
+        <div class="vpn-indicator"></div>
+        <span>VPN ACTIVE</span>
+        <span id="vpnTime">00:00</span>
+    </div>
 
     <div class="game-container">
         <!-- Resources Panel -->
@@ -665,10 +936,10 @@
                 <span>🏠</span> Desktop
             </button>
             <button class="nav-btn" onclick="switchTab('research')">
-                <span>🧪</span> Research
+                <span>🔬</span> Research
             </button>
-            <button class="nav-btn" onclick="switchTab('network')">
-                <span>🌐</span> Network
+            <button class="nav-btn" onclick="toggleModal('save')">
+                <span>💾</span> Save/Load
             </button>
         </div>
 
@@ -722,48 +993,62 @@
                 <button class="tool-btn" id="toolMove" onclick="setTool('move')" title="Move (M)">
                     ✥
                 </button>
+                <button class="tool-btn" id="toolConnect" onclick="setTool('connect')" title="Connect (C)">
+                    🔗
+                </button>
                 <button class="tool-btn" id="toolDelete" onclick="setTool('delete')" title="Delete (X)">
                     🗑️
                 </button>
             </div>
             
-            <div class="tool-section">
-                <button class="tool-btn" onclick="createNode('scanner')" title="Port Scanner">
+            <div class="tool-section" id="nodeTools">
+                <button class="tool-btn" id="btnScanner" onclick="createNode('scanner')" title="Port Scanner">
                     🌐
                     <span class="tool-cost">$100</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('exploit')" title="Exploit Engine">
+                <button class="tool-btn" id="btnExploit" onclick="createNode('exploit')" title="Exploit Engine">
                     ⚙️
                     <span class="tool-cost">$500</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('payload')" title="Payload Gen">
+                <button class="tool-btn" id="btnPayload" onclick="createNode('payload')" title="Payload Gen">
                     💻
                     <span class="tool-cost">$200</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('crypto')" title="Crypto Miner">
+                <button class="tool-btn" id="btnCrypto" onclick="createNode('crypto')" title="Crypto Miner">
                     ⛏️
                     <span class="tool-cost">$1000</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('firewall')" title="Firewall">
+                <button class="tool-btn" id="btnFirewall" onclick="createNode('firewall')" title="Firewall">
                     🛡️
                     <span class="tool-cost">$300</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('database')" title="Database">
+                <button class="tool-btn" id="btnDatabase" onclick="createNode('database')" title="Database">
                     🗄️
                     <span class="tool-cost">$800</span>
                 </button>
-                <button class="tool-btn" onclick="createNode('ai')" title="AI Core">
+                <button class="tool-btn locked" id="btnVPN" onclick="createNode('vpn')" title="VPN Tunnel (Locked)">
+                    🔒
+                    <span class="tool-cost">Research</span>
+                </button>
+                <button class="tool-btn locked" id="btnAI" onclick="createNode('ai')" title="AI Core (Locked)">
                     🧠
-                    <span class="tool-cost">$5000</span>
+                    <span class="tool-cost">Research</span>
+                </button>
+                <button class="tool-btn locked" id="btnBotnet" onclick="createNode('botnet')" title="Botnet (Locked)">
+                    🤖
+                    <span class="tool-cost">Research</span>
                 </button>
             </div>
 
             <div class="tool-section">
-                <button class="tool-btn" onclick="clearAllNodes()" title="Clear All">
-                    🗑️
+                <button class="tool-btn" onclick="exportSave()" title="Export Save">
+                    📤
                 </button>
-                <button class="tool-btn" onclick="saveLayout()" title="Save Layout">
-                    💾
+                <button class="tool-btn" onclick="importSave()" title="Import Save">
+                    📥
+                </button>
+                <button class="tool-btn" onclick="clearAllNodes()" title="Clear All">
+                    💣
                 </button>
             </div>
         </div>
@@ -780,33 +1065,93 @@
 
     <!-- Context Menu -->
     <div class="context-menu" id="contextMenu">
-        <div class="context-item" onclick="upgradeSelectedNode()">Upgrade Node</div>
-        <div class="context-item" onclick="duplicateNode()">Duplicate</div>
-        <div class="context-item delete" onclick="deleteSelectedNode()">Delete Node</div>
+        <div class="context-item" onclick="upgradeSelectedNode()">
+            <span>⬆️</span> Upgrade Node
+        </div>
+        <div class="context-item vpn" onclick="toggleVPN()" id="vpnMenuItem" style="display:none;">
+            <span>🔒</span> Toggle VPN
+        </div>
+        <div class="context-item" onclick="duplicateNode()">
+            <span>📋</span> Duplicate
+        </div>
+        <div class="context-item delete" onclick="deleteSelectedNode()">
+            <span>🗑️</span> Delete Node
+        </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Research Modal -->
+    <div class="modal" id="modal-research">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 class="modal-title">🔬 Research Tree</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="research-tree" id="researchTree">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Save/Load Modal -->
+    <div class="modal" id="modal-save">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💾 Save / Load Game</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color:#fff; margin-bottom:10px;">Local Saves (Browser Storage)</h4>
+                <div class="save-load-panel" id="localSaves">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid #3c465a; padding-top: 20px;">
+                <h4 style="color:#fff; margin-bottom:10px;">GitHub Pages Compatible - Export/Import</h4>
+                <p style="color:#8b92a8; font-size:12px; margin-bottom:15px;">
+                    Since GitHub Pages is static, use these buttons to save your game as a file or paste a save code.
+                </p>
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="btn-primary" onclick="exportToFile()">📥 Download Save File</button>
+                    <button class="btn-primary" onclick="document.getElementById('importArea').style.display='block'">📤 Import Save Code</button>
+                </div>
+                <div id="importArea" style="display:none;">
+                    <textarea id="importInput" placeholder="Paste save code here..." style="width:100%; height:100px; background:#0f1419; border:1px solid #3c465a; color:#fff; padding:10px; border-radius:6px; font-family:monospace; margin-bottom:10px;"></textarea>
+                    <button class="btn-primary" onclick="importFromText()">Import</button>
+                    <button class="btn-danger" onclick="document.getElementById('importArea').style.display='none'">Cancel</button>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid #3c465a; padding-top: 20px; margin-top: 20px;">
+                <h4 style="color:#fff; margin-bottom:10px;">Auto-Save</h4>
+                <label style="display:flex; align-items:center; gap:10px; color:#8b92a8; cursor:pointer;">
+                    <input type="checkbox" id="autoSaveToggle" checked onchange="toggleAutoSave()">
+                    Enable Auto-Save (every 30 seconds)
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrades Modal -->
     <div class="modal" id="modal-upgrades">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">🚀 System Upgrades</h3>
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="upgrade-list" id="upgradeList">
-                <!-- Generated by JS -->
-            </div>
+            <div class="upgrade-list" id="upgradeList"></div>
         </div>
     </div>
 
+    <!-- Achievements Modal -->
     <div class="modal" id="modal-achievements">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">🏆 Achievements</h3>
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div id="achievementList">
-                <!-- Generated by JS -->
-            </div>
+            <div id="achievementList"></div>
         </div>
     </div>
 
@@ -814,7 +1159,7 @@
         // Game State
         const game = {
             resources: {
-                money: 0,
+                money: 100,
                 research: 0,
                 hacks: 0,
                 data: 0,
@@ -836,10 +1181,22 @@
                 scanSpeed: 1,
                 exploitPower: 1,
                 cryptoEfficiency: 1,
-                maxNodes: 10
+                maxNodes: 10,
+                vpnSecurity: 1
+            },
+            research: {
+                basicNetworking: true,
+                advancedExploits: false,
+                vpnTechnology: false,
+                artificialIntelligence: false,
+                botnetMastery: false,
+                quantumComputing: false
             },
             sessionTime: 600,
-            lastTick: Date.now()
+            lastTick: Date.now(),
+            autoSave: true,
+            vpnActive: false,
+            vpnTimeLeft: 0
         };
 
         // Node Types Configuration
@@ -852,7 +1209,8 @@
                 inputs: 0,
                 outputs: 1,
                 production: { hacks: 0.5 },
-                description: 'Scans for open ports'
+                description: 'Scans for open ports',
+                research: null
             },
             exploit: {
                 name: 'Exploit Engine',
@@ -862,7 +1220,8 @@
                 inputs: 1,
                 outputs: 1,
                 production: { hacks: 2, data: 0.1 },
-                description: 'Runs exploitation scripts'
+                description: 'Runs exploitation scripts',
+                research: null
             },
             payload: {
                 name: 'Payload Gen',
@@ -872,7 +1231,8 @@
                 inputs: 1,
                 outputs: 1,
                 production: { data: 0.5 },
-                description: 'Generates malicious payloads'
+                description: 'Generates malicious payloads',
+                research: null
             },
             crypto: {
                 name: 'Crypto Miner',
@@ -882,7 +1242,8 @@
                 inputs: 0,
                 outputs: 1,
                 production: { money: 1 },
-                description: ' Mines cryptocurrency'
+                description: 'Mines cryptocurrency',
+                research: null
             },
             firewall: {
                 name: 'Firewall',
@@ -892,7 +1253,8 @@
                 inputs: 1,
                 outputs: 1,
                 production: {},
-                description: 'Protects network, boosts efficiency'
+                description: 'Protects network, boosts efficiency',
+                research: null
             },
             database: {
                 name: 'Database',
@@ -902,36 +1264,144 @@
                 inputs: 2,
                 outputs: 0,
                 production: {},
-                description: 'Stores stolen data for profit'
+                description: 'Stores stolen data for profit',
+                research: null
+            },
+            vpn: {
+                name: 'VPN Tunnel',
+                icon: '🔒',
+                color: '#06b6d4',
+                cost: 2000,
+                inputs: 1,
+                outputs: 1,
+                production: { hacks: 3, research: 0.2 },
+                description: 'Secures connection, generates research',
+                research: 'vpnTechnology',
+                special: 'vpn'
             },
             ai: {
                 name: 'AI Core',
                 icon: '🧠',
-                color: '#06b6d4',
+                color: '#14b8a6',
                 cost: 5000,
                 inputs: 3,
                 outputs: 2,
-                production: { research: 0.5, hacks: 5, data: 1 },
-                description: 'Automates complex operations'
+                production: { research: 1, hacks: 5, data: 1 },
+                description: 'Automates complex operations',
+                research: 'artificialIntelligence'
+            },
+            botnet: {
+                name: 'Botnet',
+                icon: '🤖',
+                color: '#f97316',
+                cost: 3000,
+                inputs: 2,
+                outputs: 3,
+                production: { hacks: 10, money: 0.5 },
+                description: 'Network of compromised devices',
+                research: 'botnetMastery'
             }
         };
 
+        // Research Tree Definition
+        const researchTree = [
+            {
+                id: 'basicNetworking',
+                name: 'Basic Networking',
+                icon: '📡',
+                cost: 0,
+                time: 0,
+                desc: 'Starting technology',
+                tier: 1,
+                unlocks: ['scanner', 'exploit', 'payload']
+            },
+            {
+                id: 'advancedExploits',
+                name: 'Advanced Exploits',
+                icon: '💥',
+                cost: 500,
+                time: 10000,
+                desc: 'Unlocks Firewall and Database',
+                tier: 2,
+                requires: 'basicNetworking',
+                unlocks: ['firewall', 'database', 'crypto']
+            },
+            {
+                id: 'vpnTechnology',
+                name: 'VPN Technology',
+                icon: '🔒',
+                cost: 2000,
+                time: 30000,
+                desc: 'Unlocks VPN Tunnel nodes',
+                tier: 3,
+                requires: 'advancedExploits',
+                unlocks: ['vpn']
+            },
+            {
+                id: 'artificialIntelligence',
+                name: 'AI Research',
+                icon: '🧠',
+                cost: 5000,
+                time: 60000,
+                desc: 'Unlocks AI Core nodes',
+                tier: 3,
+                requires: 'advancedExploits',
+                unlocks: ['ai']
+            },
+            {
+                id: 'botnetMastery',
+                name: 'Botnet Mastery',
+                icon: '🤖',
+                cost: 4000,
+                time: 45000,
+                desc: 'Unlocks Botnet nodes',
+                tier: 4,
+                requires: 'vpnTechnology',
+                unlocks: ['botnet']
+            },
+            {
+                id: 'quantumComputing',
+                name: 'Quantum Computing',
+                icon: '⚛️',
+                cost: 10000,
+                time: 120000,
+                desc: 'Doubles all production',
+                tier: 4,
+                requires: 'artificialIntelligence',
+                unlocks: []
+            }
+        ];
+
         // Initialize
         function init() {
-            updateResources();
+            loadGame();
+            updateResearchUI();
+            updateToolbar();
+            renderResearchTree();
             setInterval(gameLoop, 100);
             setInterval(secondLoop, 1000);
+            
+            if (game.autoSave) {
+                setInterval(autoSave, 30000);
+            }
             
             // Canvas interactions
             const canvas = document.getElementById('canvasArea');
             canvas.addEventListener('mousedown', handleCanvasClick);
             canvas.addEventListener('contextmenu', handleRightClick);
-            canvas.addEventListener('mousemove', handleMouseMove);
             
             document.addEventListener('keydown', handleKeyDown);
             
-            // Start with one free scanner
-            setTimeout(() => createNode('scanner', 100, 100), 500);
+            // Start with one free scanner if new game
+            if (game.nodes.length === 0) {
+                setTimeout(() => createNode('scanner', 100, 100), 500);
+            }
+            
+            window.addEventListener('beforeunload', (e) => {
+                if (game.autoSave) {
+                    saveGame();
+                }
+            });
         }
 
         function gameLoop() {
@@ -939,31 +1409,52 @@
             const delta = (now - game.lastTick) / 1000;
             game.lastTick = now;
             
+            // Update VPN
+            if (game.vpnActive) {
+                game.vpnTimeLeft -= delta;
+                if (game.vpnTimeLeft <= 0) {
+                    game.vpnActive = false;
+                    document.getElementById('vpnOverlay').classList.remove('active');
+                } else {
+                    const mins = Math.floor(game.vpnTimeLeft / 60);
+                    const secs = Math.floor(game.vpnTimeLeft % 60);
+                    document.getElementById('vpnTime').textContent = 
+                        `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                }
+            }
+            
             // Update nodes
             game.nodes.forEach(node => {
                 if (node.type === 'database') {
-                    // Database converts data to money
                     const inputData = getInputResources(node);
                     if (inputData.data > 0) {
-                        game.resources.money += inputData.data * 10 * delta;
-                        game.resources.data -= inputData.data * delta;
+                        game.resources.money += inputData.data * 10 * delta * (game.vpnActive ? 2 : 1);
+                        game.resources.data -= Math.min(inputData.data * delta, game.resources.data);
                     }
                 } else if (node.type === 'firewall') {
-                    // Firewall boosts connected nodes
                     const boosted = getConnectedNodes(node);
                     boosted.forEach(target => {
                         target.efficiency = 1.5;
                     });
+                } else if (node.type === 'vpn' && game.vpnActive) {
+                    // VPN boosts all connected nodes
+                    const connected = getConnectedNodes(node);
+                    connected.forEach(target => {
+                        target.efficiency = (target.efficiency || 1) * 1.5;
+                    });
                 } else {
-                    // Normal production
                     const type = nodeTypes[node.type];
                     if (type.production) {
                         Object.entries(type.production).forEach(([res, amount]) => {
                             const efficiency = node.efficiency || 1;
-                            game.resources[res] += amount * efficiency * delta;
+                            const vpnMult = (game.vpnActive && res === 'hacks') ? 2 : 1;
+                            game.resources[res] += amount * efficiency * vpnMult * delta;
                         });
                     }
                 }
+                
+                // Reset efficiency
+                node.efficiency = 1;
             });
             
             updateResources();
@@ -975,10 +1466,10 @@
             document.getElementById('timerFill').style.width = (game.sessionTime / 600 * 100) + '%';
             
             if (game.sessionTime <= 0) {
-                // Reset session with bonus
                 game.sessionTime = 600;
-                game.resources.money += 1000;
-                showAchievement('Session Complete', 'Bonus: $1000');
+                const bonus = game.vpnActive ? 2000 : 1000;
+                game.resources.money += bonus;
+                showAchievement('Session Complete', `Bonus: $${bonus}`);
             }
             
             // Calculate rates
@@ -992,7 +1483,6 @@
                 }
             });
             
-            // Update rate displays
             Object.keys(game.rates).forEach(res => {
                 const el = document.getElementById(res + 'Rate');
                 if (el) el.textContent = game.rates[res].toFixed(2) + '/s';
@@ -1003,12 +1493,18 @@
         }
 
         function createNode(type, x, y) {
+            const config = nodeTypes[type];
+            
+            if (config.research && !game.research[config.research]) {
+                showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Research required!');
+                return;
+            }
+            
             if (game.nodes.length >= game.upgrades.maxNodes) {
                 showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Max nodes reached!');
                 return;
             }
             
-            const config = nodeTypes[type];
             if (game.resources.money < config.cost && game.nodes.length > 0) {
                 showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Not enough money!');
                 return;
@@ -1026,16 +1522,18 @@
                 level: 1,
                 efficiency: 1,
                 inputs: [],
-                outputs: []
+                outputs: [],
+                vpnActive: false
             };
             
             game.nodes.push(node);
             renderNode(node);
             
-            // Check achievements
             if (game.nodes.length === 1) unlockAchievement('first_node', 'First Node');
             if (game.nodes.length === 10) unlockAchievement('ten_nodes', 'Network Builder');
+            if (type === 'vpn') unlockAchievement('vpn_master', 'VPN Master');
             
+            saveGame();
             return node;
         }
 
@@ -1048,9 +1546,15 @@
             div.style.top = node.y + 'px';
             div.style.borderColor = config.color;
             
+            let badge = '';
+            if (node.type === 'vpn' && node.vpnActive) {
+                badge = '<div class="node-vpn-badge">ON</div>';
+            }
+            
             div.innerHTML = `
-                <div class="port input" onclick="startConnection(${node.id}, 'input')"></div>
-                <div class="port output" onclick="startConnection(${node.id}, 'output')"></div>
+                <div class="port input" onclick="handlePortClick(${node.id}, 'input', event)"></div>
+                <div class="port output" onclick="handlePortClick(${node.id}, 'output', event)"></div>
+                ${badge}
                 <div class="node-header">
                     <div class="node-icon" style="background: ${config.color}20; color: ${config.color};">
                         ${config.icon}
@@ -1066,7 +1570,6 @@
                 </div>
             `;
             
-            // Drag functionality
             let isDragging = false;
             let startX, startY, initialX, initialY;
             
@@ -1097,42 +1600,26 @@
             });
             
             document.addEventListener('mouseup', () => {
-                isDragging = false;
+                if (isDragging) {
+                    isDragging = false;
+                    saveGame();
+                }
             });
             
             document.getElementById('nodeLayer').appendChild(div);
         }
 
-        function selectNode(node) {
-            game.selectedNode = node;
-            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
-            document.getElementById('node-' + node.id).classList.add('selected');
-        }
-
-        function deleteNode(node) {
-            const idx = game.nodes.indexOf(node);
-            if (idx > -1) {
-                game.nodes.splice(idx, 1);
-                document.getElementById('node-' + node.id).remove();
-                
-                // Remove connections
-                game.connections = game.connections.filter(c => {
-                    if (c.from === node.id || c.to === node.id) {
-                        document.getElementById('conn-' + c.id)?.remove();
-                        return false;
-                    }
-                    return true;
-                });
-            }
-        }
-
         let connectionStart = null;
 
-        function startConnection(nodeId, type) {
+        function handlePortClick(nodeId, type, e) {
+            e.stopPropagation();
+            
+            if (game.currentTool !== 'connect' && game.currentTool !== 'select') return;
+            
             if (!connectionStart) {
                 connectionStart = { node: nodeId, type: type };
+                highlightPort(nodeId, type, true);
             } else {
-                // Complete connection
                 if (connectionStart.node !== nodeId) {
                     if (connectionStart.type === 'output' && type === 'input') {
                         createConnection(connectionStart.node, nodeId);
@@ -1140,14 +1627,29 @@
                         createConnection(nodeId, connectionStart.node);
                     }
                 }
+                highlightPort(connectionStart.node, connectionStart.type, false);
                 connectionStart = null;
             }
         }
 
+        function highlightPort(nodeId, type, active) {
+            const node = document.getElementById('node-' + nodeId);
+            const port = node.querySelector('.port.' + type);
+            port.style.background = active ? '#3b82f6' : '#4a5568';
+            port.style.transform = active ? 'scale(1.3)' : 'scale(1)';
+        }
+
         function createConnection(fromId, toId) {
-            const id = 'conn-' + Date.now();
+            // Check if connection already exists
+            const exists = game.connections.some(c => 
+                (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
+            );
+            if (exists) return;
+            
+            const id = 'conn-' + Date.now() + '-' + Math.random();
             game.connections.push({ id, from: fromId, to: toId });
             drawConnection(id, fromId, toId);
+            saveGame();
         }
 
         function drawConnection(id, fromId, toId) {
@@ -1158,10 +1660,13 @@
             line.setAttribute('id', id);
             line.setAttribute('class', 'connection-line active');
             
-            const fromEl = document.getElementById('node-' + fromId);
-            const toEl = document.getElementById('node-' + toId);
+            updateConnectionPath(line, fromNode, toNode);
             
-            const x1 = fromNode.x + 120;
+            document.getElementById('connectionLayer').appendChild(line);
+        }
+
+        function updateConnectionPath(line, fromNode, toNode) {
+            const x1 = fromNode.x + 140;
             const y1 = fromNode.y + 40;
             const x2 = toNode.x;
             const y2 = toNode.y + 40;
@@ -1169,8 +1674,6 @@
             const midX = (x1 + x2) / 2;
             const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
             line.setAttribute('d', d);
-            
-            document.getElementById('connectionLayer').appendChild(line);
         }
 
         function updateConnections() {
@@ -1179,15 +1682,7 @@
                 if (line) {
                     const fromNode = game.nodes.find(n => n.id === conn.from);
                     const toNode = game.nodes.find(n => n.id === conn.to);
-                    
-                    const x1 = fromNode.x + 120;
-                    const y1 = fromNode.y + 40;
-                    const x2 = toNode.x;
-                    const y2 = toNode.y + 40;
-                    
-                    const midX = (x1 + x2) / 2;
-                    const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
-                    line.setAttribute('d', d);
+                    updateConnectionPath(line, fromNode, toNode);
                 }
             });
         }
@@ -1212,6 +1707,57 @@
                 .map(c => game.nodes.find(n => n.id === c.to));
         }
 
+        function selectNode(node) {
+            game.selectedNode = node;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+            document.getElementById('node-' + node.id).classList.add('selected');
+            
+            // Show VPN option in context menu if applicable
+            const vpnItem = document.getElementById('vpnMenuItem');
+            if (node.type === 'vpn') {
+                vpnItem.style.display = 'flex';
+                vpnItem.innerHTML = `<span>${node.vpnActive ? '🔓' : '🔒'}</span> ${node.vpnActive ? 'Disable VPN' : 'Enable VPN'}`;
+            } else {
+                vpnItem.style.display = 'none';
+            }
+        }
+
+        function toggleVPN() {
+            if (!game.selectedNode || game.selectedNode.type !== 'vpn') return;
+            
+            game.selectedNode.vpnActive = !game.selectedNode.vpnActive;
+            game.vpnActive = game.selectedNode.vpnActive;
+            game.vpnTimeLeft = game.selectedNode.vpnActive ? 300 : 0; // 5 minutes
+            
+            if (game.vpnActive) {
+                document.getElementById('vpnOverlay').classList.add('active');
+                unlockAchievement('vpn_active', 'Secure Connection');
+            } else {
+                document.getElementById('vpnOverlay').classList.remove('active');
+            }
+            
+            renderNode(game.selectedNode);
+            closeContextMenu();
+            saveGame();
+        }
+
+        function deleteNode(node) {
+            const idx = game.nodes.indexOf(node);
+            if (idx > -1) {
+                game.nodes.splice(idx, 1);
+                document.getElementById('node-' + node.id).remove();
+                
+                game.connections = game.connections.filter(c => {
+                    if (c.from === node.id || c.to === node.id) {
+                        document.getElementById(c.id)?.remove();
+                        return false;
+                    }
+                    return true;
+                });
+                saveGame();
+            }
+        }
+
         function upgradeSelectedNode() {
             if (!game.selectedNode) return;
             const cost = Math.floor(nodeTypes[game.selectedNode.type].cost * Math.pow(1.5, game.selectedNode.level));
@@ -1219,8 +1765,28 @@
                 game.resources.money -= cost;
                 game.selectedNode.level++;
                 game.selectedNode.efficiency *= 1.5;
-                renderNode(game.selectedNode);
+                
+                // Re-render node
+                const el = document.getElementById('node-' + game.selectedNode.id);
+                el.querySelector('.node-level').textContent = 'Lv.' + game.selectedNode.level;
+                
                 showFloatingText(event.clientX, event.clientY, 'Upgraded!');
+                closeContextMenu();
+                saveGame();
+            }
+        }
+
+        function duplicateNode() {
+            if (!game.selectedNode) return;
+            const original = game.selectedNode;
+            createNode(original.type, original.x + 20, original.y + 20);
+            closeContextMenu();
+        }
+
+        function deleteSelectedNode() {
+            if (game.selectedNode) {
+                deleteNode(game.selectedNode);
+                closeContextMenu();
             }
         }
 
@@ -1234,7 +1800,7 @@
             if (e.target === document.getElementById('canvasArea') || e.target.id === 'nodeLayer') {
                 game.selectedNode = null;
                 document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
-                document.getElementById('contextMenu').style.display = 'none';
+                closeContextMenu();
             }
         }
 
@@ -1248,14 +1814,15 @@
             }
         }
 
-        function handleMouseMove(e) {
-            // Could add connection preview here
+        function closeContextMenu() {
+            document.getElementById('contextMenu').style.display = 'none';
         }
 
         function handleKeyDown(e) {
             switch(e.key.toLowerCase()) {
                 case 'v': setTool('select'); break;
                 case 'm': setTool('move'); break;
+                case 'c': setTool('connect'); break;
                 case 'x': setTool('delete'); break;
                 case 'delete': 
                 case 'backspace': 
@@ -1264,6 +1831,289 @@
             }
         }
 
+        // Research System
+        function renderResearchTree() {
+            const container = document.getElementById('researchTree');
+            container.innerHTML = '';
+            
+            // Group by tier
+            const tiers = [[], [], [], []];
+            researchTree.forEach(r => {
+                if (tiers[r.tier - 1]) tiers[r.tier - 1].push(r);
+            });
+            
+            tiers.forEach((tier, idx) => {
+                const tierDiv = document.createElement('div');
+                tierDiv.className = 'research-tier';
+                
+                const label = document.createElement('div');
+                label.className = 'tier-label';
+                label.textContent = 'Tier ' + (idx + 1);
+                tierDiv.appendChild(label);
+                
+                tier.forEach(research => {
+                    const div = document.createElement('div');
+                    div.className = 'research-node';
+                    div.id = 'research-' + research.id;
+                    
+                    // Determine state
+                    const isResearched = game.research[research.id];
+                    const isLocked = research.requires && !game.research[research.requires];
+                    const isResearching = div.dataset.researching === 'true';
+                    
+                    if (isResearched) div.classList.add('researched');
+                    else if (isLocked) div.classList.add('locked');
+                    
+                    div.innerHTML = `
+                        <div class="research-icon">${research.icon}</div>
+                        <div class="research-name">${research.name}</div>
+                        <div class="research-cost">${research.cost > 0 ? '$' + research.cost : 'FREE'}</div>
+                        ${isResearching ? '<div class="research-progress" style="width:50%"></div>' : ''}
+                    `;
+                    
+                    div.onclick = () => startResearch(research);
+                    tierDiv.appendChild(div);
+                });
+                
+                container.appendChild(tierDiv);
+            });
+        }
+
+        function startResearch(research) {
+            if (game.research[research.id]) return;
+            if (research.requires && !game.research[research.requires]) {
+                showFloatingText(event.clientX, event.clientY, 'Prerequisites not met!');
+                return;
+            }
+            if (game.resources.money < research.cost) {
+                showFloatingText(event.clientX, event.clientY, 'Not enough money!');
+                return;
+            }
+            
+            game.resources.money -= research.cost;
+            const div = document.getElementById('research-' + research.id);
+            div.classList.add('researching');
+            div.dataset.researching = 'true';
+            
+            setTimeout(() => {
+                game.research[research.id] = true;
+                div.classList.remove('researching');
+                div.classList.add('researched');
+                div.dataset.researching = 'false';
+                
+                updateToolbar();
+                showAchievement('Research Complete', research.name);
+                unlockAchievement('research_' + research.id, research.name);
+                saveGame();
+            }, research.time);
+        }
+
+        function updateToolbar() {
+            Object.keys(nodeTypes).forEach(type => {
+                const config = nodeTypes[type];
+                const btn = document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1));
+                if (!btn) return;
+                
+                if (config.research && !game.research[config.research]) {
+                    btn.classList.add('locked');
+                    btn.title = config.name + ' (Locked - Research Required)';
+                } else {
+                    btn.classList.remove('locked');
+                    btn.innerHTML = `
+                        ${config.icon}
+                        <span class="tool-cost">$${config.cost}</span>
+                    `;
+                    btn.title = config.name;
+                }
+            });
+        }
+
+        // Save/Load System
+        function saveGame() {
+            const saveData = {
+                resources: game.resources,
+                upgrades: game.upgrades,
+                research: game.research,
+                nodes: game.nodes.map(n => ({
+                    id: n.id,
+                    type: n.type,
+                    x: n.x,
+                    y: n.y,
+                    level: n.level
+                })),
+                connections: game.connections,
+                nodeIdCounter: game.nodeIdCounter,
+                achievements: game.achievements,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
+            localStorage.setItem('uploadLabsSaveTime', new Date().toLocaleString());
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('uploadLabsSave');
+            if (!saved) return;
+            
+            try {
+                const data = JSON.parse(saved);
+                
+                game.resources = data.resources || game.resources;
+                game.upgrades = { ...game.upgrades, ...data.upgrades };
+                game.research = { ...game.research, ...data.research };
+                game.nodeIdCounter = data.nodeIdCounter || 0;
+                game.achievements = data.achievements || [];
+                
+                // Restore nodes
+                if (data.nodes) {
+                    data.nodes.forEach(n => {
+                        const node = {
+                            ...n,
+                            efficiency: 1,
+                            inputs: [],
+                            outputs: []
+                        };
+                        game.nodes.push(node);
+                        renderNode(node);
+                    });
+                }
+                
+                // Restore connections
+                if (data.connections) {
+                    data.connections.forEach(c => {
+                        game.connections.push(c);
+                        drawConnection(c.id, c.from, c.to);
+                    });
+                }
+                
+                updateResources();
+                updateToolbar();
+                
+            } catch (e) {
+                console.error('Failed to load save:', e);
+            }
+        }
+
+        function autoSave() {
+            if (game.autoSave) {
+                saveGame();
+                showFloatingText(window.innerWidth/2, 50, 'Auto-Saved!');
+            }
+        }
+
+        function toggleAutoSave() {
+            game.autoSave = document.getElementById('autoSaveToggle').checked;
+        }
+
+        // Export/Import for GitHub Pages
+        function exportToFile() {
+            const saveData = {
+                resources: game.resources,
+                upgrades: game.upgrades,
+                research: game.research,
+                nodes: game.nodes.map(n => ({
+                    id: n.id,
+                    type: n.type,
+                    x: n.x,
+                    y: n.y,
+                    level: n.level
+                })),
+                connections: game.connections,
+                nodeIdCounter: game.nodeIdCounter,
+                achievements: game.achievements,
+                version: '1.0',
+                exported: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(saveData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'upload-labs-save-' + Date.now() + '.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function importFromText() {
+            const text = document.getElementById('importInput').value.trim();
+            if (!text) return;
+            
+            try {
+                const data = JSON.parse(text);
+                
+                // Validate
+                if (!data.nodes || !data.resources) {
+                    throw new Error('Invalid save data');
+                }
+                
+                // Clear current
+                clearAllNodes(false);
+                
+                // Load new data
+                game.resources = data.resources;
+                game.upgrades = { ...game.upgrades, ...data.upgrades };
+                game.research = { ...game.research, ...data.research };
+                game.nodeIdCounter = data.nodeIdCounter || 0;
+                game.achievements = data.achievements || [];
+                
+                // Restore nodes
+                data.nodes.forEach(n => {
+                    const node = {
+                        ...n,
+                        efficiency: 1,
+                        inputs: [],
+                        outputs: []
+                    };
+                    game.nodes.push(node);
+                    renderNode(node);
+                });
+                
+                // Restore connections
+                if (data.connections) {
+                    data.connections.forEach(c => {
+                        game.connections.push(c);
+                        drawConnection(c.id, c.from, c.to);
+                    });
+                }
+                
+                updateResources();
+                updateToolbar();
+                renderResearchTree();
+                
+                document.getElementById('importArea').style.display = 'none';
+                document.getElementById('importInput').value = '';
+                
+                showAchievement('Save Imported', 'Game loaded successfully!');
+                saveGame();
+                
+            } catch (e) {
+                alert('Failed to import: ' + e.message);
+            }
+        }
+
+        function updateLocalSavesDisplay() {
+            const container = document.getElementById('localSaves');
+            const saveTime = localStorage.getItem('uploadLabsSaveTime');
+            
+            container.innerHTML = `
+                <div class="save-slot ${!saveTime ? 'empty' : ''}" onclick="loadGame()">
+                    <div style="font-weight:600; color:#fff;">Auto-Save Slot</div>
+                    <div class="save-date">${saveTime || 'Empty'}</div>
+                    ${saveTime ? '<button class="btn-primary" style="margin-top:10px; width:100%;" onclick="event.stopPropagation(); loadGame();">Load</button>' : ''}
+                </div>
+                <div class="save-slot empty" onclick="saveGame(); updateLocalSavesDisplay();">
+                    <div style="font-weight:600; color:#fff;">Manual Save</div>
+                    <div class="save-date">Click to save now</div>
+                    <button class="btn-primary" style="margin-top:10px; width:100%;" onclick="event.stopPropagation(); saveGame(); updateLocalSavesDisplay();">Save</button>
+                </div>
+            `;
+        }
+
+        // UI Functions
         function updateResources() {
             document.getElementById('money').textContent = formatNumber(game.resources.money);
             document.getElementById('research').textContent = formatNumber(game.resources.research);
@@ -1299,6 +2149,7 @@
             if (!game.achievements.includes(id)) {
                 game.achievements.push(id);
                 showAchievement(name);
+                updateAchievementBadge();
             }
         }
 
@@ -1309,11 +2160,24 @@
             setTimeout(() => popup.classList.remove('show'), 3000);
         }
 
+        function updateAchievementBadge() {
+            const badge = document.getElementById('achBadge');
+            const unviewed = game.achievements.length; // Simplified
+            if (unviewed > 0) {
+                badge.textContent = unviewed;
+                badge.style.display = 'block';
+            }
+        }
+
         function toggleModal(type) {
-            const modal = document.getElementById('modal-' + type);
-            if (modal) {
-                modal.classList.toggle('show');
-                if (type === 'upgrades') renderUpgrades();
+            if (type === 'research') {
+                document.getElementById('modal-research').classList.add('show');
+            } else if (type === 'save') {
+                document.getElementById('modal-save').classList.add('show');
+                updateLocalSavesDisplay();
+            } else {
+                const modal = document.getElementById('modal-' + type);
+                if (modal) modal.classList.add('show');
             }
         }
 
@@ -1321,57 +2185,24 @@
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
         }
 
-        function renderUpgrades() {
-            const list = document.getElementById('upgradeList');
-            list.innerHTML = '';
-            
-            const upgrades = [
-                { id: 'maxNodes', name: 'Expand Network', desc: 'Add 5 more node slots', cost: 1000, effect: () => game.upgrades.maxNodes += 5 },
-                { id: 'scanSpeed', name: 'Overclock Scanners', desc: 'Double scanner output', cost: 500, effect: () => game.upgrades.scanSpeed *= 2 },
-                { id: 'cryptoEff', name: 'Crypto Optimization', desc: 'Double crypto mining', cost: 2000, effect: () => game.upgrades.cryptoEfficiency *= 2 }
-            ];
-            
-            upgrades.forEach(upg => {
-                const div = document.createElement('div');
-                div.className = 'upgrade-item' + (game.resources.money < upg.cost ? ' disabled' : '');
-                div.innerHTML = `
-                    <div class="upgrade-info">
-                        <h4>${upg.name}</h4>
-                        <p>${upg.desc}</p>
-                    </div>
-                    <div class="upgrade-cost">$${formatNumber(upg.cost)}</div>
-                `;
-                div.onclick = () => {
-                    if (game.resources.money >= upg.cost) {
-                        game.resources.money -= upg.cost;
-                        upg.effect();
-                        renderUpgrades();
-                        updateResources();
-                    }
-                };
-                list.appendChild(div);
-            });
-        }
-
         function switchTab(tab) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-        }
-
-        function clearAllNodes() {
-            if (confirm('Delete all nodes? This cannot be undone.')) {
-                game.nodes = [];
-                game.connections = [];
-                document.getElementById('nodeLayer').innerHTML = '';
-                document.getElementById('connectionLayer').innerHTML = '';
-                game.nodeIdCounter = 0;
+            
+            if (tab === 'research') {
+                toggleModal('research');
             }
         }
 
-        function saveLayout() {
-            const data = JSON.stringify(game.nodes);
-            localStorage.setItem('uploadLabsSave', data);
-            showFloatingText(window.innerWidth/2, window.innerHeight/2, 'Layout Saved!');
+        function clearAllNodes(confirm = true) {
+            if (confirm && !window.confirm('Delete all nodes? This cannot be undone.')) return;
+            
+            game.nodes = [];
+            game.connections = [];
+            document.getElementById('nodeLayer').innerHTML = '';
+            document.getElementById('connectionLayer').innerHTML = '';
+            game.nodeIdCounter = 0;
+            saveGame();
         }
 
         function toggleFullscreen() {
@@ -1382,7 +2213,7 @@
             }
         }
 
-        // Start
+        // Initialize
         init();
     </script>
 </body>
