@@ -94,6 +94,25 @@
             font-size: 12px;
         }
 
+        .clickable-money {
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid transparent;
+        }
+
+        .clickable-money:hover {
+            background: rgba(245, 158, 11, 0.4);
+            border-color: #f59e0b;
+            transform: scale(1.05);
+        }
+
+        .clickable-money:active {
+            transform: scale(0.95);
+        }
+
         .timer-row {
             margin-top: 10px;
             padding-top: 10px;
@@ -114,6 +133,73 @@
             background: linear-gradient(90deg, #ff6b35, #f7931e);
             width: 100%;
             transition: width 1s linear;
+        }
+
+        /* Tutorial Overlay */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .tutorial-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .tutorial-box {
+            background: #1e2532;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.5);
+        }
+
+        .tutorial-box h2 {
+            color: #3b82f6;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .tutorial-box p {
+            color: #8b92a8;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .tutorial-box .highlight {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
         }
 
         /* Top Navigation */
@@ -211,6 +297,25 @@
             position: relative;
             overflow: hidden;
             cursor: crosshair;
+        }
+
+        .starter-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #4a5568;
+            pointer-events: none;
+        }
+
+        .starter-hint h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .starter-hint p {
+            font-size: 14px;
         }
 
         .canvas-content {
@@ -701,17 +806,6 @@
             transition: width 0.3s;
         }
 
-        /* Connection lines between research nodes */
-        .research-connections {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
         .upgrade-list {
             display: flex;
             flex-direction: column;
@@ -870,10 +964,37 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+
+        /* Click effect for manual money */
+        .click-effect {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f59e0b;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: clickRipple 0.6s ease-out forwards;
+        }
+
+        @keyframes clickRipple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <div class="blueprint-bg"></div>
+    
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay show" id="tutorial">
+        <div class="tutorial-box">
+            <h2>🔓 UPLOAD LABS</h2>
+            <p>Welcome to the network. You've been granted <span class="highlight">$1,000</span> starting capital.</p>
+            <p>Build your hacking empire by placing nodes, connecting them, and researching new technologies.</p>
+            <p><span class="highlight">Pro tip:</span> Click the money counter for emergency funds!</p>
+            <button class="btn-start" onclick="startGame()">INITIALIZE SYSTEM</button>
+        </div>
+    </div>
     
     <div class="vpn-overlay" id="vpnOverlay">
         <div class="vpn-indicator"></div>
@@ -887,7 +1008,7 @@
             <div class="resource-row">
                 <div class="resource-left">
                     <span class="resource-icon">💰</span>
-                    <span class="resource-value" id="money">0</span>
+                    <span class="resource-value clickable-money" id="money" onclick="clickMoney(event)" title="Click for quick cash!">1000</span>
                 </div>
                 <span class="resource-rate" id="moneyRate">0.00/s</span>
             </div>
@@ -976,12 +1097,12 @@
 
         <!-- Main Canvas -->
         <div class="canvas-area" id="canvasArea">
-            <svg class="canvas-content" id="connectionLayer">
-                <!-- Connections drawn here -->
-            </svg>
-            <div class="canvas-content" id="nodeLayer">
-                <!-- Nodes placed here -->
+            <div class="starter-hint" id="starterHint">
+                <h3>🖱️ Click toolbar buttons to place nodes</h3>
+                <p>Start with a Port Scanner ($100) or Crypto Miner ($1000)</p>
             </div>
+            <svg class="canvas-content" id="connectionLayer"></svg>
+            <div class="canvas-content" id="nodeLayer"></div>
         </div>
 
         <!-- Bottom Toolbar -->
@@ -1086,9 +1207,7 @@
                 <h3 class="modal-title">🔬 Research Tree</h3>
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="research-tree" id="researchTree">
-                <!-- Generated by JS -->
-            </div>
+            <div class="research-tree" id="researchTree"></div>
         </div>
     </div>
 
@@ -1102,9 +1221,7 @@
             
             <div style="margin-bottom: 20px;">
                 <h4 style="color:#fff; margin-bottom:10px;">Local Saves (Browser Storage)</h4>
-                <div class="save-load-panel" id="localSaves">
-                    <!-- Generated by JS -->
-                </div>
+                <div class="save-load-panel" id="localSaves"></div>
             </div>
 
             <div style="border-top: 1px solid #3c465a; padding-top: 20px;">
@@ -1156,10 +1273,10 @@
     </div>
 
     <script>
-        // Game State
+        // Game State - START WITH $1000
         const game = {
             resources: {
-                money: 100,
+                money: 1000,  // ← GAVE THEM 1K!
                 research: 0,
                 hacks: 0,
                 data: 0,
@@ -1182,7 +1299,8 @@
                 exploitPower: 1,
                 cryptoEfficiency: 1,
                 maxNodes: 10,
-                vpnSecurity: 1
+                vpnSecurity: 1,
+                clickPower: 1
             },
             research: {
                 basicNetworking: true,
@@ -1196,7 +1314,8 @@
             lastTick: Date.now(),
             autoSave: true,
             vpnActive: false,
-            vpnTimeLeft: 0
+            vpnTimeLeft: 0,
+            gameStarted: false
         };
 
         // Node Types Configuration
@@ -1374,7 +1493,13 @@
 
         // Initialize
         function init() {
-            loadGame();
+            // Don't auto-load if showing tutorial
+            if (localStorage.getItem('uploadLabsSave')) {
+                document.getElementById('tutorial').classList.remove('show');
+                game.gameStarted = true;
+                loadGame();
+            }
+            
             updateResearchUI();
             updateToolbar();
             renderResearchTree();
@@ -1385,31 +1510,63 @@
                 setInterval(autoSave, 30000);
             }
             
-            // Canvas interactions
             const canvas = document.getElementById('canvasArea');
             canvas.addEventListener('mousedown', handleCanvasClick);
             canvas.addEventListener('contextmenu', handleRightClick);
             
             document.addEventListener('keydown', handleKeyDown);
             
-            // Start with one free scanner if new game
-            if (game.nodes.length === 0) {
-                setTimeout(() => createNode('scanner', 100, 100), 500);
-            }
+            updateResources();
             
             window.addEventListener('beforeunload', (e) => {
-                if (game.autoSave) {
+                if (game.autoSave && game.gameStarted) {
                     saveGame();
                 }
             });
         }
 
+        function startGame() {
+            document.getElementById('tutorial').classList.remove('show');
+            game.gameStarted = true;
+            
+            // Give starter nodes positioned nicely
+            setTimeout(() => {
+                createNode('scanner', 200, 200);
+                showFloatingText(window.innerWidth/2, window.innerHeight/2, 'Welcome! Place more nodes from the toolbar.');
+            }, 500);
+            
+            unlockAchievement('first_start', 'System Online');
+        }
+
+        function clickMoney(event) {
+            if (!game.gameStarted) return;
+            
+            const amount = 10 * game.upgrades.clickPower;
+            game.resources.money += amount;
+            updateResources();
+            
+            // Visual feedback
+            showFloatingText(event.clientX, event.clientY, '+$' + amount);
+            
+            // Click effect
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.style.left = (event.clientX - 15) + 'px';
+            effect.style.top = (event.clientY - 15) + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 600);
+            
+            // Achievement
+            unlockAchievement('clicker', 'Manual Override');
+        }
+
         function gameLoop() {
+            if (!game.gameStarted) return;
+            
             const now = Date.now();
             const delta = (now - game.lastTick) / 1000;
             game.lastTick = now;
             
-            // Update VPN
             if (game.vpnActive) {
                 game.vpnTimeLeft -= delta;
                 if (game.vpnTimeLeft <= 0) {
@@ -1423,7 +1580,6 @@
                 }
             }
             
-            // Update nodes
             game.nodes.forEach(node => {
                 if (node.type === 'database') {
                     const inputData = getInputResources(node);
@@ -1437,7 +1593,6 @@
                         target.efficiency = 1.5;
                     });
                 } else if (node.type === 'vpn' && game.vpnActive) {
-                    // VPN boosts all connected nodes
                     const connected = getConnectedNodes(node);
                     connected.forEach(target => {
                         target.efficiency = (target.efficiency || 1) * 1.5;
@@ -1452,8 +1607,6 @@
                         });
                     }
                 }
-                
-                // Reset efficiency
                 node.efficiency = 1;
             });
             
@@ -1461,6 +1614,8 @@
         }
 
         function secondLoop() {
+            if (!game.gameStarted) return;
+            
             game.sessionTime--;
             document.getElementById('sessionTime').textContent = game.sessionTime + 's';
             document.getElementById('timerFill').style.width = (game.sessionTime / 600 * 100) + '%';
@@ -1472,7 +1627,6 @@
                 showAchievement('Session Complete', `Bonus: $${bonus}`);
             }
             
-            // Calculate rates
             game.rates = { money: 0, research: 0, hacks: 0, data: 0 };
             game.nodes.forEach(node => {
                 const type = nodeTypes[node.type];
@@ -1493,6 +1647,11 @@
         }
 
         function createNode(type, x, y) {
+            if (!game.gameStarted) {
+                showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Click START first!');
+                return;
+            }
+            
             const config = nodeTypes[type];
             
             if (config.research && !game.research[config.research]) {
@@ -1505,14 +1664,12 @@
                 return;
             }
             
-            if (game.resources.money < config.cost && game.nodes.length > 0) {
-                showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Not enough money!');
+            if (game.resources.money < config.cost) {
+                showFloatingText(event?.clientX || 400, event?.clientY || 300, 'Need $' + config.cost + '!');
                 return;
             }
             
-            if (game.nodes.length > 0) {
-                game.resources.money -= config.cost;
-            }
+            game.resources.money -= config.cost;
             
             const node = {
                 id: game.nodeIdCounter++,
@@ -1528,6 +1685,11 @@
             
             game.nodes.push(node);
             renderNode(node);
+            
+            // Hide starter hint
+            if (game.nodes.length > 0) {
+                document.getElementById('starterHint').style.display = 'none';
+            }
             
             if (game.nodes.length === 1) unlockAchievement('first_node', 'First Node');
             if (game.nodes.length === 10) unlockAchievement('ten_nodes', 'Network Builder');
@@ -1640,7 +1802,6 @@
         }
 
         function createConnection(fromId, toId) {
-            // Check if connection already exists
             const exists = game.connections.some(c => 
                 (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
             );
@@ -1712,7 +1873,6 @@
             document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
             document.getElementById('node-' + node.id).classList.add('selected');
             
-            // Show VPN option in context menu if applicable
             const vpnItem = document.getElementById('vpnMenuItem');
             if (node.type === 'vpn') {
                 vpnItem.style.display = 'flex';
@@ -1727,7 +1887,7 @@
             
             game.selectedNode.vpnActive = !game.selectedNode.vpnActive;
             game.vpnActive = game.selectedNode.vpnActive;
-            game.vpnTimeLeft = game.selectedNode.vpnActive ? 300 : 0; // 5 minutes
+            game.vpnTimeLeft = game.selectedNode.vpnActive ? 300 : 0;
             
             if (game.vpnActive) {
                 document.getElementById('vpnOverlay').classList.add('active');
@@ -1754,6 +1914,11 @@
                     }
                     return true;
                 });
+                
+                if (game.nodes.length === 0) {
+                    document.getElementById('starterHint').style.display = 'block';
+                }
+                
                 saveGame();
             }
         }
@@ -1766,7 +1931,6 @@
                 game.selectedNode.level++;
                 game.selectedNode.efficiency *= 1.5;
                 
-                // Re-render node
                 const el = document.getElementById('node-' + game.selectedNode.id);
                 el.querySelector('.node-level').textContent = 'Lv.' + game.selectedNode.level;
                 
@@ -1836,7 +2000,6 @@
             const container = document.getElementById('researchTree');
             container.innerHTML = '';
             
-            // Group by tier
             const tiers = [[], [], [], []];
             researchTree.forEach(r => {
                 if (tiers[r.tier - 1]) tiers[r.tier - 1].push(r);
@@ -1856,7 +2019,6 @@
                     div.className = 'research-node';
                     div.id = 'research-' + research.id;
                     
-                    // Determine state
                     const isResearched = game.research[research.id];
                     const isLocked = research.requires && !game.research[research.requires];
                     const isResearching = div.dataset.researching === 'true';
@@ -1944,6 +2106,7 @@
                 connections: game.connections,
                 nodeIdCounter: game.nodeIdCounter,
                 achievements: game.achievements,
+                gameStarted: true,
                 timestamp: Date.now()
             };
             
@@ -1963,8 +2126,8 @@
                 game.research = { ...game.research, ...data.research };
                 game.nodeIdCounter = data.nodeIdCounter || 0;
                 game.achievements = data.achievements || [];
+                game.gameStarted = data.gameStarted || true;
                 
-                // Restore nodes
                 if (data.nodes) {
                     data.nodes.forEach(n => {
                         const node = {
@@ -1978,12 +2141,15 @@
                     });
                 }
                 
-                // Restore connections
                 if (data.connections) {
                     data.connections.forEach(c => {
                         game.connections.push(c);
                         drawConnection(c.id, c.from, c.to);
                     });
+                }
+                
+                if (game.nodes.length > 0) {
+                    document.getElementById('starterHint').style.display = 'none';
                 }
                 
                 updateResources();
@@ -1995,7 +2161,7 @@
         }
 
         function autoSave() {
-            if (game.autoSave) {
+            if (game.autoSave && game.gameStarted) {
                 saveGame();
                 showFloatingText(window.innerWidth/2, 50, 'Auto-Saved!');
             }
@@ -2045,22 +2211,19 @@
             try {
                 const data = JSON.parse(text);
                 
-                // Validate
                 if (!data.nodes || !data.resources) {
                     throw new Error('Invalid save data');
                 }
                 
-                // Clear current
                 clearAllNodes(false);
                 
-                // Load new data
                 game.resources = data.resources;
                 game.upgrades = { ...game.upgrades, ...data.upgrades };
                 game.research = { ...game.research, ...data.research };
                 game.nodeIdCounter = data.nodeIdCounter || 0;
                 game.achievements = data.achievements || [];
+                game.gameStarted = true;
                 
-                // Restore nodes
                 data.nodes.forEach(n => {
                     const node = {
                         ...n,
@@ -2072,12 +2235,15 @@
                     renderNode(node);
                 });
                 
-                // Restore connections
                 if (data.connections) {
                     data.connections.forEach(c => {
                         game.connections.push(c);
                         drawConnection(c.id, c.from, c.to);
                     });
+                }
+                
+                if (game.nodes.length > 0) {
+                    document.getElementById('starterHint').style.display = 'none';
                 }
                 
                 updateResources();
@@ -2162,7 +2328,7 @@
 
         function updateAchievementBadge() {
             const badge = document.getElementById('achBadge');
-            const unviewed = game.achievements.length; // Simplified
+            const unviewed = game.achievements.length;
             if (unviewed > 0) {
                 badge.textContent = unviewed;
                 badge.style.display = 'block';
@@ -2202,6 +2368,7 @@
             document.getElementById('nodeLayer').innerHTML = '';
             document.getElementById('connectionLayer').innerHTML = '';
             game.nodeIdCounter = 0;
+            document.getElementById('starterHint').style.display = 'block';
             saveGame();
         }
 
