@@ -496,7 +496,7 @@
         /* Modals */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
             z-index: 2000; display: none; align-items: center; justify-content: center;
         }
         
@@ -505,6 +505,133 @@
             padding: 0; width: 700px; max-width: 90%; max-height: 85vh;
             display: flex; flex-direction: column;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Welcome Modal Split Layout */
+        .welcome-container {
+            display: flex;
+            gap: 0;
+            max-width: 1000px;
+            width: 95%;
+            max-height: 85vh;
+        }
+        
+        .welcome-main {
+            flex: 1.2;
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .welcome-sidebar {
+            flex: 0.8;
+            background: linear-gradient(135deg, #1a202c, #151922);
+            border: 1px solid #4a5568;
+            border-radius: 12px;
+            margin-left: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-height: 85vh;
+        }
+        
+        .welcome-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #2d3748;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .welcome-sidebar-header h2 {
+            color: var(--accent-color);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+        
+        .welcome-sidebar-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .update-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #7c3aed, #db2777);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--accent-color);
+            flex-shrink: 0;
+        }
+        
+        .feature-icon.new {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .feature-icon.fix {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+        
+        .feature-content h4 {
+            color: var(--text-color);
+            font-size: 13px;
+            margin: 0 0 4px 0;
+        }
+        
+        .feature-content p {
+            color: var(--text-muted);
+            font-size: 11px;
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .version-tag {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .modal-header {
@@ -578,6 +705,20 @@
             font-size: 11px;
             color: var(--text-muted);
         }
+
+        /* Floating text */
+        .floating-text {
+            position: fixed;
+            pointer-events: none;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 3000;
+            animation: float-up 1s ease-out forwards;
+        }
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
     </style>
 </head>
 <body>
@@ -593,43 +734,116 @@
     <!-- Event Log -->
     <div class="event-log" id="eventLog"></div>
 
-    <!-- Modals -->
+    <!-- Welcome Modal with Changelog -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
-        <div class="modal" style="width: 500px;">
-            <div class="modal-header">
-                <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs v9.0</h2>
-                <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start</button>
+        <div class="welcome-container">
+            <!-- Main Welcome Section -->
+            <div class="welcome-main">
+                <div class="modal-header">
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs v9.0</h2>
+                    <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
+                </div>
+                <div class="modal-body" style="max-height: 50vh; overflow-y: auto;">
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
+                        <ul class="instructions-list">
+                            <li>Start with your <strong>Router</strong> - it's your network core</li>
+                            <li>Buy nodes from the toolbar at the bottom (4 tabs now!)</li>
+                            <li>Connect nodes by dragging between <span style="color:#10b981">green</span> and <span style="color:#3b82f6">blue</span> ports</li>
+                            <li>Nodes must be connected to the Router to work</li>
+                            <li><strong>Right-click</strong> nodes to upgrade or delete them</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+                        <ul class="instructions-list">
+                            <li><strong>Downloaders</strong> collect files/images/videos/audio</li>
+                            <li><strong>Uploaders</strong> sell data for money</li>
+                            <li><strong>Labs</strong> convert files to Research Points (RP)</li>
+                            <li><strong>Firewalls</strong> protect from viruses</li>
+                            <li><strong>Overclock</strong> doubles speed but generates heat!</li>
+                            <li>Check the <strong>Advanced</strong> tab for powerful late-game nodes</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+                        <ul class="instructions-list">
+                            <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
+                            <li><span class="key">0</span> to reset zoom</li>
+                            <li><span class="key">Drag</span> empty space to pan</li>
+                            <li><span class="key">Right-click</span> node for upgrade menu</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
-                    <ul class="instructions-list">
-                        <li>Start with your <strong>Router</strong> - it's your network core</li>
-                        <li>Buy nodes from the toolbar at the bottom</li>
-                        <li>Drag nodes from the toolbar onto the canvas to place them</li>
-                        <li>Connect nodes by clicking and dragging between the <span style="color:#10b981">green</span> and <span style="color:#3b82f6">blue</span> ports</li>
-                        <li>Nodes must be connected to the Router to work!</li>
-                    </ul>
+            
+            <!-- What's New / Changelog Section -->
+            <div class="welcome-sidebar">
+                <div class="welcome-sidebar-header">
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v9.0</span></h2>
                 </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-lightbulb"></i> Tips</h3>
-                    <ul class="instructions-list">
-                        <li><strong>Downloaders</strong> (blue) collect files/images/videos</li>
-                        <li><strong>Uploaders</strong> (teal) sell data for money</li>
-                        <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
-                        <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
-                        <li><strong>Overclock</strong> doubles speed but generates heat!</li>
-                        <li>Upgrade your Router to increase network speed</li>
+                <div class="welcome-sidebar-body">
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-plus"></i></div>
+                            <div class="feature-content">
+                                <h4>7 New Nodes!</h4>
+                                <p>Load Balancer, Audio Downloader, Compressor, Backup Server, Proxy, Analyzer, and CDN Node</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-folder-plus"></i></div>
+                            <div class="feature-content">
+                                <h4>New "Advanced" Tab</h4>
+                                <p>Access powerful late-game nodes that boost your entire network</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-music"></i></div>
+                            <div class="feature-content">
+                                <h4>New Resource: Audio</h4>
+                                <p>Download and sell audio files - a new mid-tier resource type</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-tag"></i></div>
+                            <div class="feature-content">
+                                <h4>Router Upgrade Cost</h4>
+                                <p>Now shows upgrade price with color-coded affordability</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon fix"><i class="fa-solid fa-bug-slash"></i></div>
+                            <div class="feature-content">
+                                <h4>Right-Click Fixed</h4>
+                                <p>No more browser context menu - clean game experience!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon fix"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+                            <div class="feature-content">
+                                <h4>Better Zoom Controls</h4>
+                                <p>Zoom buttons + zooms toward mouse cursor</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-book"></i></div>
+                            <div class="feature-content">
+                                <h4>In-Game Help</h4>
+                                <p>Full guide accessible anytime from the Help button</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-flask"></i></div>
+                            <div class="feature-content">
+                                <h4>7 New Technologies</h4>
+                                <p>Research to unlock all the new advanced nodes</p>
+                            </div>
+                        </li>
                     </ul>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
-                    <ul class="instructions-list">
-                        <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom</li>
-                        <li><span class="key">Drag</span> empty space to pan</li>
-                        <li><span class="key">Right-click</span> a node to upgrade/delete</li>
-                        <li><span class="key">0</span> to reset zoom</li>
-                    </ul>
+                    <div class="version-tag">
+                        <i class="fa-solid fa-code-branch"></i> Version 9.0 - "Expansion Update"
+                    </div>
                 </div>
             </div>
         </div>
@@ -676,7 +890,7 @@
                         </div>
                         <div class="help-item">
                             <div class="help-item-title" style="color:#60a5fa;"><i class="fa-solid fa-file-code"></i> Downloaders</div>
-                            <div class="help-item-desc">Collect files, images, and videos.</div>
+                            <div class="help-item-desc">Collect files, images, videos, and audio.</div>
                         </div>
                         <div class="help-item">
                             <div class="help-item-title" style="color:#2dd4bf;"><i class="fa-solid fa-cloud-arrow-up"></i> Uploader</div>
@@ -703,12 +917,12 @@
                             <div class="help-item-desc">Uses bandwidth to mine cryptocurrency.</div>
                         </div>
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#ec4899;"><i class="fa-solid fa-server"></i> Server Rack</div>
-                            <div class="help-item-desc">High-performance downloader and uploader.</div>
+                            <div class="help-item-title" style="color:#06b6d4;"><i class="fa-solid fa-scale-balanced"></i> Load Balancer</div>
+                            <div class="help-item-desc">Distributes data evenly. More connections = more boost.</div>
                         </div>
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#ef4444;"><i class="fa-solid fa-atom"></i> Quantum Core</div>
-                            <div class="help-item-desc">Doubles global network speed.</div>
+                            <div class="help-item-title" style="color:#ec4899;"><i class="fa-solid fa-server"></i> Server Rack</div>
+                            <div class="help-item-desc">High-performance downloader and uploader.</div>
                         </div>
                         <div class="help-item">
                             <div class="help-item-title" style="color:#14b8a6;"><i class="fa-solid fa-compress"></i> Compressor</div>
@@ -736,7 +950,7 @@
                         <li><strong>Connectivity:</strong> Nodes turn <span style="color:#ef4444">red</span> when disconnected from Router</li>
                         <li><strong>Heat:</strong> Overclocking generates heat. At 100°C, speed drops 30%!</li>
                         <li><strong>Viruses:</strong> Random events that infect nodes. Clean for $500 or use Firewalls to prevent</li>
-                        <li><strong>Data Flow:</strong> Videos → Images → Files (priority order for uploaders)</li>
+                        <li><strong>Data Flow:</strong> Audio → Videos → Images → Files (priority order)</li>
                         <li><strong>Contracts:</strong> Complete before time runs out for big rewards!</li>
                     </ul>
                 </div>
@@ -868,8 +1082,7 @@
                     <li><strong>Labs</strong> make Research Points</li>
                     <li>Use <strong>Firewalls</strong> against viruses</li>
                     <li><strong>Overclock</strong> for 2x speed (watch heat!)</li>
-                    <li><strong>Compressor</strong> reduces file sizes</li>
-                    <li><strong>Backup</strong> stores excess data</li>
+                    <li>Check <strong>Advanced</strong> tab for late game!</li>
                 </ul>
                 <button class="btn btn-help" style="width:100%; margin-top:10px;" onclick="document.getElementById('helpModal').style.display='flex'">
                     <i class="fa-solid fa-book"></i> Full Guide
@@ -1029,7 +1242,7 @@
             // Prevent context menu on entire game
             document.addEventListener('contextmenu', (e) => {
                 // Only prevent if clicking on game elements
-                if (e.target.closest('.game-container') || e.target.closest('.modal')) {
+                if (e.target.closest('.game-container') || e.target.closest('.modal') || e.target.closest('.welcome-container')) {
                     e.preventDefault();
                 }
             });
