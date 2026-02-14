@@ -735,6 +735,31 @@
             </div>
             <div class="modal-body">
                 <div class="help-section">
+                    <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+                    <ul class="instructions-list">
+                        <li><strong>Downloaders</strong> (blue) collect files/images/videos/audio</li>
+                        <li><strong>Uploaders</strong> (teal) sell data for money</li>
+                        <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
+                        <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
+                        <li><strong>Overclock</strong> doubles speed but generates heat!</li>
+                        <li><strong>Coder Nodes</strong> (cyan) produce code bits for drivers</li>
+                        <li>Check the <strong>Research Tree</strong> for permanent upgrades!</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+                    <ul class="instructions-list">
+                        <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
+                        <li><span class="key">0</span> to reset zoom to 100%</li>
+                        <li><span class="key">Drag</span> empty space to pan the view</li>
+                        <li><span class="key">Right-click</span> a node to upgrade/delete</li>
+                        <li><span class="key">Drag</span> from green port to blue port to connect ($10/cable)</li>
+                        <li><span class="key">?</span> to open this help modal</li>
+                        <li><span class="key">R</span> to open Research Tree</li>
+                        <li><span class="key">C</span> to open Code Studio</li>
+                    </ul>
+                </div>
+                <div class="help-section">
                     <h3><i class="fa-solid fa-code"></i> Coding System</h3>
                     <div class="help-grid">
                         <div class="help-item">
@@ -2042,9 +2067,13 @@
             };
             
             window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT') return;
                 if (e.key === '+' || e.key === '=') zoomIn();
                 else if (e.key === '-' || e.key === '_') zoomOut();
                 else if (e.key === '0') resetZoom();
+                else if (e.key === '?' || e.key === '/') document.getElementById('helpModal').style.display='flex';
+                else if (e.key === 'r' || e.key === 'R') document.getElementById('researchModal').style.display='flex';
+                else if (e.key === 'c' || e.key === 'C') document.getElementById('codeModal').style.display='flex';
             });
             
             window.addEventListener('resize', () => drawResearchLines());
