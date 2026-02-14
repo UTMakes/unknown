@@ -16,7 +16,6 @@
             --danger: #ef4444;
             --success: #10b981;
             --warning: #f59e0b;
-            --purple: #8b5cf6;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -166,6 +165,11 @@
         .storage-track { height: 4px; background: #1a202c; border-radius: 2px; overflow: hidden; }
         .storage-fill { height: 100%; width: 0%; transition: width 0.3s; }
 
+        /* Heat Bar for Router */
+        .heat-container { margin-top: 5px; }
+        .heat-track { height: 6px; background: #1a202c; border-radius: 3px; overflow: hidden; border:1px solid #4a5568; }
+        .heat-fill { height: 100%; width: 0%; transition: width 0.2s, background-color 0.2s; background: #10b981; }
+        
         /* Contract Widget */
         .contract-widget {
             background: rgba(245, 158, 11, 0.1);
@@ -192,13 +196,14 @@
             z-index: 100;
         }
         .log-entry {
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             color: #fff;
             padding: 6px 10px;
             border-radius: 4px;
             font-size: 11px;
             border-left: 3px solid var(--accent-color);
             animation: fade-in 0.3s ease-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         @keyframes fade-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -232,32 +237,38 @@
             z-index: 0;
         }
 
-        /* Connections Layer */
+        /* Connections Layer - REWORKED */
         svg.connections-layer {
             position: absolute;
             top: -5000px; left: -5000px;
             width: 10000px; height: 10000px;
             pointer-events: none;
-            z-index: 1;
+            z-index: 1; /* Below nodes */
         }
 
         .cable {
             fill: none;
             stroke: #4a5568;
-            stroke-width: 3px;
+            stroke-width: 5px;
             stroke-linecap: round;
-            stroke-dasharray: 8, 8; /* Visible Dashes */
-            opacity: 0.6;
+            stroke-linejoin: round;
+            opacity: 0.8;
             transition: stroke 0.3s;
         }
-        .cable.active {
-            stroke: var(--accent-color);
-            stroke-opacity: 1;
-            opacity: 1;
-            stroke-width: 4px;
-            animation: flow 0.8s linear infinite;
+        
+        /* Dashed Overlay Effect */
+        .cable-inner {
+            fill: none;
+            stroke: #2dd4bf; /* Bright cyan */
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-dasharray: 8 8;
+            animation: flow 0.5s linear infinite;
+            opacity: 0;
         }
-        .cable.disconnected { stroke: var(--danger); opacity: 0.3; }
+        
+        .cable-group.active .cable-inner { opacity: 1; }
+        .cable-group.active .cable { stroke: #111827; stroke-width: 7px; } /* Dark outline when active */
 
         @keyframes flow { to { stroke-dashoffset: -16; } }
 
@@ -277,7 +288,6 @@
 
         /* States */
         .node.disconnected { border-color: var(--danger) !important; opacity: 0.8; }
-        .node.overclocked { border-color: #f59e0b !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
         
         .node.infected {
             border-color: #8b5cf6 !important;
@@ -332,9 +342,9 @@
 
         /* Ports - Left/Right Style */
         .port {
-            width: 14px; height: 14px;
+            width: 16px; height: 16px;
             background: #1a202c;
-            border: 2px solid #4a5568;
+            border: 2px solid #94a3b8;
             border-radius: 50%;
             position: absolute;
             z-index: 30;
@@ -459,13 +469,13 @@
     <!-- Modals -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="modal" style="width: 450px; padding: 20px;">
-            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v7.0</h2>
+            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v8.0</h2>
             <p style="color:#cbd5e0; margin-bottom:20px; font-size:14px; line-height:1.5;">
-                <strong>Visual & Feature Update:</strong><br><br>
-                🔌 <strong>Side Ports:</strong> Cables now connect clearly from Right to Left.<br>
-                ⚡ <strong>Overclock:</strong> Ctrl+Click a node to temporarily double speed.<br>
-                💰 <strong>Economy:</strong> Research costs increased by 2.5x.<br>
-                📜 <strong>Event Log:</strong> Track game events in the corner.<br><br>
+                <strong>Major Update:</strong><br><br>
+                ⚡ <strong>Overclock Unit:</strong> New node! Connect to Router to double speed.<br>
+                🔥 <strong>Heat System:</strong> Watch your Router temperature! Overheat = Slow.<br>
+                🔌 <strong>Cable Rework:</strong> High-visibility dashed lines with proper physics.<br>
+                💰 <strong>Rebalance:</strong> Higher tier costs adjusted.<br><br>
                 <strong>Controls:</strong> Drag to Pan, Scroll to Zoom.
             </p>
             <button class="btn btn-primary" onclick="document.getElementById('welcomeModal').style.display='none'">Start System</button>
@@ -562,7 +572,18 @@
                     <span>Global Network</span>
                     <span id="routerLvl" style="color:#f59e0b">LVL 1</span>
                 </div>
-                <div style="font-size:12px; margin-bottom:5px; display:flex; justify-content:space-between;">
+                
+                <div class="heat-container">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#a0aec0; margin-bottom:2px;">
+                        <span>Router Temp</span>
+                        <span id="heatText">0°C</span>
+                    </div>
+                    <div class="heat-track">
+                        <div class="heat-fill" id="heatBar"></div>
+                    </div>
+                </div>
+
+                <div style="font-size:12px; margin-top:8px; display:flex; justify-content:space-between;">
                     <span style="color:#8b92a8">Down Speed</span>
                     <span style="color:#3b82f6; font-weight:bold;" id="globalDown">0 B/s</span>
                 </div>
@@ -619,6 +640,7 @@
             // Infra
             miner: { name: "Crypto Miner", type: "infra", cost: 300, icon: "fa-brands fa-bitcoin", color: "#f59e0b", desc: "Uses bandwidth to mine money." },
             cache: { name: "Cache Server", type: "infra", cost: 1200, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected nodes work 50% faster." },
+            overclock: { name: "Overclock Unit", type: "infra", cost: 3000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Watch heat!", req: "tech_oc" },
             firewall: { name: "Firewall", type: "infra", cost: 800, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
             
             // Downloaders
@@ -629,20 +651,19 @@
             // Upload & Labs
             uploader: { name: "Uploader", type: "upload", cost: 400, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money." },
             lab: { name: "Research Lab", type: "lab", cost: 1500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
-            rack: { name: "Server Rack", type: "special", cost: 5000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density. Acts as strong Downloader AND Uploader.", req: "tech_rack" },
+            rack: { name: "Server Rack", type: "special", cost: 7500, icon: "fa-solid fa-server", color: "#f97316", desc: "High density. Acts as strong Downloader AND Uploader.", req: "tech_rack" },
             quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" }
         };
 
-        // Research Costs x2.5
         const TECH_TREE = [
             { id: "tech_img", name: "Image Compression", cost: 250, desc: "Unlock Image Downloaders" },
             { id: "tech_sec", name: "Cyber Security", cost: 750, desc: "Unlock Firewall Node" },
+            { id: "tech_oc", name: "Overclocking", cost: 1500, desc: "Unlock Overclock Unit" },
             { id: "tech_vid", name: "Streaming Protocol", cost: 2000, desc: "Unlock Video Downloaders" },
             { id: "tech_fiber", name: "Fiber Optics", cost: 3750, desc: "Global Speed +25%. Clean connections." },
             { id: "tech_rack", name: "Server Racks", cost: 7500, desc: "Unlock High-Density Server Racks" },
             { id: "tech_sat", name: "Satellite Link", cost: 12500, desc: "+50% Global Upload Speed" },
-            { id: "tech_quantum", name: "Quantum Computing", cost: 50000, desc: "Unlock Quantum Core" },
-            { id: "tech_ai", name: "Deep Learning", cost: 100000, desc: "Nodes auto-overclock occasionally." }
+            { id: "tech_quantum", name: "Quantum Computing", cost: 50000, desc: "Unlock Quantum Core" }
         ];
 
         const RESOURCES = {
@@ -660,6 +681,7 @@
             nodes: [],
             conns: [],
             routerLevel: 1,
+            routerHeat: 0, // 0 to 100
             unlocked: [],
             nextId: 1
         };
@@ -698,6 +720,35 @@
             
             updateConnectivity();
             
+            // Heat Logic
+            const router = game.nodes.find(n => n.type === 'router');
+            let isOverclocked = false;
+            
+            if (router && activeNodes.has(router.id)) {
+                // Check if Overclock Node is feeding Router
+                // Logic: OC Output -> Router Input
+                game.conns.forEach(c => {
+                    if (c.to === router.id) {
+                        const source = game.nodes.find(n => n.id === c.from);
+                        if (source && source.type === 'overclock' && activeNodes.has(source.id) && !source.infected) {
+                            isOverclocked = true;
+                        }
+                    }
+                });
+
+                if (isOverclocked) {
+                    game.routerHeat = Math.min(100, game.routerHeat + (10 * dt)); // Heats up fast
+                } else {
+                    game.routerHeat = Math.max(0, game.routerHeat - (5 * dt)); // Cools down
+                }
+            }
+
+            // Router Efficiency based on Heat
+            let routerEff = 1.0;
+            if (isOverclocked) routerEff = 2.0;
+            if (game.routerHeat > 90) routerEff = 0.7; // Overheat penalty
+
+            // Global Multipliers
             const prestigeMult = 1 + (game.prestige * 0.5); 
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
@@ -705,7 +756,7 @@
             let quantumMult = 1;
             game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
             
-            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult;
+            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * routerEff;
 
             // Two-Pass Resource Logic
             let fileConsumers = [];
@@ -715,27 +766,8 @@
                 if (!activeNodes.has(node.id)) return;
                 if (node.infected) { game.money -= 10 * dt; return; }
 
-                // Overclock Logic
-                if (node.overclockTime > 0) {
-                    node.overclockTime -= dt;
-                    if (node.overclockTime <= 0) {
-                        node.overclockTime = 0;
-                        node.cooldownTime = 5; // 5s cooldown
-                        renderWorld();
-                    }
-                } else if (node.cooldownTime > 0) {
-                    node.cooldownTime -= dt;
-                }
-                
-                // AI Auto-Overclock
-                if (game.unlocked.includes('tech_ai') && Math.random() < 0.001 && node.overclockTime <= 0 && node.cooldownTime <= 0) {
-                    node.overclockTime = 5;
-                    renderWorld();
-                }
-
                 const def = NODE_DEFS[node.type];
                 const lvlMult = Math.pow(1.2, node.level - 1);
-                const ocMult = node.overclockTime > 0 ? 2 : 1;
                 
                 let boost = 1;
                 game.conns.forEach(c => {
@@ -747,7 +779,7 @@
                     }
                 });
                 
-                const effectiveSpeed = baseSpeed * boost * lvlMult * ocMult * dt;
+                const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
 
                 // PRODUCTION
                 if (def.type === 'download') {
@@ -905,7 +937,7 @@
                     else el.classList.add('disconnected');
                 });
                 
-                document.querySelectorAll('.cable').forEach(c => {
+                document.querySelectorAll('.cable-group').forEach(c => {
                     const [id1, id2] = c.dataset.ends.split(',').map(Number);
                     if (newActive.has(id1) && newActive.has(id2)) {
                         c.classList.remove('disconnected');
@@ -922,7 +954,7 @@
         // --- ACTIONS ---
 
         function spawnNode(type, x, y) {
-            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false, overclockTime: 0, cooldownTime: 0 });
+            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false });
             renderWorld();
         }
 
@@ -999,6 +1031,7 @@
             game.nodes = [];
             game.conns = [];
             game.routerLevel = 1;
+            game.routerHeat = 0;
             game.unlocked = [];
             game.nextId = 1;
             activeContract = null;
@@ -1069,11 +1102,12 @@
             game.nodes.forEach(n => {
                 const def = NODE_DEFS[n.type];
                 const el = document.createElement('div');
-                el.className = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''} ${n.overclockTime > 0 ? 'overclocked' : ''}`;
+                el.className = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
                 el.id = `node-${n.id}`;
                 el.style.left = n.x + 'px';
                 el.style.top = n.y + 'px';
                 
+                // LEFT Port (Input) and RIGHT Port (Output)
                 const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
                                <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
                 
@@ -1094,17 +1128,6 @@
                 el.onmousedown = (e) => {
                     if (e.target.classList.contains('port')) return;
                     if (e.target.classList.contains('clean-btn')) return;
-                    
-                    if (e.ctrlKey) {
-                        // Overclock
-                        if (n.overclockTime <= 0 && n.cooldownTime <= 0 && activeNodes.has(n.id)) {
-                            n.overclockTime = 10; // 10s boost
-                            showFloat("⚡ OVERCLOCK", n.x+90, n.y, '#f59e0b');
-                            renderWorld();
-                        }
-                        return;
-                    }
-
                     if (e.button === 2) {
                         e.preventDefault();
                         showContext(n, e);
@@ -1128,19 +1151,37 @@
                 const n2 = game.nodes.find(n => n.id === c.to);
                 if (!n1 || !n2) return;
                 
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                path.classList.add("cable");
-                path.dataset.ends = `${c.from},${c.to}`;
+                const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                group.classList.add("cable-group");
+                group.dataset.ends = `${c.from},${c.to}`;
                 
-                // Logic: Right of source -> Left of dest
-                const x1 = n1.x + 180; // Right edge
-                const y1 = n1.y + 40;  // Center Y
-                const x2 = n2.x;       // Left edge
-                const y2 = n2.y + 40;  // Center Y
+                // Draw from Right Port (Output) of source to Left Port (Input) of dest
+                // Node: 180x80. Output: x+180, y+40. Input: x+0, y+40.
                 
-                // Curve handles
-                path.setAttribute("d", `M ${x1} ${y1} C ${x1 + 60} ${y1}, ${x2 - 60} ${y2}, ${x2} ${y2}`);
-                svg.appendChild(path);
+                const x1 = n1.x + 180;
+                const y1 = n1.y + 40;
+                const x2 = n2.x;
+                const y2 = n2.y + 40;
+                
+                // Control points for nice ribbon S-curve
+                const cx1 = x1 + Math.abs(x2 - x1) * 0.5;
+                const cx2 = x2 - Math.abs(x2 - x1) * 0.5;
+                
+                const pathStr = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+                
+                // Solid background line
+                const bgLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                bgLine.classList.add("cable");
+                bgLine.setAttribute("d", pathStr);
+                
+                // Dashed overlay line (animated)
+                const dashLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                dashLine.classList.add("cable-inner");
+                dashLine.setAttribute("d", pathStr);
+                
+                group.appendChild(bgLine);
+                group.appendChild(dashLine);
+                svg.appendChild(group);
             });
         }
 
@@ -1162,10 +1203,29 @@
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
             
             const prestigeMult = 1 + (game.prestige * 0.5);
+            
+            // Calc stats for UI
+            let isOC = false;
+            if (game.nodes.some(n => n.type==='router' && activeNodes.has(n.id))) isOC = game.routerHeat > 0; // Simplified for UI logic check
+            
             const base = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult;
             document.getElementById('globalDown').innerText = fmt(base) + ' B/s';
             document.getElementById('globalUp').innerText = fmt(base) + ' B/s';
             document.getElementById('routerLvl').innerText = 'LVL ' + game.routerLevel;
+            
+            // Heat UI
+            const heatBar = document.getElementById('heatBar');
+            const heatText = document.getElementById('heatText');
+            heatBar.style.width = game.routerHeat + '%';
+            heatText.innerText = Math.floor(game.routerHeat) + '°C';
+            
+            if (game.routerHeat > 90) {
+                heatBar.style.background = '#ef4444'; // Red
+            } else if (game.routerHeat > 50) {
+                heatBar.style.background = '#f59e0b'; // Orange
+            } else {
+                heatBar.style.background = '#10b981'; // Green
+            }
             
             if (game.money >= 10000000 || game.prestige > 0) document.getElementById('prestigeSection').style.display = 'block';
             document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 50)}%`;
@@ -1373,11 +1433,8 @@
                 try {
                     game = JSON.parse(e.target.result);
                     if (!game.prestige) game.prestige = 0;
-                    game.nodes.forEach(n => { 
-                        if (typeof n.infected === 'undefined') n.infected = false; 
-                        n.overclockTime = 0;
-                        n.cooldownTime = 0;
-                    });
+                    if (!game.routerHeat) game.routerHeat = 0;
+                    game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
                     
                     renderWorld();
                     renderResearch();
