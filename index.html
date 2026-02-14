@@ -18,6 +18,7 @@
             --warning: #f59e0b;
             --info: #06b6d4;
             --research: #8b5cf6;
+            --code: #00d4aa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,21 +33,19 @@
             width: 100vw;
         }
 
-        /* Layout Grid */
         .game-container {
             display: grid;
             grid-template-areas: 
                 "header header"
                 "sidebar canvas"
                 "toolbar toolbar";
-            grid-template-columns: 340px 1fr;
+            grid-template-columns: 360px 1fr;
             grid-template-rows: 70px 1fr 160px;
             height: 100vh;
             width: 100vw;
             gap: 0;
         }
 
-        /* Header */
         .header {
             grid-area: header;
             background: var(--panel-bg);
@@ -80,18 +79,18 @@
 
         .header-stats {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-box {
             background: rgba(10, 14, 20, 0.5);
             border: 1px solid var(--border-color);
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 80px;
+            min-width: 75px;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -101,21 +100,23 @@
         .stat-box:active { transform: scale(0.95); }
 
         .stat-icon { font-size: 14px; margin-bottom: 2px; color: var(--text-muted); }
-        .stat-value { font-weight: 700; font-size: 14px; color: #fff; }
-        .stat-rate { font-size: 10px; color: var(--success); font-family: monospace; }
+        .stat-value { font-weight: 700; font-size: 13px; color: #fff; }
+        .stat-rate { font-size: 9px; color: var(--success); font-family: monospace; }
         
         .stat-box.money .stat-icon { color: #fbbf24; }
         .stat-box.research .stat-icon { color: #8b5cf6; }
+        .stat-box.code .stat-icon { color: var(--code); }
+        .stat-box.code { border-color: rgba(0, 212, 170, 0.3); }
+        .stat-box.code:hover { border-color: var(--code); background: rgba(0, 212, 170, 0.1); }
 
-        /* Sidebar */
         .sidebar {
             grid-area: sidebar;
             background: var(--panel-bg);
             border-right: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             overflow-y: auto;
             z-index: 40;
         }
@@ -133,15 +134,16 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .action-row {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .btn {
@@ -165,26 +167,25 @@
         .btn-primary:hover { background: #2563eb; }
         .btn-research { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; color: #a78bfa; }
         .btn-research:hover { background: rgba(139, 92, 246, 0.4); }
-        
+        .btn-code { background: rgba(0, 212, 170, 0.2); border-color: var(--code); color: var(--code); }
+        .btn-code:hover { background: rgba(0, 212, 170, 0.4); }
         .btn-contract { background: rgba(245, 158, 11, 0.2); border-color: var(--warning); color: var(--warning); }
         .btn-contract:hover { background: rgba(245, 158, 11, 0.4); }
-        
         .btn-prestige { background: linear-gradient(45deg, #7c3aed, #db2777); border: none; color: white; font-weight: bold; }
         .btn-prestige:hover { filter: brightness(1.2); }
         .btn-help { background: rgba(6, 182, 212, 0.2); border-color: var(--info); color: var(--info); }
         .btn-help:hover { background: rgba(6, 182, 212, 0.4); }
+        .btn-small { padding: 6px; font-size: 10px; }
 
-        .storage-bar-container { margin-top: 8px; }
+        .storage-bar-container { margin-top: 6px; }
         .storage-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
         .storage-track { height: 4px; background: #1a202c; border-radius: 2px; overflow: hidden; }
         .storage-fill { height: 100%; width: 0%; transition: width 0.3s; }
 
-        /* Heat Bar for Router */
         .heat-container { margin-top: 5px; }
         .heat-track { height: 8px; background: #1a202c; border-radius: 4px; overflow: hidden; border:1px solid #4a5568; position: relative; }
         .heat-fill { height: 100%; width: 0%; transition: width 0.2s, background-color 0.2s; background: #10b981; }
         
-        /* Router Upgrade Cost Display */
         .router-cost {
             font-size: 10px;
             color: var(--text-muted);
@@ -194,18 +195,102 @@
             background: rgba(0,0,0,0.2);
             border-radius: 4px;
         }
-        .router-cost .cost-value {
-            color: #fbbf24;
+        .router-cost .cost-value { color: #fbbf24; font-weight: bold; }
+        .router-cost .cost-value.affordable { color: var(--success); }
+        .router-cost .cost-value.expensive { color: var(--danger); }
+
+        /* Code Panel Styles */
+        .code-panel {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+        
+        .code-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .code-stat {
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .code-stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .code-stat-value {
+            font-size: 14px;
             font-weight: bold;
+            color: var(--code);
+            font-family: monospace;
         }
-        .router-cost .cost-value.affordable {
-            color: var(--success);
+        
+        .code-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .router-cost .cost-value.expensive {
-            color: var(--danger);
+        
+        .code-btn {
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.4);
+            color: var(--code);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        
+        .code-btn:hover:not(:disabled) {
+            background: rgba(0, 212, 170, 0.25);
+            transform: translateX(3px);
+        }
+        
+        .code-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .code-btn-cost {
+            font-size: 10px;
+            color: var(--text-muted);
         }
 
-        /* Contract Widget */
+        /* Driver Badges */
+        .driver-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .driver-badge {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.1));
+            border: 1px solid rgba(0, 212, 170, 0.4);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 10px;
+            color: var(--code);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .driver-badge i {
+            font-size: 9px;
+        }
+
         .contract-widget {
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid var(--warning);
@@ -216,7 +301,6 @@
         }
         .contract-timer { font-family: monospace; font-weight: bold; color: var(--warning); float: right; }
 
-        /* Event Log */
         .event-log {
             position: absolute;
             bottom: 180px;
@@ -240,9 +324,9 @@
             animation: fade-in 0.3s ease-out;
             box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
+        .log-entry.code { border-left-color: var(--code); }
         @keyframes fade-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* Zoom Controls */
         .zoom-controls {
             position: absolute;
             bottom: 180px;
@@ -266,46 +350,14 @@
             font-size: 16px;
             transition: all 0.2s;
         }
-        .zoom-btn:hover {
-            border-color: var(--accent-color);
-            background: rgba(59, 130, 246, 0.2);
-        }
-        .zoom-level {
-            text-align: center;
-            font-size: 10px;
-            color: var(--text-muted);
-            padding: 4px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 4px;
-        }
+        .zoom-btn:hover { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.2); }
+        .zoom-level { text-align: center; font-size: 10px; color: var(--text-muted); padding: 4px; background: rgba(0,0,0,0.5); border-radius: 4px; }
 
-        /* Instructions Panel */
-        .instructions-list {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-        .instructions-list li {
-            margin-bottom: 6px;
-            list-style: none;
-            padding-left: 16px;
-            position: relative;
-        }
-        .instructions-list li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: var(--accent-color);
-        }
-        .instructions-list .key {
-            background: rgba(255,255,255,0.1);
-            padding: 1px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-            color: var(--text-color);
-        }
+        .instructions-list { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+        .instructions-list li { margin-bottom: 6px; list-style: none; padding-left: 16px; position: relative; }
+        .instructions-list li::before { content: '▸'; position: absolute; left: 0; color: var(--accent-color); }
+        .instructions-list .key { background: rgba(255,255,255,0.1); padding: 1px 5px; border-radius: 3px; font-family: monospace; color: var(--text-color); }
 
-        /* Canvas */
         .canvas-viewport {
             grid-area: canvas;
             position: relative;
@@ -316,12 +368,7 @@
         }
         .canvas-viewport:active { cursor: grabbing; }
 
-        .world {
-            position: absolute;
-            top: 0; left: 0;
-            transform-origin: 0 0;
-            width: 0; height: 0;
-        }
+        .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; width: 0; height: 0; }
 
         .grid-bg {
             position: absolute;
@@ -335,50 +382,19 @@
             z-index: 0;
         }
 
-        /* Connections Layer */
-        svg.connections-layer {
-            position: absolute;
-            top: 0; left: 0;
-            width: 1px; height: 1px;
-            overflow: visible;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .cable {
-            fill: none;
-            stroke: #4a5568;
-            stroke-width: 4px;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            opacity: 0.5;
-            transition: stroke 0.3s;
-        }
-        
-        .cable-inner {
-            fill: none;
-            stroke: #2dd4bf;
-            stroke-width: 2px;
-            stroke-linecap: round;
-            stroke-dasharray: 6 6;
-            animation: flow 0.5s linear infinite;
-            opacity: 0;
-        }
-        
+        svg.connections-layer { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; z-index: 1; }
+        .cable { fill: none; stroke: #4a5568; stroke-width: 4px; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
+        .cable-inner { fill: none; stroke: #2dd4bf; stroke-width: 2px; stroke-linecap: round; stroke-dasharray: 6 6; animation: flow 0.5s linear infinite; opacity: 0; }
         .cable-group.active .cable-inner { opacity: 1; }
         .cable-group.active .cable { stroke: #1f2937; stroke-width: 6px; opacity: 1; } 
-
-        /* Cable Colors */
         .cable-group.power .cable-inner { stroke: #f59e0b; }
         .cable-group.money .cable-inner { stroke: #10b981; }
-
+        .cable-group.code .cable-inner { stroke: var(--code); }
         @keyframes flow { to { stroke-dashoffset: -12; } }
 
-        /* Nodes */
         .node {
             position: absolute;
-            width: 180px;
-            height: 80px; 
+            width: 180px; height: 80px; 
             background: rgba(20, 25, 35, 0.98);
             border: 2px solid var(--border-color);
             border-radius: 12px;
@@ -388,14 +404,15 @@
             z-index: 10;
         }
 
-        /* States */
-        .node.disconnected { border-color: var(--danger) !important; opacity: 0.8; }
-        
-        .node.overheating {
-            animation: shake 0.5s infinite;
-            border-color: #ef4444 !important;
+        .node.coding { border-color: var(--code) !important; box-shadow: 0 0 20px rgba(0, 212, 170, 0.3); }
+        .node.coding .node-icon-box { animation: pulse-code 1.5s infinite; }
+        @keyframes pulse-code {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 212, 170, 0); }
         }
-        
+
+        .node.disconnected { border-color: var(--danger) !important; opacity: 0.8; }
+        .node.overheating { animation: shake 0.5s infinite; border-color: #ef4444 !important; }
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             25% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -403,493 +420,137 @@
             75% { transform: translate(3px, 2px) rotate(0deg); }
             100% { transform: translate(1px, -1px) rotate(-1deg); }
         }
-
-        .node.infected {
-            border-color: #8b5cf6 !important;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-        }
-        
+        .node.infected { border-color: #8b5cf6 !important; box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
         .clean-btn {
-            display: none;
-            position: absolute;
-            bottom: -35px; left: 50%; transform: translateX(-50%);
+            display: none; position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%);
             background: #10b981; color: white; border: 2px solid #fff;
             padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 11px;
-            cursor: pointer; z-index: 1000; white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            cursor: pointer; z-index: 1000; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
         .clean-btn:hover { background: #059669; transform: translateX(-50%) scale(1.1); }
         .node.infected .clean-btn { display: block; }
-
         .node:hover { border-color: var(--text-muted); }
-        .node.selected { 
-            border-color: var(--accent-color); 
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6);
-            z-index: 20; 
-        }
+        .node.selected { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6); z-index: 20; }
 
-        .node-header {
-            padding: 10px; display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px 10px 0 0; height: 100%;
-        }
-
-        .node-icon-box {
-            width: 40px; height: 40px; border-radius: 8px; background: rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center; font-size: 18px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
+        .node-header { padding: 10px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); border-radius: 10px 10px 0 0; height: 100%; }
+        .node-icon-box { width: 40px; height: 40px; border-radius: 8px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.1); }
         .node.working .node-icon-box { animation: pulse-work 1s infinite; }
-        @keyframes pulse-work {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-        }
-
+        @keyframes pulse-work { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } }
         .node-info { flex: 1; overflow: hidden; }
         .node-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .node-lvl { font-size: 11px; color: var(--text-muted); }
 
-        /* Ports */
-        .port {
-            width: 14px; height: 14px;
-            background: #1a202c;
-            border: 2px solid #64748b;
-            border-radius: 50%;
-            position: absolute;
-            z-index: 30;
-            cursor: crosshair;
-            transition: transform 0.2s;
-        }
+        .port { width: 14px; height: 14px; background: #1a202c; border: 2px solid #64748b; border-radius: 50%; position: absolute; z-index: 30; cursor: crosshair; transition: transform 0.2s; }
         .port:hover { transform: scale(1.6); background: #fff; border-color: var(--accent-color); }
-        
         .port.in { left: -7px; top: 50%; transform: translateY(-50%); border-color: #3b82f6; }
         .port.out { right: -7px; top: 50%; transform: translateY(-50%); border-color: #10b981; }
 
-        /* Toolbar */
-        .toolbar {
-            grid-area: toolbar;
-            background: var(--panel-bg);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            z-index: 50;
-        }
-
+        .toolbar { grid-area: toolbar; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 50; }
         .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 10px; }
-        .tab {
-            padding: 10px 15px; font-size: 12px; font-weight: 600; color: var(--text-muted);
-            cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
-        }
+        .tab { padding: 10px 15px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .tab:hover { color: #fff; }
         .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
 
-        .items-tray {
-            flex: 1; padding: 10px 15px; overflow-x: auto; display: flex; gap: 12px; align-items: center;
-        }
-
-        .shop-item {
-            min-width: 140px; height: 100px; background: rgba(30, 37, 50, 0.6);
-            border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;
-            cursor: pointer; position: relative; transition: all 0.2s; display: flex; flex-direction: column;
-        }
+        .items-tray { flex: 1; padding: 10px 15px; overflow-x: auto; display: flex; gap: 12px; align-items: center; }
+        .shop-item { min-width: 140px; height: 100px; background: rgba(30, 37, 50, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; position: relative; transition: all 0.2s; display: flex; flex-direction: column; }
         .shop-item:hover:not(.disabled) { border-color: var(--accent-color); transform: translateY(-3px); background: rgba(40, 50, 70, 0.8); }
         .shop-item.disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
-        
-        .item-cost { 
-            position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.4); color: #fbbf24; 
-            font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 4px; 
-        }
+        .item-cost { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.4); color: #fbbf24; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 4px; }
         .item-icon { font-size: 20px; margin-bottom: 6px; color: #fff; }
         .item-name { font-size: 12px; font-weight: bold; color: #fff; margin-bottom: 2px; }
         .item-desc { font-size: 10px; color: var(--text-muted); line-height: 1.2; }
 
-        /* Modals */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-        }
-        
-        .modal {
-            background: #1a202c; border: 1px solid #4a5568; border-radius: 12px;
-            padding: 0; width: 700px; max-width: 90%; max-height: 85vh;
-            display: flex; flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal { background: #1a202c; border: 1px solid #4a5568; border-radius: 12px; padding: 0; width: 700px; max-width: 90%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
 
-        /* Welcome Modal Split Layout */
-        .welcome-container {
-            display: flex;
-            gap: 0;
-            max-width: 1000px;
-            width: 95%;
-            max-height: 85vh;
-        }
-        
-        .welcome-main {
-            flex: 1.2;
-            background: #1a202c;
-            border: 1px solid #4a5568;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        
-        .welcome-sidebar {
-            flex: 0.8;
-            background: linear-gradient(135deg, #1a202c, #151922);
-            border: 1px solid #4a5568;
-            border-radius: 12px;
-            margin-left: 15px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-height: 85vh;
-        }
-        
-        .welcome-sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #2d3748;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 12px 12px 0 0;
-        }
-        
-        .welcome-sidebar-header h2 {
-            color: var(--accent-color);
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 0;
-        }
-        
-        .welcome-sidebar-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        
-        .update-badge {
-            display: inline-block;
-            background: linear-gradient(45deg, #7c3aed, #db2777);
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-left: 10px;
-            text-transform: uppercase;
-        }
-        
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .feature-item {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        
-        .feature-item:last-child {
-            border-bottom: none;
-        }
-        
-        .feature-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(59, 130, 246, 0.15);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: var(--accent-color);
-            flex-shrink: 0;
-        }
-        
-        .feature-icon.new {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-        }
-        
-        .feature-icon.fix {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-        }
-        
-        .feature-content h4 {
-            color: var(--text-color);
-            font-size: 13px;
-            margin: 0 0 4px 0;
-        }
-        
-        .feature-content p {
-            color: var(--text-muted);
-            font-size: 11px;
-            margin: 0;
-            line-height: 1.4;
-        }
-        
-        .version-tag {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
+        .welcome-container { display: flex; gap: 0; max-width: 1000px; width: 95%; max-height: 85vh; }
+        .welcome-main { flex: 1.2; background: #1a202c; border: 1px solid #4a5568; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .welcome-sidebar { flex: 0.8; background: linear-gradient(135deg, #1a202c, #151922); border: 1px solid #4a5568; border-radius: 12px; margin-left: 15px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 85vh; }
+        .welcome-sidebar-header { padding: 20px; border-bottom: 1px solid #2d3748; background: rgba(59, 130, 246, 0.1); border-radius: 12px 12px 0 0; }
+        .welcome-sidebar-header h2 { color: var(--accent-color); font-size: 18px; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .welcome-sidebar-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .update-badge { display: inline-block; background: linear-gradient(45deg, #7c3aed, #db2777); color: white; font-size: 10px; font-weight: bold; padding: 3px 10px; border-radius: 20px; margin-left: 10px; text-transform: uppercase; }
+        .feature-list { list-style: none; padding: 0; margin: 0; }
+        .feature-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 12px; }
+        .feature-item:last-child { border-bottom: none; }
+        .feature-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--accent-color); flex-shrink: 0; }
+        .feature-icon.new { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .feature-icon.code { background: rgba(0, 212, 170, 0.15); color: var(--code); }
+        .feature-content h4 { color: var(--text-color); font-size: 13px; margin: 0 0 4px 0; }
+        .feature-content p { color: var(--text-muted); font-size: 11px; margin: 0; line-height: 1.4; }
+        .version-tag { font-size: 10px; color: var(--text-muted); margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
 
-        .modal-header {
-            padding: 20px; border-bottom: 1px solid #2d3748;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .modal-header { padding: 20px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 20px; overflow-y: auto; }
-        
-        /* RESEARCH TREE STYLES */
-        .research-tree-container {
-            position: relative;
-            min-height: 600px;
-            overflow: auto;
-            background: radial-gradient(circle at center, rgba(30, 40, 55, 0.5) 0%, transparent 70%);
-        }
-        
-        .research-tree-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .research-tree-line {
-            stroke: #4a5568;
-            stroke-width: 2;
-            fill: none;
-            transition: all 0.3s;
-        }
-        
-        .research-tree-line.unlocked {
-            stroke: var(--research);
-            stroke-width: 3;
-            filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
-        }
-        
-        .research-tree-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
-            padding: 40px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .research-tier {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .tier-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            padding: 4px 12px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-        }
-        
-        .tech-card {
-            background: linear-gradient(135deg, #2d3748, #1a202c);
-            border: 2px solid #4a5568;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            width: 140px;
-            z-index: 3;
-        }
-        
-        .tech-card:hover:not(.locked):not(.owned) {
-            border-color: var(--research);
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-        }
-        
-        .tech-card.locked {
-            opacity: 0.5;
-            filter: grayscale(1);
-            cursor: not-allowed;
-        }
-        
-        .tech-card.owned {
-            border-color: var(--success);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
-        }
-        
-        .tech-card.owned::after {
-            content: "✓";
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--success);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .tech-card.available {
-            border-color: var(--research);
-            animation: pulse-available 2s infinite;
-        }
-        
-        @keyframes pulse-available {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
-        }
-        
-        .tech-icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: var(--research);
-        }
-        
-        .tech-card.owned .tech-icon {
-            color: var(--success);
-        }
-        
-        .tech-card.locked .tech-icon {
-            color: #64748b;
-        }
-        
-        .tech-name {
-            font-weight: bold;
-            color: #fff;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-        
-        .tech-desc {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-        
-        .tech-cost {
-            color: var(--research);
-            font-weight: bold;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        
-        .tech-cost.affordable {
-            color: var(--success);
-        }
-        
-        .tech-req {
-            font-size: 9px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
 
-        /* Contracts */
-        .contract-item {
-            background: rgba(40, 50, 70, 0.4); border: 1px solid #4a5568; border-radius: 8px; padding: 15px;
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        .research-tree-container { position: relative; min-height: 600px; overflow: auto; background: radial-gradient(circle at center, rgba(30, 40, 55, 0.5) 0%, transparent 70%); }
+        .research-tree-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: all 0.3s; }
+        .research-tree-line.unlocked { stroke: var(--research); stroke-width: 3; filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5)); }
+        .research-tree-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 40px; position: relative; z-index: 2; }
+        .research-tier { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .tier-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; padding: 4px 12px; background: rgba(0,0,0,0.3); border-radius: 20px; }
+        .tech-card { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #4a5568; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; width: 140px; z-index: 3; }
+        .tech-card:hover:not(.locked):not(.owned) { border-color: var(--research); transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+        .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        .tech-card.owned { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .tech-card.owned::after { content: "✓"; position: absolute; top: -8px; right: -8px; background: var(--success); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .tech-card.available { border-color: var(--research); animation: pulse-available 2s infinite; }
+        @keyframes pulse-available { 0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); } }
+        .tech-icon { font-size: 28px; margin-bottom: 10px; color: var(--research); }
+        .tech-card.owned .tech-icon { color: var(--success); }
+        .tech-card.locked .tech-icon { color: #64748b; }
+        .tech-name { font-weight: bold; color: #fff; font-size: 12px; margin-bottom: 5px; }
+        .tech-desc { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.3; }
+        .tech-cost { color: var(--research); font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .tech-cost.affordable { color: var(--success); }
+        .tech-req { font-size: 9px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        /* Code Modal */
+        .code-modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .code-section { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px; border: 1px solid var(--border-color); }
+        .code-section h3 { color: var(--code); font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .driver-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .driver-card {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        .driver-card:hover:not(.locked) { border-color: var(--code); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2); }
+        .driver-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .driver-card.installed { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); }
+        .driver-icon { font-size: 20px; color: var(--code); margin-bottom: 5px; }
+        .driver-name { font-size: 11px; font-weight: bold; color: #fff; }
+        .driver-desc { font-size: 9px; color: var(--text-muted); margin: 4px 0; }
+        .driver-cost { font-size: 10px; color: var(--code); }
+        .driver-level { font-size: 9px; color: var(--success); margin-top: 4px; }
+
+        .contract-item { background: rgba(40, 50, 70, 0.4); border: 1px solid #4a5568; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .contract-item h4 { color: #fff; font-size: 14px; margin-bottom: 4px; }
         .contract-item p { color: #a0aec0; font-size: 12px; }
         .contract-reward { color: #fbbf24; font-weight: bold; font-size: 13px; text-align: right; }
 
-        /* Context Menu */
-        #contextMenu {
-            position: fixed; background: #1a202c; border: 1px solid #4a5568; border-radius: 6px;
-            padding: 5px; z-index: 5000; display: none; min-width: 150px;
-        }
-        .ctx-item {
-            padding: 8px 12px; cursor: pointer; color: #e2e8f0; font-size: 13px;
-            display: flex; justify-content: space-between;
-        }
+        #contextMenu { position: fixed; background: #1a202c; border: 1px solid #4a5568; border-radius: 6px; padding: 5px; z-index: 5000; display: none; min-width: 150px; }
+        .ctx-item { padding: 8px 12px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; justify-content: space-between; }
         .ctx-item:hover { background: #2d3748; border-radius: 4px; }
         .ctx-item.danger { color: var(--danger); }
 
-        /* Help Modal */
-        .help-section {
-            margin-bottom: 20px;
-        }
-        .help-section h3 {
-            color: var(--accent-color);
-            font-size: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .help-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        .help-item {
-            background: rgba(30, 40, 55, 0.5);
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-        }
-        .help-item-title {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-        .help-item-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .help-section { margin-bottom: 20px; }
+        .help-section h3 { color: var(--accent-color); font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .help-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .help-item { background: rgba(30, 40, 55, 0.5); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .help-item-title { font-weight: bold; font-size: 12px; margin-bottom: 4px; }
+        .help-item-desc { font-size: 11px; color: var(--text-muted); }
 
-        /* Floating text */
-        .floating-text {
-            position: fixed;
-            pointer-events: none;
-            font-weight: bold;
-            font-size: 14px;
-            z-index: 3000;
-            animation: float-up 1s ease-out forwards;
-        }
-        @keyframes float-up {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-30px); }
-        }
+        .floating-text { position: fixed; pointer-events: none; font-weight: bold; font-size: 14px; z-index: 3000; animation: float-up 1s ease-out forwards; }
+        @keyframes float-up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
     </style>
 </head>
 <body>
 
-    <!-- Zoom Controls -->
     <div class="zoom-controls">
         <button class="zoom-btn" onclick="Game.zoomIn()" title="Zoom In (+)"><i class="fa-solid fa-plus"></i></button>
         <div class="zoom-level" id="zoomLevel">100%</div>
@@ -897,16 +558,14 @@
         <button class="zoom-btn" onclick="Game.resetZoom()" title="Reset Zoom (0)"><i class="fa-solid fa-compress"></i></button>
     </div>
 
-    <!-- Event Log -->
     <div class="event-log" id="eventLog"></div>
 
-    <!-- Welcome Modal with Changelog -->
+    <!-- Welcome Modal -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="welcome-container">
-            <!-- Main Welcome Section -->
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v9.1</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v9.2</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 50vh; overflow-y: auto;">
@@ -914,107 +573,121 @@
                         <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
                         <ul class="instructions-list">
                             <li>Start with your <strong>Router</strong> - it's your network core</li>
-                            <li>Buy nodes from the toolbar at the bottom (4 tabs!)</li>
+                            <li>Buy nodes from the toolbar at the bottom (5 tabs now!)</li>
                             <li>Connect nodes by dragging between <span style="color:#10b981">green</span> and <span style="color:#3b82f6">blue</span> ports</li>
-                            <li>Nodes must be connected to the Router to work</li>
-                            <li><strong>Right-click</strong> nodes to upgrade or delete them</li>
+                            <li><strong>Coder Nodes</strong> produce code bits for powerful upgrades!</li>
                         </ul>
                     </div>
                     <div class="help-section">
-                        <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+                        <h3><i class="fa-solid fa-code"></i> NEW: Coding System</h3>
                         <ul class="instructions-list">
-                            <li><strong>Downloaders</strong> collect files/images/videos/audio</li>
-                            <li><strong>Uploaders</strong> sell data for money</li>
-                            <li><strong>Labs</strong> convert files to Research Points (RP)</li>
-                            <li><strong>Firewalls</strong> protect from viruses</li>
-                            <li><strong>Research Tree</strong> now has visual connections!</li>
-                            <li>Check the <strong>Advanced</strong> tab for powerful late-game nodes</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
-                        <ul class="instructions-list">
-                            <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
-                            <li><span class="key">0</span> to reset zoom</li>
-                            <li><span class="key">Drag</span> empty space to pan</li>
-                            <li><span class="key">Right-click</span> node for upgrade menu</li>
+                            <li><strong>Coder Nodes</strong> generate code bits over time</li>
+                            <li>Convert 100 code bits → 1 Optimization Code</li>
+                            <li>Use optimization code to create <strong>Drivers</strong></li>
+                            <li>Drivers provide permanent global bonuses!</li>
                         </ul>
                     </div>
                 </div>
             </div>
             
-            <!-- What's New / Changelog Section -->
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v9.1</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v9.2</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-diagram-project"></i></div>
+                            <div class="feature-icon code"><i class="fa-solid fa-code"></i></div>
                             <div class="feature-content">
-                                <h4>Visual Research Tree!</h4>
-                                <p>Research now shows connections between technologies. Unlock prerequisites to access advanced tech!</p>
+                                <h4>NEW: Coding System!</h4>
+                                <p>Coder nodes produce code bits. Convert to optimization code, then create powerful drivers!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-plus"></i></div>
+                            <div class="feature-icon code"><i class="fa-solid fa-microchip"></i></div>
                             <div class="feature-content">
-                                <h4>10 New Nodes!</h4>
-                                <p>AI Processor, Cluster Node, Data Warehouse, Streaming Server, and more!</p>
+                                <h4>7 Driver Types</h4>
+                                <p>Network, Compression, Security, Mining, Research, Upload, and Download drivers!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-flask"></i></div>
+                            <div class="feature-icon new"><i class="fa-solid fa-terminal"></i></div>
                             <div class="feature-content">
-                                <h4>Expanded Research</h4>
-                                <p>20+ new technologies with a proper tech tree progression system</p>
+                                <h4>Coder Node</h4>
+                                <p>New "Coding" tab with Coder nodes that generate code bits based on coding speed!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon fix"><i class="fa-solid fa-bug-slash"></i></div>
+                            <div class="feature-icon new"><i class="fa-solid fa-layer-group"></i></div>
                             <div class="feature-content">
-                                <h4>Bug Fixes</h4>
-                                <p>Right-click menu fixed, zoom improvements, UI polish</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-tag"></i></div>
-                            <div class="feature-content">
-                                <h4>Router Upgrade Cost</h4>
-                                <p>Now shows upgrade price with color-coded affordability</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-book"></i></div>
-                            <div class="feature-content">
-                                <h4>In-Game Help</h4>
-                                <p>Full guide accessible anytime from the Help button</p>
+                                <h4>5th Toolbar Tab</h4>
+                                <p>New "Coding" tab contains all programming-related nodes</p>
                             </div>
                         </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-code-branch"></i> Version 9.1 - "Research Tree Update"
+                        <i class="fa-solid fa-code-branch"></i> Version 9.2 - "Code & Drivers Update"
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Research Modal with Tree -->
     <div id="researchModal" class="modal-overlay">
         <div class="modal" style="width: 900px; max-width: 95%;">
             <div class="modal-header">
                 <h2 style="color:#fff"><i class="fa-solid fa-flask"></i> Research & Development Tree</h2>
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <span style="color:#a78bfa; font-weight:bold;">Available RP: <span id="modalRpDisplay">0</span></span>
+                    <span style="color:#a78bfa; font-weight:bold;">RP: <span id="modalRpDisplay">0</span></span>
                     <button class="btn" onclick="document.getElementById('researchModal').style.display='none'">Close</button>
                 </div>
             </div>
             <div class="modal-body" style="padding: 0;">
                 <div class="research-tree-container" id="researchTreeContainer">
                     <svg class="research-tree-svg" id="researchTreeSvg"></svg>
-                    <div class="research-tree-grid" id="researchTreeGrid">
+                    <div class="research-tree-grid" id="researchTreeGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code/Drivers Modal -->
+    <div id="codeModal" class="modal-overlay">
+        <div class="modal" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 style="color:var(--code)"><i class="fa-solid fa-terminal"></i> Code Studio</h2>
+                <button class="btn" onclick="document.getElementById('codeModal').style.display='none'">Close</button>
+            </div>
+            <div class="modal-body code-modal-body">
+                <div class="code-section">
+                    <h3><i class="fa-solid fa-cube"></i> Resources</h3>
+                    <div class="code-stats">
+                        <div class="code-stat">
+                            <div class="code-stat-label">Code Bits</div>
+                            <div class="code-stat-value" id="codeBitsDisplay">0</div>
+                        </div>
+                        <div class="code-stat">
+                            <div class="code-stat-label">Optimization Code</div>
+                            <div class="code-stat-value" id="optCodeDisplay">0</div>
+                        </div>
+                    </div>
+                    <div class="code-actions">
+                        <button class="code-btn" id="convertBitsBtn" onclick="convertCodeBits()">
+                            <span><i class="fa-solid fa-right-left"></i> 100 Bits → 1 Opt. Code</span>
+                            <span class="code-btn-cost">Cost: 100 bits</span>
+                        </button>
+                    </div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;"><i class="fa-solid fa-bolt"></i> Installed Drivers:</div>
+                        <div class="driver-list" id="installedDriversList">
+                            <span style="font-size: 10px; color: #64748b;">No drivers installed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="code-section">
+                    <h3><i class="fa-solid fa-microchip"></i> Compile Drivers</h3>
+                    <div class="driver-grid" id="driverGrid">
                         <!-- Generated by JS -->
                     </div>
                 </div>
@@ -1040,93 +713,36 @@
             </div>
             <div class="modal-body">
                 <div class="help-section">
-                    <h3><i class="fa-solid fa-cube"></i> Node Types</h3>
+                    <h3><i class="fa-solid fa-code"></i> Coding System</h3>
                     <div class="help-grid">
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#3b82f6;"><i class="fa-solid fa-globe"></i> Router</div>
-                            <div class="help-item-desc">Network core. All nodes must connect to it.</div>
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-terminal"></i> Coder Node</div>
+                            <div class="help-item-desc">Generates code bits based on coding speed. Connect to Router!</div>
                         </div>
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#60a5fa;"><i class="fa-solid fa-file-code"></i> Downloaders</div>
-                            <div class="help-item-desc">Collect files, images, videos, and audio.</div>
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-cube"></i> Code Bits</div>
+                            <div class="help-item-desc">Basic resource. 100 bits = 1 Optimization Code.</div>
                         </div>
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#2dd4bf;"><i class="fa-solid fa-cloud-arrow-up"></i> Uploader</div>
-                            <div class="help-item-desc">Sells data for money.</div>
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-file-code"></i> Optimization Code</div>
+                            <div class="help-item-desc">Refined code used to compile drivers.</div>
                         </div>
                         <div class="help-item">
-                            <div class="help-item-title" style="color:#8b5cf6;"><i class="fa-solid fa-flask"></i> Research Lab</div>
-                            <div class="help-item-desc">Converts files to Research Points.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#f59e0b;"><i class="fa-solid fa-bolt"></i> Overclock</div>
-                            <div class="help-item-desc">Doubles speed. Connect to Router.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#ef4444;"><i class="fa-solid fa-shield-halved"></i> Firewall</div>
-                            <div class="help-item-desc">Protects connected nodes from viruses.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#10b981;"><i class="fa-solid fa-database"></i> Cache</div>
-                            <div class="help-item-desc">Boosts speed of connected nodes by 50%.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#fbbf24;"><i class="fa-brands fa-bitcoin"></i> Miner</div>
-                            <div class="help-item-desc">Uses bandwidth to mine cryptocurrency.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#06b6d4;"><i class="fa-solid fa-scale-balanced"></i> Load Balancer</div>
-                            <div class="help-item-desc">Distributes data evenly. More connections = more boost.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#ec4899;"><i class="fa-solid fa-server"></i> Server Rack</div>
-                            <div class="help-item-desc">High-performance downloader and uploader.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#14b8a6;"><i class="fa-solid fa-compress"></i> Compressor</div>
-                            <div class="help-item-desc">Reduces file sizes by 30% for faster transfers.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#a855f7;"><i class="fa-solid fa-box-archive"></i> Backup Server</div>
-                            <div class="help-item-desc">Stores excess data, prevents loss.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#f97316;"><i class="fa-solid fa-brain"></i> AI Processor</div>
-                            <div class="help-item-desc">Uses AI to optimize all connected nodes.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#84cc16;"><i class="fa-solid fa-network-wired"></i> Cluster Node</div>
-                            <div class="help-item-desc">Links with other clusters for massive boost.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#22d3ee;"><i class="fa-solid fa-tower-broadcast"></i> Streaming Server</div>
-                            <div class="help-item-desc">Specialized for video and audio content.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:#e879f9;"><i class="fa-solid fa-warehouse"></i> Data Warehouse</div>
-                            <div class="help-item-desc">Massive storage with auto-organization.</div>
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-microchip"></i> Drivers</div>
+                            <div class="help-item-desc">Permanent global upgrades. Stackable and level up!</div>
                         </div>
                     </div>
                 </div>
                 <div class="help-section">
-                    <h3><i class="fa-solid fa-keyboard"></i> Controls & Shortcuts</h3>
+                    <h3><i class="fa-solid fa-microchip"></i> Driver Types</h3>
                     <ul class="instructions-list">
-                        <li><span class="key">Left Click + Drag</span> on empty space to pan the view</li>
-                        <li><span class="key">Mouse Wheel</span> or <span class="key">+/-</span> buttons to zoom in/out</li>
-                        <li><span class="key">0</span> key to reset zoom to 100%</li>
-                        <li><span class="key">Right Click</span> on a node to open upgrade/delete menu</li>
-                        <li><span class="key">Drag</span> from green port to blue port to connect nodes ($10 per cable)</li>
-                    </ul>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Important Mechanics</h3>
-                    <ul class="instructions-list">
-                        <li><strong>Connectivity:</strong> Nodes turn <span style="color:#ef4444">red</span> when disconnected from Router</li>
-                        <li><strong>Heat:</strong> Overclocking generates heat. At 100°C, speed drops 30%!</li>
-                        <li><strong>Viruses:</strong> Random events that infect nodes. Clean for $500 or use Firewalls to prevent</li>
-                        <li><strong>Data Flow:</strong> Audio → Videos → Images → Files (priority order)</li>
-                        <li><strong>Contracts:</strong> Complete before time runs out for big rewards!</li>
-                        <li><strong>Research Tree:</strong> Technologies have prerequisites - plan your path!</li>
+                        <li><strong style="color:var(--code)">Network Driver:</strong> +10% connection speed per level</li>
+                        <li><strong style="color:var(--code)">Compression Driver:</strong> +5% file compression per level</li>
+                        <li><strong style="color:var(--code)">Security Driver:</strong> -10% virus chance per level</li>
+                        <li><strong style="color:var(--code)">Mining Driver:</strong> +15% crypto mining per level</li>
+                        <li><strong style="color:var(--code)">Research Driver:</strong> +10% RP generation per level</li>
+                        <li><strong style="color:var(--code)">Upload Driver:</strong> +10% upload speed per level</li>
+                        <li><strong style="color:var(--code)">Download Driver:</strong> +10% download speed per level</li>
                     </ul>
                 </div>
             </div>
@@ -1145,7 +761,7 @@
     <!-- Main Game -->
     <div class="game-container">
         <div class="header">
-            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v9.1</span></div>
+            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v9.2</span></div>
             <div class="header-stats">
                 <div class="stat-box money" onclick="addMoney(event)">
                     <i class="fa-solid fa-coins stat-icon"></i>
@@ -1157,6 +773,11 @@
                     <div class="stat-value" id="rpDisplay">0 RP</div>
                     <div class="stat-rate" id="rpRate">+0/s</div>
                 </div>
+                <div class="stat-box code" onclick="document.getElementById('codeModal').style.display='flex'">
+                    <i class="fa-solid fa-terminal stat-icon"></i>
+                    <div class="stat-value" id="codeDisplay">0</div>
+                    <div class="stat-rate">Code Bits</div>
+                </div>
             </div>
         </div>
 
@@ -1167,14 +788,17 @@
                     <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
                         <i class="fa-solid fa-flask"></i> Research
                     </button>
+                    <button class="btn btn-code" onclick="document.getElementById('codeModal').style.display='flex'">
+                        <i class="fa-solid fa-terminal"></i> Code
+                    </button>
                     <button class="btn btn-contract" onclick="openContracts()">
                         <i class="fa-solid fa-file-contract"></i> Contracts
                     </button>
+                </div>
+                <div class="action-row">
                     <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='flex'">
                         <i class="fa-solid fa-question"></i> Help
                     </button>
-                </div>
-                <div class="action-row">
                     <button class="btn" onclick="exportSave()"><i class="fa-solid fa-download"></i> Save</button>
                     <button class="btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Load</button>
                     <input type="file" id="importFile" style="display:none" onchange="importSave(this)">
@@ -1193,6 +817,32 @@
                     </div>
                     <div style="font-size:11px; color:#d1d5db;" id="contractDesc">Upload 500 Files</div>
                     <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
+                </div>
+            </div>
+
+            <!-- Code Panel -->
+            <div class="panel code-panel">
+                <div class="panel-title"><i class="fa-solid fa-code"></i> Code Studio</div>
+                <div class="code-stats">
+                    <div class="code-stat">
+                        <div class="code-stat-label">Bits</div>
+                        <div class="code-stat-value" id="sidebarCodeBits">0</div>
+                    </div>
+                    <div class="code-stat">
+                        <div class="code-stat-label">Opt. Code</div>
+                        <div class="code-stat-value" id="sidebarOptCode">0</div>
+                    </div>
+                </div>
+                <div class="code-actions">
+                    <button class="code-btn" id="sidebarConvertBtn" onclick="convertCodeBits()">
+                        <span>100 Bits → Opt Code</span>
+                    </button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 5px;">Installed Drivers:</div>
+                    <div class="driver-list" id="sidebarDrivers">
+                        <span style="font-size: 9px; color: #64748b;">None</span>
+                    </div>
                 </div>
             </div>
 
@@ -1247,22 +897,6 @@
                     <div class="storage-track"><div class="storage-fill" id="barVideos" style="background:#ec4899"></div></div>
                 </div>
             </div>
-
-            <div class="panel">
-                <div class="panel-title">Quick Guide</div>
-                <ul class="instructions-list">
-                    <li>Connect nodes to the <strong>Router</strong></li>
-                    <li><strong>Downloaders</strong> collect data</li>
-                    <li><strong>Uploaders</strong> sell for money</li>
-                    <li><strong>Labs</strong> make Research Points</li>
-                    <li>Use <strong>Firewalls</strong> against viruses</li>
-                    <li><strong>Research Tree</strong> unlocks new tech!</li>
-                    <li>Check <strong>Advanced</strong> tab for late game!</li>
-                </ul>
-                <button class="btn btn-help" style="width:100%; margin-top:10px;" onclick="document.getElementById('helpModal').style.display='flex'">
-                    <i class="fa-solid fa-book"></i> Full Guide
-                </button>
-            </div>
         </div>
 
         <div class="canvas-viewport" id="viewport">
@@ -1279,14 +913,15 @@
                 <div class="tab" data-tab="download" onclick="setTab('download', this)">Download</div>
                 <div class="tab" data-tab="upload" onclick="setTab('upload', this)">Upload & Security</div>
                 <div class="tab" data-tab="advanced" onclick="setTab('advanced', this)">Advanced</div>
+                <div class="tab" data-tab="coding" onclick="setTab('coding', this)">Coding</div>
             </div>
             <div class="items-tray" id="tray"></div>
         </div>
     </div>
 
     <script>
-        // GAME VERSION
-        const GAME_VERSION = "9.1";
+        // GAME VERSION - Update by 0.1 for minor, +1 for major
+        const GAME_VERSION = "9.2";
 
         // --- CONFIGURATION ---
         const NODE_DEFS = {
@@ -1317,16 +952,18 @@
             proxy: { name: "Proxy Node", type: "advanced", cost: 2000, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
             analyzer: { name: "Data Analyzer", type: "advanced", cost: 6000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow, increasing RP generation by 50%.", req: "tech_analyze" },
             cdn: { name: "CDN Node", type: "advanced", cost: 8000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. Boosts all uploaders.", req: "tech_cdn" },
-            
-            // NEW: Expert Tier
             ai_processor: { name: "AI Processor", type: "advanced", cost: 15000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization for all connected nodes. +100% efficiency.", req: "tech_ai" },
             cluster: { name: "Cluster Node", type: "advanced", cost: 12000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. Each cluster boosts all others.", req: "tech_cluster" },
             warehouse: { name: "Data Warehouse", type: "advanced", cost: 18000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage with intelligent auto-organization.", req: "tech_warehouse" },
             streaming: { name: "Streaming Server", type: "advanced", cost: 10000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for video/audio. 3x media processing.", req: "tech_streaming" },
-            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 25000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining operation.", req: "tech_crypto_farm" }
+            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 25000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining operation.", req: "tech_crypto_farm" },
+            
+            // CODING - NEW!
+            coder: { name: "Coder Node", type: "coding", cost: 2500, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
+            dev_station: { name: "Dev Station", type: "coding", cost: 8000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2x code bit generation. Can compile advanced drivers.", req: "tech_dev_station" },
+            compiler: { name: "Code Compiler", type: "coding", cost: 15000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to opt. code.", req: "tech_compiler" }
         };
 
-        // Add audio resource
         const RESOURCES = {
             files: { size: 10, price: 5, rp: 1 },
             images: { size: 50, price: 25, rp: 5 },
@@ -1334,38 +971,47 @@
             audio: { size: 80, price: 40, rp: 10 }
         };
 
-        // RESEARCH TREE WITH DEPENDENCIES
+        // DRIVER CONFIGURATION
+        const DRIVERS = {
+            network: { name: "Network Driver", icon: "fa-solid fa-network-wired", desc: "+10% connection speed", cost: 1, effect: 0.1 },
+            compression: { name: "Compression Driver", icon: "fa-solid fa-compress", desc: "+5% file compression", cost: 1, effect: 0.05 },
+            security: { name: "Security Driver", icon: "fa-solid fa-shield-halved", desc: "-10% virus chance", cost: 1, effect: 0.1 },
+            mining: { name: "Mining Driver", icon: "fa-solid fa-coins", desc: "+15% crypto mining", cost: 1, effect: 0.15 },
+            research: { name: "Research Driver", icon: "fa-solid fa-flask", desc: "+10% RP generation", cost: 1, effect: 0.1 },
+            upload: { name: "Upload Driver", icon: "fa-solid fa-cloud-arrow-up", desc: "+10% upload speed", cost: 1, effect: 0.1 },
+            download: { name: "Download Driver", icon: "fa-solid fa-download", desc: "+10% download speed", cost: 1, effect: 0.1 }
+        };
+
         const TECH_TREE = [
-            // Tier 1 - Basic
             { id: "tech_img", name: "Image Compression", cost: 250, desc: "Unlock Image Downloaders", tier: 1, icon: "fa-solid fa-image", requires: [] },
             { id: "tech_sec", name: "Cyber Security", cost: 500, desc: "Unlock Firewall Node", tier: 1, icon: "fa-solid fa-shield-halved", requires: [] },
             
-            // Tier 2 - Intermediate
             { id: "tech_oc", name: "Overclocking", cost: 1000, desc: "Unlock Overclock Unit", tier: 2, icon: "fa-solid fa-bolt", requires: [] },
             { id: "tech_vid", name: "Streaming Protocol", cost: 1500, desc: "Unlock Video Downloaders", tier: 2, icon: "fa-solid fa-film", requires: ["tech_img"] },
             { id: "tech_proxy", name: "Proxy Networking", cost: 2000, desc: "Unlock Proxy Node", tier: 2, icon: "fa-solid fa-network-wired", requires: ["tech_sec"] },
             { id: "tech_balance", name: "Load Balancing", cost: 2500, desc: "Unlock Load Balancer node", tier: 2, icon: "fa-solid fa-scale-balanced", requires: ["tech_sec"] },
             
-            // Tier 3 - Advanced
             { id: "tech_fiber", name: "Fiber Optics", cost: 3000, desc: "Global Speed +25%", tier: 3, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
             { id: "tech_audio", name: "Audio Streaming", cost: 3500, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
             { id: "tech_compress", name: "Data Compression", cost: 4000, desc: "Unlock Compressor node", tier: 3, icon: "fa-solid fa-compress", requires: ["tech_img"] },
             { id: "tech_analyze", name: "Data Analysis", cost: 5000, desc: "Unlock Data Analyzer", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
             { id: "tech_backup", name: "Backup Systems", cost: 4500, desc: "Unlock Backup Server", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
             
-            // Tier 4 - Expert
+            // Coding techs
+            { id: "tech_coding", name: "Basic Coding", cost: 2000, desc: "Unlock Coder Nodes", tier: 3, icon: "fa-solid fa-terminal", requires: [] },
+            
             { id: "tech_rack", name: "Server Racks", cost: 6000, desc: "Unlock High-Density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
             { id: "tech_cdn", name: "CDN Technology", cost: 7000, desc: "Unlock CDN Node", tier: 4, icon: "fa-solid fa-earth-americas", requires: ["tech_audio", "tech_compress"] },
             { id: "tech_sat", name: "Satellite Link", cost: 8000, desc: "+50% Global Upload Speed", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
             { id: "tech_streaming", name: "Streaming Infrastructure", cost: 7500, desc: "Unlock Streaming Server", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
+            { id: "tech_dev_station", name: "Dev Station", cost: 6000, desc: "Unlock Dev Station", tier: 4, icon: "fa-solid fa-laptop-code", requires: ["tech_coding"] },
             
-            // Tier 5 - Master
             { id: "tech_quantum", name: "Quantum Computing", cost: 30000, desc: "Unlock Quantum Core", tier: 5, icon: "fa-solid fa-atom", requires: ["tech_rack", "tech_sat"] },
             { id: "tech_ai", name: "AI Integration", cost: 12000, desc: "Unlock AI Processor", tier: 5, icon: "fa-solid fa-brain", requires: ["tech_analyze", "tech_cdn"] },
             { id: "tech_cluster", name: "Cluster Computing", cost: 10000, desc: "Unlock Cluster Node", tier: 5, icon: "fa-solid fa-network-wired", requires: ["tech_rack", "tech_backup"] },
             { id: "tech_warehouse", name: "Data Warehousing", cost: 15000, desc: "Unlock Data Warehouse", tier: 5, icon: "fa-solid fa-warehouse", requires: ["tech_backup", "tech_cdn"] },
+            { id: "tech_compiler", name: "Code Compiler", cost: 12000, desc: "Unlock Auto-Compiler", tier: 5, icon: "fa-solid fa-gears", requires: ["tech_dev_station"] },
             
-            // Tier 6 - Ultimate
             { id: "tech_crypto_farm", name: "Crypto Mining Farm", cost: 20000, desc: "Unlock Crypto Farm", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster"] },
             { id: "tech_neural", name: "Neural Network", cost: 25000, desc: "All nodes +50% efficiency", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
         ];
@@ -1382,7 +1028,21 @@
             routerHeat: 0,
             overheatMode: false,
             unlocked: [],
-            nextId: 1
+            nextId: 1,
+            activeContract: null,
+            
+            // CODE SYSTEM
+            codeBits: 0,
+            optimizationCode: 0,
+            drivers: {
+                network: 0,
+                compression: 0,
+                security: 0,
+                mining: 0,
+                research: 0,
+                upload: 0,
+                download: 0
+            }
         };
 
         let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
@@ -1418,12 +1078,7 @@
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
         }
 
-        // Expose to Game object
-        window.Game = {
-            zoomIn,
-            zoomOut,
-            resetZoom
-        };
+        window.Game = { zoomIn, zoomOut, resetZoom };
         
         // --- CORE FUNCTIONS ---
 
@@ -1440,8 +1095,8 @@
             
             setupInputs();
             updateZoomDisplay();
+            renderDriverGrid();
             
-            // Prevent context menu on entire game
             document.addEventListener('contextmenu', (e) => {
                 if (e.target.closest('.game-container') || e.target.closest('.modal') || e.target.closest('.welcome-container')) {
                     e.preventDefault();
@@ -1449,10 +1104,10 @@
             });
         }
 
-        function logEvent(msg) {
+        function logEvent(msg, type = 'info') {
             const log = document.getElementById('eventLog');
             const entry = document.createElement('div');
-            entry.className = 'log-entry';
+            entry.className = `log-entry ${type}`;
             entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
             log.prepend(entry);
             if (log.children.length > 5) log.lastChild.remove();
@@ -1463,7 +1118,7 @@
             
             updateConnectivity();
             
-            // --- HEAT MECHANIC ---
+            // Heat
             const router = game.nodes.find(n => n.type === 'router');
             let isOverclocked = false;
             
@@ -1487,53 +1142,71 @@
                 if (game.routerHeat <= 50) game.overheatMode = false;
             }
 
-            // Calculate Efficiency
+            // Calculate multipliers
             let efficiency = 1.0;
             if (isOverclocked) efficiency *= 2.0;
             if (game.overheatMode) efficiency *= 0.7;
+            
+            // Driver effects
+            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
+            const driverUploadMult = 1 + (game.drivers.upload * DRIVERS.upload.effect);
+            const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect);
+            const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect);
 
-            // Global Multipliers
             const prestigeMult = 1 + (game.prestige * 0.5); 
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
             const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
-            
-            // CDN boost
-            let cdnBoost = 1;
-            game.nodes.forEach(n => { 
-                if (n.type === 'cdn' && activeNodes.has(n.id) && !n.infected) cdnBoost += 0.25; 
-            });
-            
-            // AI Processor boost
-            let aiBoost = 1;
-            game.nodes.forEach(n => { 
-                if (n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected) aiBoost += 1.0; 
-            });
-            
-            // Cluster boost
+            const cdnBoost = 1 + (game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.25);
+            const aiBoost = 1 + (game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 1.0);
             const clusterCount = game.nodes.filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).length;
             const clusterBoost = 1 + (clusterCount * 0.2);
-            
             let quantumMult = 1;
             game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
             
-            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency;
-
-            // --- TWO PASS RESOURCE SYSTEM ---
+            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult;
             
+            // CODE GENERATION
+            const coders = game.nodes.filter(n => n.type === 'coder' && activeNodes.has(n.id) && !n.infected);
+            const devStations = game.nodes.filter(n => n.type === 'dev_station' && activeNodes.has(n.id) && !n.infected);
+            const compilers = game.nodes.filter(n => n.type === 'compiler' && activeNodes.has(n.id) && !n.infected);
+            
+            let codeGenRate = 0;
+            coders.forEach(coder => {
+                const lvlMult = Math.pow(1.2, coder.level - 1);
+                codeGenRate += 5 * lvlMult; // 5 bits per second base
+            });
+            devStations.forEach(station => {
+                const lvlMult = Math.pow(1.2, station.level - 1);
+                codeGenRate += 10 * lvlMult; // 10 bits per second
+            });
+            
+            game.codeBits += codeGenRate * dt;
+            
+            // Auto-compiler
+            if (compilers.length > 0 && game.codeBits >= 100) {
+                const toConvert = Math.min(Math.floor(game.codeBits / 100), compilers.length * 10);
+                if (toConvert > 0) {
+                    game.codeBits -= toConvert * 100;
+                    game.optimizationCode += toConvert;
+                }
+            }
+
+            // Process resources
             let fileConsumers = [];
             let totalFileDemand = 0;
-
-            // Count analyzers for RP boost
             let analyzerCount = game.nodes.filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).length;
             let rpBoost = 1 + (analyzerCount * 0.5);
-            
-            // Data Warehouse boost
             const warehouseCount = game.nodes.filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).length;
 
             game.nodes.forEach(node => {
                 if (!activeNodes.has(node.id)) return;
-                if (node.infected) { game.money -= 10 * dt; return; }
+                if (node.infected) { 
+                    // Security driver reduces money loss from viruses
+                    const securityMult = Math.max(0, 1 - (game.drivers.security * DRIVERS.security.effect));
+                    game.money -= 10 * dt * securityMult; 
+                    return; 
+                }
 
                 const def = NODE_DEFS[node.type];
                 const lvlMult = Math.pow(1.2, node.level - 1);
@@ -1551,7 +1224,6 @@
                     }
                 });
                 
-                // Load balancer bonus
                 if (node.type === 'balancer') {
                     const neighbors = [];
                     game.conns.forEach(c => {
@@ -1561,35 +1233,33 @@
                     boost *= (1 + neighbors.length * 0.1);
                 }
                 
-                // Streaming server bonus for media
                 let isStreamingServer = node.type === 'streaming';
-                
-                // Crypto farm bonus
-                if (node.type === 'crypto_farm') {
-                    boost *= 3;
-                }
+                if (node.type === 'crypto_farm') boost *= 3;
                 
                 const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
 
-                // 1. Production
                 if (def.type === 'download' || node.type === 'dl_audio') {
                     const resourceKey = def.out || node.type.replace('dl_', '');
                     let amt = effectiveSpeed / RESOURCES[resourceKey].size;
-                    // Warehouse organizes data better
                     if (warehouseCount > 0) amt *= (1 + warehouseCount * 0.3);
                     game.res[resourceKey] += amt;
                     workAnim(node);
                 }
-                else if (node.type === 'miner' || node.type === 'crypto_farm') {
-                    const gain = effectiveSpeed * 0.05;
+                else if (node.type === 'miner') {
+                    const gain = effectiveSpeed * 0.05 * driverMiningMult;
+                    game.money += gain;
+                    history.money += gain;
+                    workAnim(node);
+                }
+                else if (node.type === 'crypto_farm') {
+                    const gain = effectiveSpeed * 0.15 * driverMiningMult; // Better mining
                     game.money += gain;
                     history.money += gain;
                     workAnim(node);
                 }
 
-                // 2. Identify Demand
                 if (def.type === 'upload' || node.type === 'rack') {
-                    const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult) * cdnBoost;
+                    const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult) * cdnBoost * driverUploadMult;
                     let cap = upSpeed;
                     
                     if (node.type === 'rack') {
@@ -1599,13 +1269,11 @@
                         if(game.unlocked.includes('tech_audio')) game.res.audio += (upSpeed * 0.15) / RESOURCES.audio.size;
                     }
 
-                    // Audio, Videos, Images first (priority order)
+                    // Priority: audio, videos, images
                     ['audio', 'videos', 'images'].forEach(k => {
                         if (cap <= 0 || game.res[k] <= 0) return;
                         let size = RESOURCES[k].size;
-                        // Apply compression
-                        if (hasCompressor) size *= 0.7;
-                        // Streaming server processes media faster
+                        if (hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
                         if (isStreamingServer && (k === 'audio' || k === 'videos')) size *= 0.5;
                         
                         const count = Math.min(game.res[k], cap / size);
@@ -1619,7 +1287,6 @@
                         if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                     });
 
-                    // Remaining for Files
                     if (cap > 0) {
                         fileConsumers.push({ node, capacity: cap, type: 'upload', hasCompressor });
                         totalFileDemand += cap;
@@ -1627,7 +1294,6 @@
                 }
                 else if (def.type === 'lab') {
                     let labCap = effectiveSpeed * RESOURCES.files.size;
-                    // Load balancer distributes lab capacity better
                     const neighbors = [];
                     game.conns.forEach(c => {
                         if (c.from === node.id) neighbors.push(c.to);
@@ -1639,14 +1305,12 @@
                     })) {
                         labCap *= 1.3;
                     }
-                    // AI Processor boosts labs more
                     if (aiBoost > 1) labCap *= aiBoost;
                     fileConsumers.push({ node, capacity: labCap, type: 'lab', hasCompressor });
                     totalFileDemand += labCap;
                 }
             });
 
-            // 3. Distribute Files Fairly
             if (totalFileDemand > 0) {
                 const totalFilesBytes = game.res.files * RESOURCES.files.size;
                 const ratio = totalFilesBytes >= totalFileDemand ? 1 : (totalFilesBytes / totalFileDemand);
@@ -1656,7 +1320,7 @@
                     if (allocatedBytes <= 0) return;
                     
                     let size = RESOURCES.files.size;
-                    if (c.hasCompressor) size *= 0.7;
+                    if (c.hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
                     
                     const count = allocatedBytes / size;
                     
@@ -1669,7 +1333,7 @@
                             history.money += gain;
                             if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                         } else {
-                            const gain = count * RESOURCES.files.rp * rpBoost;
+                            const gain = count * RESOURCES.files.rp * rpBoost * driverResearchMult;
                             game.rp += gain;
                             history.rp += gain;
                         }
@@ -1678,7 +1342,6 @@
                 });
             }
 
-            // Backup server and warehouse storage bonus
             game.nodes.forEach(n => {
                 if ((n.type === 'backup' || n.type === 'warehouse') && activeNodes.has(n.id) && !n.infected) {
                     const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
@@ -1690,7 +1353,6 @@
                 }
             });
 
-            // Contracts
             if (activeContract) {
                 activeContract.time -= dt;
                 if (activeContract.time <= 0) {
@@ -1711,7 +1373,9 @@
         }
 
         function virusLoop() {
-            if (Math.random() > 0.05) return; 
+            // Security driver reduces virus chance
+            const securityMult = Math.max(0.1, 1 - (game.drivers.security * DRIVERS.security.effect));
+            if (Math.random() > (0.05 * securityMult)) return; 
             
             const targets = game.nodes.filter(n => activeNodes.has(n.id) && n.type !== 'router' && n.type !== 'firewall' && !n.infected);
             if (targets.length === 0) return;
@@ -1780,6 +1444,82 @@
                 });
             }
             activeNodes = newActive;
+        }
+
+        // --- CODE SYSTEM FUNCTIONS ---
+        
+        function convertCodeBits() {
+            if (game.codeBits >= 100) {
+                game.codeBits -= 100;
+                game.optimizationCode += 1;
+                logEvent("Converted 100 code bits to 1 optimization code", 'code');
+                updateCodeUI();
+            }
+        }
+        
+        function installDriver(driverId) {
+            const driver = DRIVERS[driverId];
+            if (game.optimizationCode >= driver.cost) {
+                game.optimizationCode -= driver.cost;
+                game.drivers[driverId]++;
+                logEvent(`Installed ${driver.name} Level ${game.drivers[driverId]}!`, 'code');
+                renderDriverGrid();
+                updateCodeUI();
+            }
+        }
+        
+        function updateCodeUI() {
+            document.getElementById('codeBitsDisplay').innerText = Math.floor(game.codeBits);
+            document.getElementById('optCodeDisplay').innerText = game.optimizationCode;
+            document.getElementById('codeDisplay').innerText = Math.floor(game.codeBits);
+            document.getElementById('sidebarCodeBits').innerText = Math.floor(game.codeBits);
+            document.getElementById('sidebarOptCode').innerText = game.optimizationCode;
+            
+            const convertBtn = document.getElementById('convertBitsBtn');
+            const sidebarConvertBtn = document.getElementById('sidebarConvertBtn');
+            if (convertBtn) convertBtn.disabled = game.codeBits < 100;
+            if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
+            
+            updateInstalledDriversList();
+        }
+        
+        function updateInstalledDriversList() {
+            const lists = ['installedDriversList', 'sidebarDrivers'];
+            lists.forEach(listId => {
+                const list = document.getElementById(listId);
+                if (!list) return;
+                
+                const installed = Object.entries(game.drivers).filter(([_, level]) => level > 0);
+                if (installed.length === 0) {
+                    list.innerHTML = '<span style="font-size: 9px; color: #64748b;">No drivers installed</span>';
+                } else {
+                    list.innerHTML = installed.map(([id, level]) => {
+                        const driver = DRIVERS[id];
+                        return `<div class="driver-badge"><i class="${driver.icon}"></i> ${driver.name.split(' ')[0]} Lv.${level}</div>`;
+                    }).join('');
+                }
+            });
+        }
+        
+        function renderDriverGrid() {
+            const grid = document.getElementById('driverGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = Object.entries(DRIVERS).map(([id, driver]) => {
+                const level = game.drivers[id];
+                const canAfford = game.optimizationCode >= driver.cost;
+                const installed = level > 0;
+                
+                return `
+                    <div class="driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}" onclick="${canAfford ? `installDriver('${id}')` : ''}">
+                        <div class="driver-icon"><i class="${driver.icon}"></i></div>
+                        <div class="driver-name">${driver.name}</div>
+                        <div class="driver-desc">${driver.desc}</div>
+                        <div class="driver-cost">Cost: ${driver.cost} Opt Code</div>
+                        ${installed ? `<div class="driver-level">Level ${level} (+${Math.round(level * driver.effect * 100)}%)</div>` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
         // --- ACTIONS ---
@@ -1862,7 +1602,7 @@
         
         function prestige() {
             if (game.money < 10000000) return;
-            if (!confirm("Sell company? Resets money, nodes, tech.")) return;
+            if (!confirm("Sell company? Resets money, nodes, tech. Drivers and code persist!")) return;
             
             game.prestige++;
             game.money = 2000;
@@ -1883,7 +1623,6 @@
             logEvent(`Prestige Level ${game.prestige} Achieved!`);
         }
 
-        // --- CONTRACTS ---
         function openContracts() {
             const list = document.getElementById('contractList');
             list.innerHTML = '';
@@ -1927,8 +1666,6 @@
             document.getElementById('contractModal').style.display='none';
         }
 
-        // --- UI & RENDERING ---
-
         function fmt(n) {
             if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
             if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
@@ -1958,6 +1695,7 @@
                 const el = document.createElement('div');
                 let classes = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
                 if (n.type === 'router' && game.overheatMode) classes += ' overheating';
+                if (def.type === 'coding') classes += ' coding';
                 
                 el.className = classes;
                 el.id = `node-${n.id}`;
@@ -2011,9 +1749,10 @@
                 group.classList.add("cable-group");
                 group.dataset.ends = `${c.from},${c.to}`;
                 
-                const destType = NODE_DEFS[n2.type].type;
-                if (destType === 'upload' || n2.type === 'rack') group.classList.add('money');
-                else if (destType === 'lab') group.classList.add('power');
+                const destDef = NODE_DEFS[n2.type];
+                if (destDef.type === 'upload' || n2.type === 'rack') group.classList.add('money');
+                else if (destDef.type === 'lab') group.classList.add('power');
+                else if (destDef.type === 'coding') group.classList.add('code');
                 if (activeNodes.has(n1.id) && activeNodes.has(n2.id)) group.classList.add('active');
                 
                 const x1 = n1.x + 180;
@@ -2055,12 +1794,12 @@
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
             
             const prestigeMult = 1 + (game.prestige * 0.5);
-            const base = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult;
+            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
+            const base = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * driverDownloadMult;
             document.getElementById('globalDown').innerText = fmt(base * eff) + ' B/s';
             document.getElementById('globalUp').innerText = fmt(base * eff) + ' B/s';
             document.getElementById('routerLvl').innerText = 'LVL ' + game.routerLevel;
             
-            // Heat UI
             const heatBar = document.getElementById('heatBar');
             const heatText = document.getElementById('heatText');
             const heatStatus = document.getElementById('heatStatus');
@@ -2096,16 +1835,15 @@
             }
             
             updateRouterCostDisplay();
+            updateCodeUI();
         }
 
-        // --- RESEARCH TREE RENDERING ---
         function renderResearchTree() {
             const grid = document.getElementById('researchTreeGrid');
             const svg = document.getElementById('researchTreeSvg');
             grid.innerHTML = '';
             svg.innerHTML = '';
             
-            // Group by tier
             const tiers = {};
             TECH_TREE.forEach(t => {
                 if (!tiers[t.tier]) tiers[t.tier] = [];
@@ -2114,7 +1852,6 @@
             
             const maxTier = Math.max(...Object.keys(tiers).map(Number));
             
-            // Create columns for each tier
             for (let tier = 1; tier <= maxTier; tier++) {
                 const tierCol = document.createElement('div');
                 tierCol.className = 'research-tier';
@@ -2153,7 +1890,6 @@
                 grid.appendChild(tierCol);
             }
             
-            // Draw connection lines
             setTimeout(() => drawResearchLines(), 100);
         }
         
@@ -2193,7 +1929,6 @@
             });
         }
 
-        // --- SHOP & RESEARCH ---
         let currTab = 'infra';
 
         function setTab(t, el) {
@@ -2211,6 +1946,7 @@
                 if (currTab === 'download' && def.type !== 'download') return;
                 if (currTab === 'upload' && def.type !== 'upload' && def.type !== 'lab' && def.type !== 'special') return;
                 if (currTab === 'advanced' && def.type !== 'advanced') return;
+                if (currTab === 'coding' && def.type !== 'coding') return;
                 if (def.type === 'core') return;
 
                 const el = document.createElement('div');
@@ -2230,7 +1966,6 @@
             });
         }
 
-        // --- INPUT & DRAGGING ---
         let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
         let port = { active: false, src: null };
         let selNodeId = null;
@@ -2264,11 +1999,9 @@
             
             window.onmouseup = () => { drag.active = false; drag.node = null; };
             
-            // Improved zoom with mouse wheel
             vp.onwheel = (e) => {
                 e.preventDefault();
                 
-                // Calculate world position before zoom
                 const rect = vp.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
                 const mouseY = e.clientY - rect.top;
@@ -2276,11 +2009,9 @@
                 const worldX = (mouseX - view.x) / view.scale;
                 const worldY = (mouseY - view.y) / view.scale;
                 
-                // Apply zoom
                 const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
                 const newScale = Math.max(0.3, Math.min(2, view.scale * zoomFactor));
                 
-                // Adjust position to zoom toward mouse
                 view.x = mouseX - worldX * newScale;
                 view.y = mouseY - worldY * newScale;
                 view.scale = newScale;
@@ -2288,21 +2019,13 @@
                 updateZoomDisplay();
             };
             
-            // Keyboard zoom shortcuts
             window.addEventListener('keydown', (e) => {
-                if (e.key === '+' || e.key === '=') {
-                    zoomIn();
-                } else if (e.key === '-' || e.key === '_') {
-                    zoomOut();
-                } else if (e.key === '0') {
-                    resetZoom();
-                }
+                if (e.key === '+' || e.key === '=') zoomIn();
+                else if (e.key === '-' || e.key === '_') zoomOut();
+                else if (e.key === '0') resetZoom();
             });
             
-            // Redraw research lines on resize
-            window.addEventListener('resize', () => {
-                drawResearchLines();
-            });
+            window.addEventListener('resize', () => drawResearchLines());
         }
         
         function dragStart(node, e) {
@@ -2383,12 +2106,17 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    game = JSON.parse(e.target.result);
+                    const data = JSON.parse(e.target.result);
+                    game = data;
                     if (!game.prestige) game.prestige = 0;
                     if (!game.routerHeat) game.routerHeat = 0;
                     if (!game.res.audio) game.res.audio = 0;
+                    // Ensure code system exists
+                    if (!game.codeBits) game.codeBits = 0;
+                    if (!game.optimizationCode) game.optimizationCode = 0;
+                    if (!game.drivers) game.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
                     game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
-                    renderWorld(); renderResearchTree(); updateUI();
+                    renderWorld(); renderResearchTree(); renderDriverGrid(); updateUI();
                     updateRouterCostDisplay();
                     logEvent("Game Loaded");
                 } catch(err) { alert("Invalid Save File"); }
@@ -2398,6 +2126,7 @@
 
         init();
         renderResearchTree();
+        renderDriverGrid();
         setTab('infra');
     </script>
 </body>
