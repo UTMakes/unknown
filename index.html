@@ -597,7 +597,7 @@
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="modal" style="width: 500px;">
             <div class="modal-header">
-                <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs v8.7</h2>
+                <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs v9.0</h2>
                 <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start</button>
             </div>
             <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
@@ -701,6 +701,22 @@
                         <div class="help-item">
                             <div class="help-item-title" style="color:#fbbf24;"><i class="fa-brands fa-bitcoin"></i> Miner</div>
                             <div class="help-item-desc">Uses bandwidth to mine cryptocurrency.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:#ec4899;"><i class="fa-solid fa-server"></i> Server Rack</div>
+                            <div class="help-item-desc">High-performance downloader and uploader.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:#ef4444;"><i class="fa-solid fa-atom"></i> Quantum Core</div>
+                            <div class="help-item-desc">Doubles global network speed.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:#14b8a6;"><i class="fa-solid fa-compress"></i> Compressor</div>
+                            <div class="help-item-desc">Reduces file sizes by 30% for faster transfers.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:#a855f7;"><i class="fa-solid fa-box-archive"></i> Backup Server</div>
+                            <div class="help-item-desc">Stores excess data, prevents loss.</div>
                         </div>
                     </div>
                 </div>
@@ -852,6 +868,8 @@
                     <li><strong>Labs</strong> make Research Points</li>
                     <li>Use <strong>Firewalls</strong> against viruses</li>
                     <li><strong>Overclock</strong> for 2x speed (watch heat!)</li>
+                    <li><strong>Compressor</strong> reduces file sizes</li>
+                    <li><strong>Backup</strong> stores excess data</li>
                 </ul>
                 <button class="btn btn-help" style="width:100%; margin-top:10px;" onclick="document.getElementById('helpModal').style.display='flex'">
                     <i class="fa-solid fa-book"></i> Full Guide
@@ -872,6 +890,7 @@
                 <div class="tab active" data-tab="infra" onclick="setTab('infra', this)">Infrastructure</div>
                 <div class="tab" data-tab="download" onclick="setTab('download', this)">Download</div>
                 <div class="tab" data-tab="upload" onclick="setTab('upload', this)">Upload & Security</div>
+                <div class="tab" data-tab="advanced" onclick="setTab('advanced', this)">Advanced</div>
             </div>
             <div class="items-tray" id="tray"></div>
         </div>
@@ -883,21 +902,38 @@
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
             
             // Infra
-            miner: { name: "Crypto Miner", type: "infra", cost: 300, icon: "fa-brands fa-bitcoin", color: "#f59e0b", desc: "Uses bandwidth to mine money." },
+            miner: { name: "Crypto Miner", type: "infra", cost: 300, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money." },
             cache: { name: "Cache Server", type: "infra", cost: 1200, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected nodes work 50% faster." },
             overclock: { name: "Overclock Unit", type: "infra", cost: 3000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Watch heat!", req: "tech_oc" },
             firewall: { name: "Firewall", type: "infra", cost: 800, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
+            balancer: { name: "Load Balancer", type: "infra", cost: 2500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly across connected nodes.", req: "tech_balance" },
             
             // Downloaders
             dl_file: { name: "File Downloader", type: "download", out: "files", cost: 200, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files." },
             dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Requires Tech.", req: "tech_img" },
             dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 2500, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Requires Tech.", req: "tech_vid" },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 4000, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Requires Tech.", req: "tech_audio" },
             
             // Upload & Labs
             uploader: { name: "Uploader", type: "upload", cost: 400, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money." },
             lab: { name: "Research Lab", type: "lab", cost: 1500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
             rack: { name: "Server Rack", type: "special", cost: 7500, icon: "fa-solid fa-server", color: "#f97316", desc: "High density. Acts as strong Downloader AND Uploader.", req: "tech_rack" },
-            quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" }
+            quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" },
+            
+            // Advanced
+            compressor: { name: "Compressor", type: "advanced", cost: 3500, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 30% for faster transfers.", req: "tech_compress" },
+            backup: { name: "Backup Server", type: "advanced", cost: 5000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data preventing loss during outages.", req: "tech_backup" },
+            proxy: { name: "Proxy Node", type: "advanced", cost: 2000, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
+            analyzer: { name: "Data Analyzer", type: "advanced", cost: 6000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow, increasing RP generation by 50%.", req: "tech_analyze" },
+            cdn: { name: "CDN Node", type: "advanced", cost: 8000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. Boosts all uploaders.", req: "tech_cdn" }
+        };
+
+        // Add audio resource
+        const RESOURCES = {
+            files: { size: 10, price: 5, rp: 1 },
+            images: { size: 50, price: 25, rp: 5 },
+            videos: { size: 200, price: 100, rp: 25 },
+            audio: { size: 80, price: 40, rp: 10 }
         };
 
         const TECH_TREE = [
@@ -908,21 +944,23 @@
             { id: "tech_fiber", name: "Fiber Optics", cost: 3750, desc: "Global Speed +25%. Clean connections." },
             { id: "tech_rack", name: "Server Racks", cost: 7500, desc: "Unlock High-Density Server Racks" },
             { id: "tech_sat", name: "Satellite Link", cost: 12500, desc: "+50% Global Upload Speed" },
-            { id: "tech_quantum", name: "Quantum Computing", cost: 50000, desc: "Unlock Quantum Core" }
+            { id: "tech_quantum", name: "Quantum Computing", cost: 50000, desc: "Unlock Quantum Core" },
+            // New techs
+            { id: "tech_balance", name: "Load Balancing", cost: 3000, desc: "Unlock Load Balancer node" },
+            { id: "tech_audio", name: "Audio Streaming", cost: 4500, desc: "Unlock Audio Downloaders" },
+            { id: "tech_compress", name: "Data Compression", cost: 4000, desc: "Unlock Compressor node" },
+            { id: "tech_backup", name: "Backup Systems", cost: 5500, desc: "Unlock Backup Server" },
+            { id: "tech_proxy", name: "Proxy Networking", cost: 2500, desc: "Unlock Proxy Node" },
+            { id: "tech_analyze", name: "Data Analysis", cost: 7000, desc: "Unlock Data Analyzer" },
+            { id: "tech_cdn", name: "CDN Technology", cost: 9000, desc: "Unlock CDN Node" }
         ];
-
-        const RESOURCES = {
-            files: { size: 10, price: 5, rp: 1 },
-            images: { size: 50, price: 25, rp: 5 },
-            videos: { size: 200, price: 100, rp: 25 }
-        };
 
         // --- STATE ---
         let game = {
             money: 2000,
             rp: 0,
             prestige: 0, 
-            res: { files: 0, images: 0, videos: 0 },
+            res: { files: 0, images: 0, videos: 0, audio: 0 },
             nodes: [],
             conns: [],
             routerLevel: 1,
@@ -987,6 +1025,14 @@
             
             setupInputs();
             updateZoomDisplay();
+            
+            // Prevent context menu on entire game
+            document.addEventListener('contextmenu', (e) => {
+                // Only prevent if clicking on game elements
+                if (e.target.closest('.game-container') || e.target.closest('.modal')) {
+                    e.preventDefault();
+                }
+            });
         }
 
         function logEvent(msg) {
@@ -1037,6 +1083,12 @@
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
             
+            // CDN boost
+            let cdnBoost = 1;
+            game.nodes.forEach(n => { 
+                if (n.type === 'cdn' && activeNodes.has(n.id) && !n.infected) cdnBoost += 0.25; 
+            });
+            
             let quantumMult = 1;
             game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
             
@@ -1047,6 +1099,10 @@
             let fileConsumers = [];
             let totalFileDemand = 0;
 
+            // Count analyzers for RP boost
+            let analyzerCount = game.nodes.filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).length;
+            let rpBoost = 1 + (analyzerCount * 0.5);
+
             game.nodes.forEach(node => {
                 if (!activeNodes.has(node.id)) return;
                 if (node.infected) { game.money -= 10 * dt; return; }
@@ -1055,21 +1111,35 @@
                 const lvlMult = Math.pow(1.2, node.level - 1);
                 
                 let boost = 1;
+                let hasCompressor = false;
+                
                 game.conns.forEach(c => {
                     const nid = c.from === node.id ? c.to : c.from;
                     const n = game.nodes.find(x => x.id === nid);
                     if (n && activeNodes.has(nid) && !n.infected) {
                         if (n.type === 'cache') boost *= 1.5;
                         if (n.type === 'rack') boost *= 1.2;
+                        if (n.type === 'compressor') hasCompressor = true;
                     }
                 });
+                
+                // Load balancer bonus
+                if (node.type === 'balancer') {
+                    const neighbors = [];
+                    game.conns.forEach(c => {
+                        if (c.from === node.id) neighbors.push(c.to);
+                        else if (c.to === node.id) neighbors.push(c.from);
+                    });
+                    boost *= (1 + neighbors.length * 0.1);
+                }
                 
                 const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
 
                 // 1. Production
-                if (def.type === 'download') {
-                    const amt = effectiveSpeed / RESOURCES[def.out].size;
-                    game.res[def.out] += amt;
+                if (def.type === 'download' || node.type === 'dl_audio') {
+                    const resourceKey = def.out || node.type.replace('dl_', '');
+                    const amt = effectiveSpeed / RESOURCES[resourceKey].size;
+                    game.res[resourceKey] += amt;
                     workAnim(node);
                 }
                 else if (node.type === 'miner') {
@@ -1081,19 +1151,23 @@
 
                 // 2. Identify Demand
                 if (def.type === 'upload' || node.type === 'rack') {
-                    const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult);
+                    const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult) * cdnBoost;
                     let cap = upSpeed;
                     
                     if (node.type === 'rack') {
-                        game.res.files += (upSpeed * 0.3) / RESOURCES.files.size;
-                        if(game.unlocked.includes('tech_img')) game.res.images += (upSpeed * 0.3) / RESOURCES.images.size;
-                        if(game.unlocked.includes('tech_vid')) game.res.videos += (upSpeed * 0.3) / RESOURCES.videos.size;
+                        game.res.files += (upSpeed * 0.2) / RESOURCES.files.size;
+                        if(game.unlocked.includes('tech_img')) game.res.images += (upSpeed * 0.2) / RESOURCES.images.size;
+                        if(game.unlocked.includes('tech_vid')) game.res.videos += (upSpeed * 0.2) / RESOURCES.videos.size;
+                        if(game.unlocked.includes('tech_audio')) game.res.audio += (upSpeed * 0.2) / RESOURCES.audio.size;
                     }
 
-                    // Videos/Images first
-                    ['videos', 'images'].forEach(k => {
+                    // Audio, Videos, Images first (priority order)
+                    ['audio', 'videos', 'images'].forEach(k => {
                         if (cap <= 0 || game.res[k] <= 0) return;
-                        const size = RESOURCES[k].size;
+                        let size = RESOURCES[k].size;
+                        // Apply compression
+                        if (hasCompressor) size *= 0.7;
+                        
                         const count = Math.min(game.res[k], cap / size);
                         game.res[k] -= count;
                         cap -= count * size;
@@ -1107,13 +1181,27 @@
 
                     // Remaining for Files
                     if (cap > 0) {
-                        fileConsumers.push({ node, capacity: cap, type: 'upload' });
+                        fileConsumers.push({ node, capacity: cap, type: 'upload', hasCompressor });
                         totalFileDemand += cap;
                     }
                 }
                 else if (def.type === 'lab') {
-                    const labCap = effectiveSpeed * RESOURCES.files.size; 
-                    fileConsumers.push({ node, capacity: labCap, type: 'lab' });
+                    let labCap = effectiveSpeed * RESOURCES.files.size;
+                    // Load balancer distributes lab capacity better
+                    if (node.type === 'lab') {
+                        const neighbors = [];
+                        game.conns.forEach(c => {
+                            if (c.from === node.id) neighbors.push(c.to);
+                            else if (c.to === node.id) neighbors.push(c.from);
+                        });
+                        if (neighbors.some(nid => {
+                            const n = game.nodes.find(x => x.id === nid);
+                            return n && n.type === 'balancer';
+                        })) {
+                            labCap *= 1.3;
+                        }
+                    }
+                    fileConsumers.push({ node, capacity: labCap, type: 'lab', hasCompressor });
                     totalFileDemand += labCap;
                 }
             });
@@ -1127,7 +1215,10 @@
                     const allocatedBytes = c.capacity * ratio;
                     if (allocatedBytes <= 0) return;
                     
-                    const count = allocatedBytes / RESOURCES.files.size;
+                    let size = RESOURCES.files.size;
+                    if (c.hasCompressor) size *= 0.7;
+                    
+                    const count = allocatedBytes / size;
                     
                     if (game.res.files >= count) {
                         game.res.files -= count;
@@ -1136,9 +1227,9 @@
                             const gain = count * RESOURCES.files.price;
                             game.money += gain;
                             history.money += gain;
-                            if (activeContract && activeContract.type === 'upload') activeContract.current += count * RESOURCES.files.size;
+                            if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                         } else {
-                            const gain = count * RESOURCES.files.rp;
+                            const gain = count * RESOURCES.files.rp * rpBoost;
                             game.rp += gain;
                             history.rp += gain;
                         }
@@ -1146,6 +1237,19 @@
                     }
                 });
             }
+
+            // Backup server stores excess
+            game.nodes.forEach(n => {
+                if (n.type === 'backup' && activeNodes.has(n.id) && !n.infected) {
+                    // Backup server slowly converts stored data to money
+                    const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
+                    if (stored > 1000) {
+                        const bonus = stored * 0.001 * dt;
+                        game.money += bonus;
+                        history.money += bonus;
+                    }
+                }
+            });
 
             // Contracts
             if (activeContract) {
@@ -1317,7 +1421,7 @@
             game.prestige++;
             game.money = 2000;
             game.rp = 0;
-            game.res = { files: 0, images: 0, videos: 0 };
+            game.res = { files: 0, images: 0, videos: 0, audio: 0 };
             game.nodes = [];
             game.conns = [];
             game.routerLevel = 1;
@@ -1566,6 +1670,7 @@
                 if (currTab === 'infra' && def.type !== 'infra' && def.type !== 'core') return;
                 if (currTab === 'download' && def.type !== 'download') return;
                 if (currTab === 'upload' && def.type !== 'upload' && def.type !== 'lab' && def.type !== 'special') return;
+                if (currTab === 'advanced' && def.type !== 'advanced') return;
                 if (def.type === 'core') return;
 
                 const el = document.createElement('div');
@@ -1753,6 +1858,7 @@
                     game = JSON.parse(e.target.result);
                     if (!game.prestige) game.prestige = 0;
                     if (!game.routerHeat) game.routerHeat = 0;
+                    if (!game.res.audio) game.res.audio = 0;
                     game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
                     renderWorld(); renderResearch(); updateUI();
                     updateRouterCostDisplay();
