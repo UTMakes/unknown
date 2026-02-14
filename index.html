@@ -247,6 +247,22 @@
             z-index: 1; /* Below nodes (10) */
         }
 
+        /* Group catches click events */
+        .cable-group {
+            pointer-events: all; 
+            cursor: pointer;
+        }
+
+        /* Hover Effect for Removal */
+        .cable-group:hover .cable {
+            stroke: #ef4444; /* Red color on hover */
+            opacity: 1;
+            stroke-dasharray: 0; /* Solid red line */
+        }
+        .cable-group:hover .cable-inner {
+            opacity: 0; /* Hide animation on hover */
+        }
+
         .cable {
             fill: none;
             stroke: #4a5568;
@@ -254,7 +270,7 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             opacity: 0.5;
-            transition: stroke 0.3s;
+            transition: stroke 0.2s, opacity 0.2s;
         }
         
         .cable-inner {
@@ -467,13 +483,13 @@
     <!-- Modals -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="modal" style="width: 450px; padding: 20px;">
-            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v8.6</h2>
+            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v8.7</h2>
             <p style="color:#cbd5e0; margin-bottom:20px; font-size:14px; line-height:1.5;">
                 <strong>Major Update:</strong><br><br>
+                ✂️ <strong>Remove Cables:</strong> Right-click a cable to disconnect it.<br>
                 🔌 <strong>Fixed Cables:</strong> High-visibility dashed connections.<br>
                 ⚡ <strong>Overclock:</strong> Connect the <strong>Overclock Unit</strong> node to Router.<br>
-                🔥 <strong>Heat System:</strong> Router overheats if boosted too long (30% penalty).<br>
-                ⚖️ <strong>Fair Split:</strong> Files split 50:50 between Labs & Uploaders.<br><br>
+                🔥 <strong>Heat System:</strong> Router overheats if boosted too long (30% penalty).<br><br>
                 <strong>Controls:</strong> Drag to Pan, Scroll to Zoom.
             </p>
             <button class="btn btn-primary" onclick="document.getElementById('welcomeModal').style.display='none'">Start System</button>
@@ -1051,6 +1067,13 @@
             logEvent(`Prestige Level ${game.prestige} Achieved!`);
         }
 
+        function removeCable(conn) {
+            game.conns = game.conns.filter(c => c !== conn);
+            renderCables();
+            updateConnectivity();
+            showFloat("Disconnected", event.clientX, event.clientY, '#ef4444');
+        }
+
         // --- CONTRACTS ---
         function openContracts() {
             const list = document.getElementById('contractList');
@@ -1163,15 +1186,20 @@
                 
                 const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
                 group.classList.add("cable-group");
-                group.dataset.ends = `${c.from},${c.to}`; // Fix: Ensure data-ends attribute is set
+                group.dataset.ends = `${c.from},${c.to}`; 
                 
-                // Color Logic
+                // Interaction: Remove on Right Click
+                group.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeCable(c);
+                };
+                
                 const destType = NODE_DEFS[n2.type].type;
                 if (destType === 'upload' || n2.type === 'rack') group.classList.add('money');
                 else if (destType === 'lab') group.classList.add('power');
                 if (activeNodes.has(n1.id) && activeNodes.has(n2.id)) group.classList.add('active');
                 
-                // Draw from Output (Right) to Input (Left)
                 const x1 = n1.x + 180;
                 const y1 = n1.y + 40;
                 const x2 = n2.x;
