@@ -54,7 +54,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            z-index: 10;
+            z-index: 50;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
@@ -106,7 +106,7 @@
             flex-direction: column;
             gap: 15px;
             overflow-y: auto;
-            z-index: 9;
+            z-index: 40;
         }
 
         .panel {
@@ -177,6 +177,31 @@
         }
         .contract-timer { font-family: monospace; font-weight: bold; color: var(--warning); float: right; }
 
+        /* Event Log */
+        .event-log {
+            position: absolute;
+            bottom: 180px;
+            right: 20px;
+            width: 250px;
+            max-height: 150px;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .log-entry {
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            border-left: 3px solid var(--accent-color);
+            animation: fade-in 0.3s ease-out;
+        }
+        @keyframes fade-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
         /* Canvas */
         .canvas-viewport {
             grid-area: canvas;
@@ -184,6 +209,7 @@
             background: #0f1218;
             overflow: hidden;
             cursor: grab;
+            z-index: 1;
         }
         .canvas-viewport:active { cursor: grabbing; }
 
@@ -191,6 +217,7 @@
             position: absolute;
             top: 0; left: 0;
             transform-origin: 0 0;
+            width: 0; height: 0;
         }
 
         .grid-bg {
@@ -202,39 +229,56 @@
                 linear-gradient(90deg, rgba(40, 50, 70, 0.3) 1px, transparent 1px);
             background-size: 50px 50px;
             pointer-events: none;
+            z-index: 0;
         }
+
+        /* Connections Layer */
+        svg.connections-layer {
+            position: absolute;
+            top: -5000px; left: -5000px;
+            width: 10000px; height: 10000px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cable {
+            fill: none;
+            stroke: #4a5568;
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-dasharray: 8, 8; /* Visible Dashes */
+            opacity: 0.6;
+            transition: stroke 0.3s;
+        }
+        .cable.active {
+            stroke: var(--accent-color);
+            stroke-opacity: 1;
+            opacity: 1;
+            stroke-width: 4px;
+            animation: flow 0.8s linear infinite;
+        }
+        .cable.disconnected { stroke: var(--danger); opacity: 0.3; }
+
+        @keyframes flow { to { stroke-dashoffset: -16; } }
 
         /* Nodes */
         .node {
             position: absolute;
             width: 180px;
-            height: 80px; /* Fixed height for consistency */
-            background: rgba(20, 25, 35, 0.95);
+            height: 80px; 
+            background: rgba(20, 25, 35, 0.98);
             border: 2px solid var(--border-color);
             border-radius: 12px;
             padding: 0;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
             transition: border-color 0.2s, opacity 0.3s, transform 0.2s;
             z-index: 10;
         }
 
         /* States */
-        .node.disconnected {
-            border-color: var(--danger) !important;
-            opacity: 0.7;
-        }
-        .node.disconnected .node-icon-box {
-            color: var(--danger) !important;
-            border-color: var(--danger) !important;
-            animation: none !important;
-        }
-        .node.disconnected::after {
-            content: "NO SIGNAL";
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            background: var(--danger); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold;
-        }
-
-        /* Infected State */
+        .node.disconnected { border-color: var(--danger) !important; opacity: 0.8; }
+        .node.overclocked { border-color: #f59e0b !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        
         .node.infected {
             border-color: #8b5cf6 !important;
             box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
@@ -244,22 +288,14 @@
             color: #fff !important;
             animation: pulse-virus 0.5s infinite !important;
         }
-        @keyframes pulse-virus { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
         .clean-btn {
             display: none;
             position: absolute;
             bottom: -35px; left: 50%; transform: translateX(-50%);
-            background: #10b981;
-            color: white;
-            border: 2px solid #fff;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            z-index: 1000;
-            white-space: nowrap;
+            background: #10b981; color: white; border: 2px solid #fff;
+            padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 11px;
+            cursor: pointer; z-index: 1000; white-space: nowrap;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
         .clean-btn:hover { background: #059669; transform: translateX(-50%) scale(1.1); }
@@ -273,24 +309,14 @@
         }
 
         .node-header {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            border-radius: 10px 10px 0 0;
-            height: 100%; /* Fill the node */
+            padding: 10px; display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px 10px 0 0; height: 100%;
         }
 
         .node-icon-box {
-            width: 40px; height: 40px;
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            width: 40px; height: 40px; border-radius: 8px; background: rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
@@ -304,10 +330,11 @@
         .node-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .node-lvl { font-size: 11px; color: var(--text-muted); }
 
+        /* Ports - Left/Right Style */
         .port {
             width: 14px; height: 14px;
-            background: #2d3748;
-            border: 2px solid #718096;
+            background: #1a202c;
+            border: 2px solid #4a5568;
             border-radius: 50%;
             position: absolute;
             z-index: 30;
@@ -315,26 +342,17 @@
             transition: transform 0.2s;
         }
         .port:hover { transform: scale(1.4); background: #fff; border-color: var(--accent-color); }
-        .port.in { left: -7px; top: 50%; transform: translateY(-50%); }
-        .port.out { right: -7px; top: 50%; transform: translateY(-50%); }
-
-        /* Connections */
-        .cable {
-            fill: none;
-            stroke: #4a5568;
-            stroke-width: 4px;
-            stroke-linecap: round;
-            stroke-dasharray: 6 6; /* Always Dashed */
-            opacity: 0.8;
-            transition: stroke 0.3s;
+        
+        /* Input (Left) */
+        .port.in { 
+            left: -8px; top: 50%; transform: translateY(-50%); 
+            border-color: #3b82f6; 
         }
-        .cable.active {
-            stroke: var(--accent-color);
-            animation: flow 1s linear infinite;
+        /* Output (Right) */
+        .port.out { 
+            right: -8px; top: 50%; transform: translateY(-50%); 
+            border-color: #10b981; 
         }
-        .cable.disconnected { stroke: var(--danger); opacity: 0.5; }
-
-        @keyframes flow { from { stroke-dashoffset: 12; } to { stroke-dashoffset: 0; } }
 
         /* Toolbar */
         .toolbar {
@@ -343,50 +361,31 @@
             border-top: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            z-index: 20;
+            z-index: 50;
         }
 
         .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 10px; }
         .tab {
-            padding: 10px 15px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            padding: 10px 15px; font-size: 12px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
         }
         .tab:hover { color: #fff; }
         .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
 
         .items-tray {
-            flex: 1;
-            padding: 10px 15px;
-            overflow-x: auto;
-            display: flex;
-            gap: 12px;
-            align-items: center;
+            flex: 1; padding: 10px 15px; overflow-x: auto; display: flex; gap: 12px; align-items: center;
         }
 
         .shop-item {
-            min-width: 140px;
-            height: 100px;
-            background: rgba(30, 37, 50, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
+            min-width: 140px; height: 100px; background: rgba(30, 37, 50, 0.6);
+            border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;
+            cursor: pointer; position: relative; transition: all 0.2s; display: flex; flex-direction: column;
         }
         .shop-item:hover:not(.disabled) { border-color: var(--accent-color); transform: translateY(-3px); background: rgba(40, 50, 70, 0.8); }
         .shop-item.disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
         
         .item-cost { 
-            position: absolute; top: 6px; right: 6px; 
-            background: rgba(0,0,0,0.4); color: #fbbf24; 
+            position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.4); color: #fbbf24; 
             font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 4px; 
         }
         .item-icon { font-size: 20px; margin-bottom: 6px; color: #fff; }
@@ -414,9 +413,7 @@
         .modal-body { padding: 20px; overflow-y: auto; }
         
         /* Research Tree */
-        .research-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;
-        }
+        .research-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
         .tech-card {
             background: #2d3748; border: 2px solid #4a5568; border-radius: 8px; padding: 15px;
             text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
@@ -424,9 +421,7 @@
         .tech-card:hover:not(.locked):not(.owned) { border-color: #8b5cf6; transform: translateY(-2px); }
         .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
         .tech-card.owned { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
-        .tech-card.owned::after {
-            content: "✓"; position: absolute; top: 5px; right: 5px; color: var(--success); font-weight: bold;
-        }
+        .tech-card.owned::after { content: "✓"; position: absolute; top: 5px; right: 5px; color: var(--success); font-weight: bold; }
         .tech-cost { color: #8b5cf6; font-weight: bold; font-size: 11px; margin-top: 8px; }
 
         /* Contracts */
@@ -440,7 +435,7 @@
 
         .floating-text {
             position: absolute; pointer-events: none; font-weight: bold; font-size: 14px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); animation: float-up 0.8s forwards; z-index: 100;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); animation: float-up 0.8s forwards; z-index: 2000;
         }
         @keyframes float-up { to { transform: translateY(-30px); opacity: 0; } }
         
@@ -458,16 +453,19 @@
 </head>
 <body>
 
+    <!-- Event Log -->
+    <div class="event-log" id="eventLog"></div>
+
     <!-- Modals -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="modal" style="width: 450px; padding: 20px;">
-            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v5.3</h2>
+            <h2 style="color:#fff; margin-bottom:10px;"><i class="fa-solid fa-network-wired"></i> Upload Labs v7.0</h2>
             <p style="color:#cbd5e0; margin-bottom:20px; font-size:14px; line-height:1.5;">
-                <strong>System Patch:</strong><br><br>
-                ⚖️ <strong>Fair Distribution:</strong> Files are split 50:50 between Uploaders & Labs.<br>
-                🔌 <strong>Dashed Cables:</strong> Visuals updated to show data flow.<br>
-                🦠 <strong>Rare Viruses:</strong> Attacks occur ~5% chance every 2 mins.<br>
-                🛡️ <strong>Easy Clean:</strong> Click "CLEAN" button on infected nodes.<br><br>
+                <strong>Visual & Feature Update:</strong><br><br>
+                🔌 <strong>Side Ports:</strong> Cables now connect clearly from Right to Left.<br>
+                ⚡ <strong>Overclock:</strong> Ctrl+Click a node to temporarily double speed.<br>
+                💰 <strong>Economy:</strong> Research costs increased by 2.5x.<br>
+                📜 <strong>Event Log:</strong> Track game events in the corner.<br><br>
                 <strong>Controls:</strong> Drag to Pan, Scroll to Zoom.
             </p>
             <button class="btn btn-primary" onclick="document.getElementById('welcomeModal').style.display='none'">Start System</button>
@@ -598,7 +596,7 @@
         <div class="canvas-viewport" id="viewport">
             <div class="world" id="world">
                 <div class="grid-bg"></div>
-                <svg id="cables" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></svg>
+                <svg class="connections-layer" id="cables"></svg>
                 <div id="nodes"></div>
             </div>
         </div>
@@ -635,14 +633,16 @@
             quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" }
         };
 
+        // Research Costs x2.5
         const TECH_TREE = [
-            { id: "tech_img", name: "Image Compression", cost: 100, desc: "Unlock Image Downloaders" },
-            { id: "tech_sec", name: "Cyber Security", cost: 300, desc: "Unlock Firewall Node" },
-            { id: "tech_vid", name: "Streaming Protocol", cost: 800, desc: "Unlock Video Downloaders" },
-            { id: "tech_fiber", name: "Fiber Optics", cost: 1500, desc: "Global Speed +25%. Clean connections." },
-            { id: "tech_rack", name: "Server Racks", cost: 3000, desc: "Unlock High-Density Server Racks" },
-            { id: "tech_sat", name: "Satellite Link", cost: 5000, desc: "+50% Global Upload Speed" },
-            { id: "tech_quantum", name: "Quantum Computing", cost: 20000, desc: "Unlock Quantum Core" }
+            { id: "tech_img", name: "Image Compression", cost: 250, desc: "Unlock Image Downloaders" },
+            { id: "tech_sec", name: "Cyber Security", cost: 750, desc: "Unlock Firewall Node" },
+            { id: "tech_vid", name: "Streaming Protocol", cost: 2000, desc: "Unlock Video Downloaders" },
+            { id: "tech_fiber", name: "Fiber Optics", cost: 3750, desc: "Global Speed +25%. Clean connections." },
+            { id: "tech_rack", name: "Server Racks", cost: 7500, desc: "Unlock High-Density Server Racks" },
+            { id: "tech_sat", name: "Satellite Link", cost: 12500, desc: "+50% Global Upload Speed" },
+            { id: "tech_quantum", name: "Quantum Computing", cost: 50000, desc: "Unlock Quantum Core" },
+            { id: "tech_ai", name: "Deep Learning", cost: 100000, desc: "Nodes auto-overclock occasionally." }
         ];
 
         const RESOURCES = {
@@ -655,7 +655,7 @@
         let game = {
             money: 2000,
             rp: 0,
-            prestige: 0, // Data Centers
+            prestige: 0, 
             res: { files: 0, images: 0, videos: 0 },
             nodes: [],
             conns: [],
@@ -667,23 +667,30 @@
         let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
         let activeNodes = new Set();
         let history = { money: 0, rp: 0 };
-        let activeContract = null; // { type, target, current, time, rewardMoney, rewardRp }
+        let activeContract = null; 
         
         // --- CORE FUNCTIONS ---
 
         function init() {
-            // Initial Render
             if (game.nodes.length === 0) spawnNode('router', 2500, 2500);
             renderWorld();
             updateUI();
+            logEvent("System initialized.");
             
-            // Loop
             requestAnimationFrame(gameLoop);
             setInterval(secLoop, 1000);
-            setInterval(virusLoop, 120000); // Check virus every 2 mins (120,000 ms)
+            setInterval(virusLoop, 120000); // 2 mins
             
-            // Input Setup
             setupInputs();
+        }
+
+        function logEvent(msg) {
+            const log = document.getElementById('eventLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            log.prepend(entry);
+            if (log.children.length > 5) log.lastChild.remove();
         }
 
         function gameLoop(time) {
@@ -691,7 +698,6 @@
             
             updateConnectivity();
             
-            // Global Multipliers
             const prestigeMult = 1 + (game.prestige * 0.5); 
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
@@ -701,21 +707,36 @@
             
             const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult;
 
-            // --- TWO PASS SYSTEM ---
-            // Pass 1: Production & Non-File Consumption (Money, Video, Image)
-            // Pass 2: File Consumption (Distributed Fairly between Labs and Uploaders)
-            
-            let fileConsumers = []; // { node, capacity, type }
-            let totalFileDemand = 0;
+            // Two-Pass Resource Logic
+            let fileConsumers = [];
+            let totalFileDemandBytes = 0;
 
             game.nodes.forEach(node => {
                 if (!activeNodes.has(node.id)) return;
                 if (node.infected) { game.money -= 10 * dt; return; }
 
+                // Overclock Logic
+                if (node.overclockTime > 0) {
+                    node.overclockTime -= dt;
+                    if (node.overclockTime <= 0) {
+                        node.overclockTime = 0;
+                        node.cooldownTime = 5; // 5s cooldown
+                        renderWorld();
+                    }
+                } else if (node.cooldownTime > 0) {
+                    node.cooldownTime -= dt;
+                }
+                
+                // AI Auto-Overclock
+                if (game.unlocked.includes('tech_ai') && Math.random() < 0.001 && node.overclockTime <= 0 && node.cooldownTime <= 0) {
+                    node.overclockTime = 5;
+                    renderWorld();
+                }
+
                 const def = NODE_DEFS[node.type];
                 const lvlMult = Math.pow(1.2, node.level - 1);
+                const ocMult = node.overclockTime > 0 ? 2 : 1;
                 
-                // Boosts
                 let boost = 1;
                 game.conns.forEach(c => {
                     const nid = c.from === node.id ? c.to : c.from;
@@ -726,7 +747,7 @@
                     }
                 });
                 
-                const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
+                const effectiveSpeed = baseSpeed * boost * lvlMult * ocMult * dt;
 
                 // PRODUCTION
                 if (def.type === 'download') {
@@ -740,13 +761,11 @@
                     workAnim(node);
                 }
 
-                // CONSUMPTION - PRE-CALC
+                // DEMAND
                 if (def.type === 'upload' || node.type === 'rack') {
                     const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult);
-                    // Consume Videos & Images first (High Priority)
                     let cap = upSpeed;
                     
-                    // Rack production logic inside consumption loop for simplicity
                     if (node.type === 'rack') {
                         game.res.files += (upSpeed * 0.3) / RESOURCES.files.size;
                         if(game.unlocked.includes('tech_img')) game.res.images += (upSpeed * 0.3) / RESOURCES.images.size;
@@ -759,6 +778,7 @@
                         const count = Math.min(game.res[k], cap / size);
                         game.res[k] -= count;
                         cap -= count * size;
+                        
                         const gain = count * RESOURCES[k].price;
                         game.money += gain;
                         history.money += gain;
@@ -766,32 +786,28 @@
                         if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                     });
 
-                    // Remaining capacity for Files
                     if (cap > 0) {
                         fileConsumers.push({ node, capacity: cap, type: 'upload' });
-                        totalFileDemand += cap;
+                        totalFileDemandBytes += cap;
                     }
                 }
                 else if (def.type === 'lab') {
-                    // Lab converts Files. 
-                    // To match 50:50, we give it equal weight/speed to uploader (removed 0.5 penalty)
-                    const labCap = effectiveSpeed * 1.0 * RESOURCES.files.size; // Cap in bytes
+                    const labCap = effectiveSpeed * RESOURCES.files.size; 
                     fileConsumers.push({ node, capacity: labCap, type: 'lab' });
-                    totalFileDemand += labCap;
+                    totalFileDemandBytes += labCap;
                 }
             });
 
-            // PASS 2: DISTRIBUTE FILES
-            if (totalFileDemand > 0) {
-                const totalFilesBytes = game.res.files * RESOURCES.files.size;
-                // If we have less files than demand, scale everyone down equally
-                const ratio = totalFilesBytes >= totalFileDemand ? 1 : (totalFilesBytes / totalFileDemand);
+            // DISTRIBUTION
+            if (totalFileDemandBytes > 0) {
+                const totalFilesAvailableBytes = game.res.files * RESOURCES.files.size;
+                const ratio = totalFilesAvailableBytes >= totalFileDemandBytes ? 1 : (totalFilesAvailableBytes / totalFileDemandBytes);
                 
                 fileConsumers.forEach(c => {
-                    const allowedBytes = c.capacity * ratio;
-                    if (allowedBytes <= 0) return;
+                    const allocatedBytes = c.capacity * ratio;
+                    if (allocatedBytes <= 0) return;
                     
-                    const count = allowedBytes / RESOURCES.files.size;
+                    const count = allocatedBytes / RESOURCES.files.size;
                     
                     if (game.res.files >= count) {
                         game.res.files -= count;
@@ -811,16 +827,17 @@
                 });
             }
 
-            // Contract Check
             if (activeContract) {
                 activeContract.time -= dt;
                 if (activeContract.time <= 0) {
                     showFloat("Contract Failed", window.innerWidth/2, window.innerHeight/2, 'red');
+                    logEvent("Contract Failed.");
                     activeContract = null;
                 } else if (activeContract.current >= activeContract.target) {
                     game.money += activeContract.rewardMoney;
                     game.rp += activeContract.rewardRp;
-                    showFloat(`Contract Complete! +$${fmt(activeContract.rewardMoney)}`, window.innerWidth/2, window.innerHeight/2, 'gold');
+                    showFloat(`+$${fmt(activeContract.rewardMoney)}`, window.innerWidth/2, window.innerHeight/2, 'gold');
+                    logEvent("Contract Complete!");
                     activeContract = null;
                 }
             }
@@ -830,7 +847,7 @@
         }
 
         function virusLoop() {
-            if (Math.random() > 0.05) return; // 5% chance
+            if (Math.random() > 0.05) return; 
             
             const targets = game.nodes.filter(n => activeNodes.has(n.id) && n.type !== 'router' && n.type !== 'firewall' && !n.infected);
             if (targets.length === 0) return;
@@ -846,7 +863,8 @@
             
             if (!protected) {
                 target.infected = true;
-                showFloat("⚠️ VIRUS DETECTED", target.x + 90, target.y, '#8b5cf6');
+                showFloat("⚠️ VIRUS", target.x + 90, target.y, '#8b5cf6');
+                logEvent("Virus detected in network!");
                 renderWorld(); 
             } else {
                 showFloat("🛡️ BLOCKED", target.x + 90, target.y, '#10b981');
@@ -904,7 +922,7 @@
         // --- ACTIONS ---
 
         function spawnNode(type, x, y) {
-            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false });
+            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false, overclockTime: 0, cooldownTime: 0 });
             renderWorld();
         }
 
@@ -926,6 +944,7 @@
                 game.money -= cost;
                 node.infected = false;
                 showFloat("CLEANED", node.x + 90, node.y, '#10b981');
+                logEvent("Virus cleaned.");
                 renderWorld();
             } else {
                 showFloat("Need $500", node.x + 90, node.y, 'red');
@@ -971,7 +990,7 @@
         
         function prestige() {
             if (game.money < 10000000) return;
-            if (!confirm("Sell company for Data Center Prestige? Resets money, nodes, tech.")) return;
+            if (!confirm("Sell company? Resets money, nodes, tech.")) return;
             
             game.prestige++;
             game.money = 2000;
@@ -988,6 +1007,7 @@
             renderWorld();
             renderResearch();
             setTab('infra');
+            logEvent(`Prestige Level ${game.prestige} Achieved!`);
         }
 
         // --- CONTRACTS ---
@@ -1030,6 +1050,7 @@
                 rewardRp: c.rewardR,
                 desc: c.desc 
             };
+            logEvent("Contract Started: " + c.title);
             document.getElementById('contractModal').style.display = 'none';
         }
 
@@ -1048,7 +1069,7 @@
             game.nodes.forEach(n => {
                 const def = NODE_DEFS[n.type];
                 const el = document.createElement('div');
-                el.className = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
+                el.className = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''} ${n.overclockTime > 0 ? 'overclocked' : ''}`;
                 el.id = `node-${n.id}`;
                 el.style.left = n.x + 'px';
                 el.style.top = n.y + 'px';
@@ -1073,6 +1094,17 @@
                 el.onmousedown = (e) => {
                     if (e.target.classList.contains('port')) return;
                     if (e.target.classList.contains('clean-btn')) return;
+                    
+                    if (e.ctrlKey) {
+                        // Overclock
+                        if (n.overclockTime <= 0 && n.cooldownTime <= 0 && activeNodes.has(n.id)) {
+                            n.overclockTime = 10; // 10s boost
+                            showFloat("⚡ OVERCLOCK", n.x+90, n.y, '#f59e0b');
+                            renderWorld();
+                        }
+                        return;
+                    }
+
                     if (e.button === 2) {
                         e.preventDefault();
                         showContext(n, e);
@@ -1100,14 +1132,14 @@
                 path.classList.add("cable");
                 path.dataset.ends = `${c.from},${c.to}`;
                 
-                const x1 = n1.x + 90;
-                const y1 = n1.y + 40;
-                const x2 = n2.x + 90;
-                const y2 = n2.y + 40;
+                // Logic: Right of source -> Left of dest
+                const x1 = n1.x + 180; // Right edge
+                const y1 = n1.y + 40;  // Center Y
+                const x2 = n2.x;       // Left edge
+                const y2 = n2.y + 40;  // Center Y
                 
-                const mx = (x1+x2)/2;
-                
-                path.setAttribute("d", `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
+                // Curve handles
+                path.setAttribute("d", `M ${x1} ${y1} C ${x1 + 60} ${y1}, ${x2 - 60} ${y2}, ${x2} ${y2}`);
                 svg.appendChild(path);
             });
         }
@@ -1341,11 +1373,16 @@
                 try {
                     game = JSON.parse(e.target.result);
                     if (!game.prestige) game.prestige = 0;
-                    game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
+                    game.nodes.forEach(n => { 
+                        if (typeof n.infected === 'undefined') n.infected = false; 
+                        n.overclockTime = 0;
+                        n.cooldownTime = 0;
+                    });
                     
                     renderWorld();
                     renderResearch();
                     updateUI();
+                    logEvent("Game Loaded");
                 } catch(err) { alert("Invalid Save File"); }
             };
             reader.readAsText(file);
