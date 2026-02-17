@@ -557,7 +557,7 @@
         .achievement-badge { position: absolute; top: -8px; right: -8px; background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
         
         /* Event Notifications */
-        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; }
+        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .event-notification.show { transform: translateX(-50%) translateY(0); }
         .event-notification.good { border-color: var(--success); }
         .event-notification.bad { border-color: var(--danger); }
@@ -610,7 +610,7 @@
     </div>
     
     <!-- Event Notification -->
-    <div class="event-notification" id="eventNotification" style="display: none;">
+    <div class="event-notification" id="eventNotification">
         <h3 id="eventTitle">Event Title</h3>
         <p id="eventDesc">Event description goes here</p>
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
@@ -1545,18 +1545,8 @@
             document.getElementById('eventDesc').innerText = event.desc;
             document.getElementById('eventEffect').innerText = event.instant ? 'Instant effect applied!' : `Duration: ${event.duration} seconds`;
             
-            notif.style.display = 'block';
             notif.className = `event-notification ${event.type} show`;
-            
-            // Clear any existing timeout to prevent early closing
-            if (notif.hideTimeout) clearTimeout(notif.hideTimeout);
-            
-            notif.hideTimeout = setTimeout(() => {
-                notif.classList.remove('show');
-                setTimeout(() => {
-                    notif.style.display = 'none';
-                }, 500); // Wait for CSS transition to finish
-            }, event.instant ? 4000 : 6000);
+            setTimeout(() => notif.classList.remove('show'), event.instant ? 4000 : 6000);
         }
 
         function updateEvents(dt) {
@@ -2799,4 +2789,47 @@
                     game = data;
                     if (!game.prestige) game.prestige = 0;
                     if (!game.routerHeat) game.routerHeat = 0;
-                    if (!game.res.audio) game.res.audio =  ‌‍
+                    if (!game.res.audio) game.res.audio = 0;
+                    // Ensure code system exists
+                    if (!game.codeBits) game.codeBits = 0;
+                    if (!game.optimizationCode) game.optimizationCode = 0;
+                    if (!game.drivers) game.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                    // Ensure stats system exists
+                    if (!game.stats) {
+                        game.stats = {
+                            totalMoney: game.money,
+                            peakMoney: game.money,
+                            moneySpent: 0,
+                            totalRP: game.rp,
+                            nodesCreated: game.nodes.length,
+                            nodesDeleted: 0,
+                            cablesPlaced: game.conns.length,
+                            upgrades: 0,
+                            contractsCompleted: 0,
+                            filesDownloaded: 0,
+                            virusesCleaned: 0,
+                            totalCodeBits: 0,
+                            totalDrivers: 0,
+                            playTime: 0,
+                            techsUnlocked: game.unlocked.length,
+                            prestigeCount: game.prestige,
+                            startTime: Date.now()
+                        };
+                    }
+                    if (!game.achievements) game.achievements = [];
+                    game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
+                    renderWorld(); renderResearchTree(); renderDriverGrid(); renderAchievements(); updateUI();
+                    updateRouterCostDisplay();
+                    logEvent("Game Loaded");
+                } catch(err) { alert("Invalid Save File"); }
+            };
+            reader.readAsText(file);
+        }
+
+        init();
+        renderResearchTree();
+        renderDriverGrid();
+        setTab('infra');
+    </script>
+</body>
+</html>
