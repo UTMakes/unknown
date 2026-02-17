@@ -520,7 +520,7 @@
             transition: all 0.2s;
         }
         .driver-card:hover:not(.locked) { border-color: var(--code); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2); }
-        .driver-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .driver-card.locked { opacity: 0.5; cursor: not-allowed; background: rgba(30, 40, 50, 0.5); border-color: #4a5568; }
         .driver-card.installed { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); }
         .driver-icon { font-size: 20px; color: var(--code); margin-bottom: 5px; }
         .driver-name { font-size: 11px; font-weight: bold; color: #fff; }
@@ -2148,8 +2148,24 @@
             const grid = document.getElementById('driverGrid');
             if (!grid) return;
             
+            // Check if Basic Coding research is unlocked
+            const codingUnlocked = game.unlocked.includes('tech_coding');
+            
             grid.innerHTML = Object.entries(DRIVERS).map(([id, driver]) => {
                 const level = game.drivers[id];
+                
+                // Check if Basic Coding research is unlocked
+                if (!codingUnlocked) {
+                    return `
+                        <div class="driver-card locked">
+                            <div class="driver-icon" style="color: #64748b;"><i class="fa-solid fa-lock"></i></div>
+                            <div class="driver-name">${driver.name}</div>
+                            <div class="driver-desc" style="color: #ef4444; font-weight: bold;">Requires: Basic Coding research</div>
+                            <div class="driver-cost" style="color: #64748b;">???</div>
+                        </div>
+                    `;
+                }
+                
                 const canAfford = game.optimizationCode >= driver.cost;
                 const installed = level > 0;
                 
@@ -2250,6 +2266,12 @@
                 game.rp -= tech.cost;
                 game.unlocked.push(id);
                 renderResearchTree();
+                
+                // Re-render driver grid if we unlocked coding
+                if (id === 'tech_coding') {
+                    renderDriverGrid();
+                }
+                
                 setTab(currTab);
                 logEvent(`Researched: ${tech.name}`);
             }
