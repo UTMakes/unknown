@@ -726,7 +726,7 @@
         <div class="welcome-container">
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.1</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.1.1</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 50vh; overflow-y: auto;">
@@ -775,7 +775,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.1</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.1.1</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -836,9 +836,13 @@
                     <!-- Changelog Section -->
                     <div class="changelog-section">
                         <div class="changelog-header">
-                            <i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.1)
+                            <i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.1.1)
                         </div>
                         <ul class="changelog-list">
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span>Fixed cloud save loading not working after accounts update</span>
+                            </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge balance">Balance</span>
                                 <span>Rebalanced all node costs for longer gameplay (2-4 hours instead of 20 minutes)</span>
@@ -1255,7 +1259,7 @@
     <!-- Main Game -->
     <div class="game-container">
         <div class="header">
-            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.1</span></div>
+            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.1.1</span></div>
             <div class="header-stats">
                 <div class="stat-box money" onclick="addMoney(event)">
                     <i class="fa-solid fa-coins stat-icon"></i>
@@ -1444,7 +1448,7 @@
 
     <script>
         // GAME VERSION - Update by 0.1 for minor, +1 for major
-        const GAME_VERSION = "10.1";
+        const GAME_VERSION = "10.1.1";
 
         // --- CONFIGURATION ---
         const NODE_DEFS = {
@@ -3351,12 +3355,12 @@
         // Sync game to cloud
         async function syncToCloud() {
             if (!cloudSaveEnabled || !currentUser) {
-                logEvent('Cloud save not available', 'bad');
+                logEvent('Cloud save not available - please login first', 'bad');
+                showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                document.getElementById('accountModal').style.display='flex';
                 return;
             }
             
-            const btn = document.getElementById('cloudSyncBtn');
-            if (btn) btn.disabled = true;
             updateCloudSaveStatus('syncing', 'Syncing...');
             
             try {
@@ -3364,8 +3368,9 @@
                 const doc = window.firebaseDoc;
                 const setDoc = window.firebaseSetDoc;
                 
+                // Create a clean copy of game data
                 const saveData = {
-                    game: game,
+                    game: JSON.parse(JSON.stringify(game)),
                     version: GAME_VERSION,
                     timestamp: Date.now(),
                     device: navigator.userAgent
@@ -3374,27 +3379,30 @@
                 await setDoc(doc(db, 'saves', currentUser.uid), saveData);
                 
                 updateCloudSaveStatus('online', 'Saved to Cloud');
-                document.getElementById('lastSyncTime').innerText = 'Last sync: ' + new Date().toLocaleTimeString();
+                
+                // Update last sync time display if it exists
+                const lastSyncEl = document.getElementById('lastSyncTime');
+                if (lastSyncEl) lastSyncEl.innerText = 'Last sync: ' + new Date().toLocaleTimeString();
+                
                 logEvent('Game saved to cloud', 'good');
                 showFloat('☁️ Saved to Cloud', window.innerWidth/2, window.innerHeight/2, '#3b82f6');
             } catch (error) {
                 console.error('Cloud save error:', error);
                 updateCloudSaveStatus('error', 'Sync Failed');
-                logEvent('Cloud save failed', 'bad');
-            } finally {
-                if (btn) btn.disabled = false;
+                logEvent('Cloud save failed: ' + error.message, 'bad');
+                showFloat('❌ Save Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
             }
         }
 
         // Load game from cloud
         async function loadFromCloud() {
             if (!cloudSaveEnabled || !currentUser) {
-                logEvent('Cloud save not available', 'bad');
+                logEvent('Cloud save not available - please login first', 'bad');
+                showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                document.getElementById('accountModal').style.display='flex';
                 return;
             }
             
-            const btn = document.getElementById('cloudLoadBtn');
-            if (btn) btn.disabled = true;
             updateCloudSaveStatus('syncing', 'Loading...');
             
             try {
@@ -3423,6 +3431,7 @@
                         game.routerLevel = Number(importedGame.routerLevel) || 1;
                         game.routerHeat = Number(importedGame.routerHeat) || 0;
                         game.overheatMode = Boolean(importedGame.overheatMode);
+                        game.nextId = Number(importedGame.nextId) || 1;
                         
                         game.res = {
                             files: Number(importedGame.res?.files) || 0,
@@ -3478,7 +3487,8 @@
                         updateRouterCostDisplay();
                         
                         const saveDate = new Date(saveData.timestamp).toLocaleString();
-                        document.getElementById('lastSyncTime').innerText = 'Loaded: ' + saveDate;
+                        const lastSyncEl = document.getElementById('lastSyncTime');
+                        if (lastSyncEl) lastSyncEl.innerText = 'Loaded: ' + saveDate;
                         updateCloudSaveStatus('online', 'Loaded from Cloud');
                         logEvent('Game loaded from cloud', 'good');
                         showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
@@ -3490,9 +3500,8 @@
             } catch (error) {
                 console.error('Cloud load error:', error);
                 updateCloudSaveStatus('error', 'Load Failed');
-                logEvent('Cloud load failed', 'bad');
-            } finally {
-                if (btn) btn.disabled = false;
+                logEvent('Cloud load failed: ' + error.message, 'bad');
+                showFloat('❌ Load Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
             }
         }
 
