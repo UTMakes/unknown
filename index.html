@@ -549,13 +549,20 @@
         .modal-header { padding: 20px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 20px; overflow-y: auto; }
 
-        .research-tree-container { position: relative; min-height: 600px; overflow: auto; background: radial-gradient(circle at center, rgba(30, 40, 55, 0.5) 0%, transparent 70%); }
+        .research-tree-container { position: relative; min-height: 700px; overflow: auto; background: radial-gradient(circle at center, rgba(30, 40, 55, 0.8) 0%, rgba(15, 20, 30, 0.95) 100%); border-radius: 12px; border: 1px solid var(--border-color); }
         .research-tree-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: all 0.3s; }
-        .research-tree-line.unlocked { stroke: var(--research); stroke-width: 3; filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5)); }
-        .research-tree-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; padding: 40px; position: relative; z-index: 2; }
-        .research-tier { display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .tier-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; padding: 4px 12px; background: rgba(0,0,0,0.3); border-radius: 20px; }
+        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: all 0.5s ease; }
+        .research-tree-line.unlocked { stroke: var(--research); stroke-width: 4; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8)); animation: linePulse 2s infinite; }
+        @keyframes linePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .research-tree-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px; padding: 40px; position: relative; z-index: 2; min-width: 1200px; }
+        .research-tier { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .tier-label { font-size: 11px; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; padding: 6px 16px; background: linear-gradient(135deg, #4a5568, #2d3748); border-radius: 20px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .tier-label.tier-1 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .tier-label.tier-2 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tier-label.tier-3 { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+        .tier-label.tier-4 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .tier-label.tier-5 { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .tier-label.tier-6 { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
         .tech-card { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #4a5568; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; width: 140px; z-index: 3; }
         .tech-card:hover:not(.locked):not(.owned) { border-color: var(--research); transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
         .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
@@ -1390,48 +1397,48 @@
         const NODE_DEFS = {
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
             
-            // Infra
-            miner: { name: "Crypto Miner", type: "infra", cost: 300, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money." },
-            cache: { name: "Cache Server", type: "infra", cost: 1200, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected nodes work 50% faster." },
-            overclock: { name: "Overclock Unit", type: "infra", cost: 3000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Watch heat!", req: "tech_oc" },
-            firewall: { name: "Firewall", type: "infra", cost: 800, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
-            balancer: { name: "Load Balancer", type: "infra", cost: 2500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly across connected nodes.", req: "tech_balance" },
+            // Infra - Early game utility
+            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
+            cache: { name: "Cache Server", type: "infra", cost: 2500, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
+            firewall: { name: "Firewall", type: "infra", cost: 1500, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
+            balancer: { name: "Load Balancer", type: "infra", cost: 4500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
+            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
             
-            // Downloaders
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 200, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files." },
-            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Requires Tech.", req: "tech_img" },
-            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 2500, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Requires Tech.", req: "tech_vid" },
-            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 4000, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Requires Tech.", req: "tech_audio" },
+            // Downloaders - Tiered progression
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 300, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 1800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 6000, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 15000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
             
-            // Upload & Labs
-            uploader: { name: "Uploader", type: "upload", cost: 400, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money." },
-            lab: { name: "Research Lab", type: "lab", cost: 1500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
-            rack: { name: "Server Rack", type: "special", cost: 7500, icon: "fa-solid fa-server", color: "#f97316", desc: "High density. Acts as strong Downloader AND Uploader.", req: "tech_rack" },
-            quantum: { name: "Quantum Core", type: "special", cost: 50000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "2x Global Speed. Requires Tech.", req: "tech_quantum" },
+            // Upload & Labs - Money and RP generation
+            uploader: { name: "Uploader", type: "upload", cost: 600, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
+            lab: { name: "Research Lab", type: "lab", cost: 3500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
+            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
+            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
             
-            // Advanced
-            compressor: { name: "Compressor", type: "advanced", cost: 3500, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 30% for faster transfers.", req: "tech_compress" },
-            backup: { name: "Backup Server", type: "advanced", cost: 5000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data preventing loss during outages.", req: "tech_backup" },
-            proxy: { name: "Proxy Node", type: "advanced", cost: 2000, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
-            analyzer: { name: "Data Analyzer", type: "advanced", cost: 6000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow, increasing RP generation by 50%.", req: "tech_analyze" },
-            cdn: { name: "CDN Node", type: "advanced", cost: 8000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. Boosts all uploaders.", req: "tech_cdn" },
-            ai_processor: { name: "AI Processor", type: "advanced", cost: 15000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization for all connected nodes. +100% efficiency.", req: "tech_ai" },
-            cluster: { name: "Cluster Node", type: "advanced", cost: 12000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. Each cluster boosts all others.", req: "tech_cluster" },
-            warehouse: { name: "Data Warehouse", type: "advanced", cost: 18000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage with intelligent auto-organization.", req: "tech_warehouse" },
-            streaming: { name: "Streaming Server", type: "advanced", cost: 10000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for video/audio. 3x media processing.", req: "tech_streaming" },
-            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 25000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining operation.", req: "tech_crypto_farm" },
+            // Advanced - Late game specialization
+            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
+            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress" },
+            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup" },
+            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze" },
+            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming" },
+            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn" },
+            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster" },
+            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse" },
+            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai" },
+            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm" },
             
-            // CODING - NEW!
-            coder: { name: "Coder Node", type: "coding", cost: 2500, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
-            dev_station: { name: "Dev Station", type: "coding", cost: 8000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2x code bit generation. Can compile advanced drivers.", req: "tech_dev_station" },
-            compiler: { name: "Code Compiler", type: "coding", cost: 15000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to opt. code.", req: "tech_compiler" }
+            // CODING - Programming system
+            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
+            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "tech_dev_station" },
+            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" }
         };
 
         const RESOURCES = {
-            files: { size: 10, price: 5, rp: 1 },
-            images: { size: 50, price: 25, rp: 5 },
-            videos: { size: 200, price: 100, rp: 25 },
-            audio: { size: 80, price: 40, rp: 10 }
+            files: { size: 20, price: 8, rp: 2 },
+            images: { size: 80, price: 35, rp: 8 },
+            videos: { size: 350, price: 150, rp: 40 },
+            audio: { size: 120, price: 55, rp: 15 }
         };
 
         // DRIVER CONFIGURATION
@@ -1446,37 +1453,41 @@
         };
 
         const TECH_TREE = [
-            { id: "tech_img", name: "Image Compression", cost: 250, desc: "Unlock Image Downloaders", tier: 1, icon: "fa-solid fa-image", requires: [] },
-            { id: "tech_sec", name: "Cyber Security", cost: 500, desc: "Unlock Firewall Node", tier: 1, icon: "fa-solid fa-shield-halved", requires: [] },
+            // Tier 1: Basics (Early game)
+            { id: "tech_img", name: "Image Compression", cost: 400, desc: "Unlock Image Downloaders", tier: 1, icon: "fa-solid fa-image", requires: [] },
+            { id: "tech_sec", name: "Cyber Security", cost: 800, desc: "Unlock Firewall protection", tier: 1, icon: "fa-solid fa-shield-halved", requires: [] },
+            { id: "tech_coding", name: "Basic Programming", cost: 1200, desc: "Unlock Coder Nodes", tier: 1, icon: "fa-solid fa-terminal", requires: [] },
             
-            { id: "tech_oc", name: "Overclocking", cost: 1000, desc: "Unlock Overclock Unit", tier: 2, icon: "fa-solid fa-bolt", requires: [] },
-            { id: "tech_vid", name: "Streaming Protocol", cost: 1500, desc: "Unlock Video Downloaders", tier: 2, icon: "fa-solid fa-film", requires: ["tech_img"] },
-            { id: "tech_proxy", name: "Proxy Networking", cost: 2000, desc: "Unlock Proxy Node", tier: 2, icon: "fa-solid fa-network-wired", requires: ["tech_sec"] },
-            { id: "tech_balance", name: "Load Balancing", cost: 2500, desc: "Unlock Load Balancer node", tier: 2, icon: "fa-solid fa-scale-balanced", requires: ["tech_sec"] },
+            // Tier 2: Expansion (Mid-early game)
+            { id: "tech_proxy", name: "Proxy Networking", cost: 2500, desc: "Unlock Proxy Nodes for range extension", tier: 2, icon: "fa-solid fa-network-wired", requires: ["tech_sec"] },
+            { id: "tech_oc", name: "Overclocking", cost: 3500, desc: "Unlock Overclock Units (risk/reward)", tier: 2, icon: "fa-solid fa-bolt", requires: [] },
+            { id: "tech_balance", name: "Load Balancing", cost: 4500, desc: "Unlock Load Balancers", tier: 2, icon: "fa-solid fa-scale-balanced", requires: ["tech_sec"] },
             
-            { id: "tech_fiber", name: "Fiber Optics", cost: 3000, desc: "Global Speed +25%", tier: 3, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
-            { id: "tech_audio", name: "Audio Streaming", cost: 3500, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
-            { id: "tech_compress", name: "Data Compression", cost: 4000, desc: "Unlock Compressor node", tier: 3, icon: "fa-solid fa-compress", requires: ["tech_img"] },
-            { id: "tech_analyze", name: "Data Analysis", cost: 5000, desc: "Unlock Data Analyzer", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
-            { id: "tech_backup", name: "Backup Systems", cost: 4500, desc: "Unlock Backup Server", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
+            // Tier 3: Specialization (Mid game)
+            { id: "tech_vid", name: "Video Streaming", cost: 6000, desc: "Unlock Video Downloaders", tier: 3, icon: "fa-solid fa-film", requires: ["tech_img"] },
+            { id: "tech_compress", name: "Data Compression", cost: 7500, desc: "Unlock Compressor nodes", tier: 3, icon: "fa-solid fa-compress", requires: ["tech_img"] },
+            { id: "tech_audio", name: "Audio Processing", cost: 9000, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
+            { id: "tech_analyze", name: "Data Analysis", cost: 10000, desc: "Unlock Data Analyzers (+RP generation)", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
+            { id: "tech_backup", name: "Backup Systems", cost: 12000, desc: "Unlock Backup Servers", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
             
-            // Coding techs
-            { id: "tech_coding", name: "Basic Coding", cost: 2000, desc: "Unlock Coder Nodes", tier: 3, icon: "fa-solid fa-terminal", requires: [] },
+            // Tier 4: Advanced Infrastructure (Late-mid game)
+            { id: "tech_fiber", name: "Fiber Optics", cost: 15000, desc: "Global network speed +25%", tier: 4, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
+            { id: "dev_station", name: "Dev Environment", cost: 18000, desc: "Unlock Dev Stations", tier: 4, icon: "fa-solid fa-laptop-code", requires: ["tech_coding"] },
+            { id: "tech_rack", name: "Server Racks", cost: 25000, desc: "Unlock high-density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
+            { id: "tech_sat", name: "Satellite Uplink", cost: 30000, desc: "Global upload speed +50%", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
+            { id: "tech_streaming", name: "Media Streaming", cost: 35000, desc: "Unlock Streaming Servers", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
             
-            { id: "tech_rack", name: "Server Racks", cost: 6000, desc: "Unlock High-Density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
-            { id: "tech_cdn", name: "CDN Technology", cost: 7000, desc: "Unlock CDN Node", tier: 4, icon: "fa-solid fa-earth-americas", requires: ["tech_audio", "tech_compress"] },
-            { id: "tech_sat", name: "Satellite Link", cost: 8000, desc: "+50% Global Upload Speed", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
-            { id: "tech_streaming", name: "Streaming Infrastructure", cost: 7500, desc: "Unlock Streaming Server", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
-            { id: "tech_dev_station", name: "Dev Station", cost: 6000, desc: "Unlock Dev Station", tier: 4, icon: "fa-solid fa-laptop-code", requires: ["tech_coding"] },
+            // Tier 5: Enterprise (Late game)
+            { id: "tech_cdn", name: "CDN Network", cost: 50000, desc: "Unlock CDN Nodes (global uploader boost)", tier: 5, icon: "fa-solid fa-earth-americas", requires: ["tech_rack", "tech_streaming"] },
+            { id: "tech_cluster", name: "Cluster Computing", cost: 65000, desc: "Unlock Cluster Nodes (synergy bonuses)", tier: 5, icon: "fa-solid fa-network-wired", requires: ["tech_rack", "tech_backup"] },
+            { id: "tech_compiler", name: "Auto-Compilation", cost: 80000, desc: "Unlock Code Compilers", tier: 5, icon: "fa-solid fa-gears", requires: ["dev_station"] },
+            { id: "tech_warehouse", name: "Data Warehousing", cost: 100000, desc: "Unlock massive Data Warehouses", tier: 5, icon: "fa-solid fa-warehouse", requires: ["tech_backup", "tech_cdn"] },
+            { id: "tech_ai", name: "AI Processing", cost: 150000, desc: "Unlock AI Processors", tier: 5, icon: "fa-solid fa-brain", requires: ["tech_analyze", "tech_cluster"] },
             
-            { id: "tech_quantum", name: "Quantum Computing", cost: 30000, desc: "Unlock Quantum Core", tier: 5, icon: "fa-solid fa-atom", requires: ["tech_rack", "tech_sat"] },
-            { id: "tech_ai", name: "AI Integration", cost: 12000, desc: "Unlock AI Processor", tier: 5, icon: "fa-solid fa-brain", requires: ["tech_analyze", "tech_cdn"] },
-            { id: "tech_cluster", name: "Cluster Computing", cost: 10000, desc: "Unlock Cluster Node", tier: 5, icon: "fa-solid fa-network-wired", requires: ["tech_rack", "tech_backup"] },
-            { id: "tech_warehouse", name: "Data Warehousing", cost: 15000, desc: "Unlock Data Warehouse", tier: 5, icon: "fa-solid fa-warehouse", requires: ["tech_backup", "tech_cdn"] },
-            { id: "tech_compiler", name: "Code Compiler", cost: 12000, desc: "Unlock Auto-Compiler", tier: 5, icon: "fa-solid fa-gears", requires: ["tech_dev_station"] },
-            
-            { id: "tech_crypto_farm", name: "Crypto Mining Farm", cost: 20000, desc: "Unlock Crypto Farm", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster"] },
-            { id: "tech_neural", name: "Neural Network", cost: 25000, desc: "All nodes +50% efficiency", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
+            // Tier 6: Endgame (Very late game)
+            { id: "tech_quantum", name: "Quantum Computing", cost: 500000, desc: "Unlock Quantum Core (2.5x global speed)", tier: 6, icon: "fa-solid fa-atom", requires: ["tech_ai", "tech_cluster"] },
+            { id: "tech_crypto_farm", name: "Mining Farm", cost: 750000, desc: "Unlock Crypto Farms (massive passive income)", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster", "tech_warehouse"] },
+            { id: "tech_neural", name: "Neural Network", cost: 1000000, desc: "All nodes +50% efficiency. The ultimate upgrade.", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
         ];
 
         // ACHIEVEMENTS CONFIGURATION
@@ -1917,6 +1928,13 @@
 
         function gameLoop(time) {
             const dt = 1/60; 
+            
+            // Safety check - ensure game loop continues even with large numbers
+            if (!game || typeof game.money !== 'number') {
+                console.error('Game state corrupted, resetting...');
+                location.reload();
+                return;
+            }
             
             updateConnectivity();
             
@@ -2719,7 +2737,7 @@
                 tierCol.className = 'research-tier';
                 
                 const tierLabel = document.createElement('div');
-                tierLabel.className = 'tier-label';
+                tierLabel.className = `tier-label tier-${tier}`;
                 tierLabel.innerText = 'Tier ' + tier;
                 tierCol.appendChild(tierLabel);
                 
@@ -2971,10 +2989,17 @@
         }
 
         function exportSave() {
-            const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(game));
+            // Create a clean copy of game state for export
+            const saveData = {
+                version: GAME_VERSION,
+                timestamp: Date.now(),
+                game: JSON.parse(JSON.stringify(game))
+            };
+            const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData));
             const node = document.createElement('a');
-            node.setAttribute("href", data); node.setAttribute("download", "network_save.json");
+            node.setAttribute("href", data); node.setAttribute("download", "upload_labs_save_v" + GAME_VERSION + ".json");
             document.body.appendChild(node); node.click(); node.remove();
+            logEvent('Game saved to file', 'good');
         }
         
         function importSave(input) {
@@ -2983,44 +3008,90 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    game = data;
-                    if (!game.prestige) game.prestige = 0;
-                    if (!game.routerHeat) game.routerHeat = 0;
-                    if (!game.res.audio) game.res.audio = 0;
-                    // Ensure code system exists
-                    if (!game.codeBits) game.codeBits = 0;
-                    if (!game.optimizationCode) game.optimizationCode = 0;
-                    if (!game.drivers) game.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
-                    // Ensure stats system exists
-                    if (!game.stats) {
+                    const saveData = JSON.parse(e.target.result);
+                    
+                    // Handle both old format (direct game object) and new format (wrapped with metadata)
+                    const importedGame = saveData.game || saveData;
+                    
+                    // Validate required fields
+                    if (!importedGame || typeof importedGame.money !== 'number') {
+                        throw new Error('Invalid save data structure');
+                    }
+                    
+                    // Create a fresh game state and merge
+                    game.money = Number(importedGame.money) || 2000;
+                    game.rp = Number(importedGame.rp) || 0;
+                    game.prestige = Number(importedGame.prestige) || 0;
+                    game.routerLevel = Number(importedGame.routerLevel) || 1;
+                    game.routerHeat = Number(importedGame.routerHeat) || 0;
+                    game.overheatMode = Boolean(importedGame.overheatMode);
+                    game.nextId = Number(importedGame.nextId) || 1;
+                    
+                    // Resources - ensure all are numbers
+                    game.res = {
+                        files: Number(importedGame.res?.files) || 0,
+                        images: Number(importedGame.res?.images) || 0,
+                        videos: Number(importedGame.res?.videos) || 0,
+                        audio: Number(importedGame.res?.audio) || 0
+                    };
+                    
+                    // Arrays
+                    game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
+                    game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
+                    game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
+                    game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                    
+                    // Code system
+                    game.codeBits = Number(importedGame.codeBits) || 0;
+                    game.optimizationCode = Number(importedGame.optimizationCode) || 0;
+                    game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                    
+                    // Stats - preserve or create new
+                    if (importedGame.stats) {
                         game.stats = {
-                            totalMoney: game.money,
-                            peakMoney: game.money,
-                            moneySpent: 0,
-                            totalRP: game.rp,
-                            nodesCreated: game.nodes.length,
-                            nodesDeleted: 0,
-                            cablesPlaced: game.conns.length,
-                            upgrades: 0,
-                            contractsCompleted: 0,
-                            filesDownloaded: 0,
-                            virusesCleaned: 0,
-                            totalCodeBits: 0,
-                            totalDrivers: 0,
-                            playTime: 0,
-                            techsUnlocked: game.unlocked.length,
-                            prestigeCount: game.prestige,
+                            totalMoney: Number(importedGame.stats.totalMoney) || game.money,
+                            peakMoney: Number(importedGame.stats.peakMoney) || game.money,
+                            moneySpent: Number(importedGame.stats.moneySpent) || 0,
+                            totalRP: Number(importedGame.stats.totalRP) || game.rp,
+                            nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
+                            nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
+                            cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
+                            upgrades: Number(importedGame.stats.upgrades) || 0,
+                            contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
+                            filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
+                            virusesCleaned: Number(importedGame.stats.virusesCleaned) || 0,
+                            totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
+                            totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
+                            playTime: Number(importedGame.stats.playTime) || 0,
+                            techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
+                            prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
                             startTime: Date.now()
                         };
                     }
-                    if (!game.achievements) game.achievements = [];
-                    game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
+                    
+                    // Ensure nodes have infected property
+                    game.nodes.forEach(n => { 
+                        if (typeof n.infected === 'undefined') n.infected = false;
+                        if (typeof n.level === 'undefined') n.level = 1;
+                    });
+                    
+                    // Reset active nodes and reinitialize
+                    activeNodes.clear();
+                    selectedNode = null;
+                    
                     renderWorld(); renderResearchTree(); renderDriverGrid(); renderAchievements(); updateUI();
                     updateRouterCostDisplay();
-                    logEvent("Game Loaded");
-                } catch(err) { alert("Invalid Save File"); }
+                    
+                    const version = saveData.version ? ` (v${saveData.version})` : '';
+                    logEvent(`Game loaded successfully${version}`, 'good');
+                    showFloat('✅ Game Loaded!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                    
+                } catch(err) { 
+                    console.error('Save import error:', err);
+                    alert("Invalid Save File: " + err.message); 
+                }
             };
+            reader.onerror = () => alert("Error reading file");
             reader.readAsText(file);
         }
 
@@ -3283,46 +3354,65 @@
                 if (docSnap.exists()) {
                     const saveData = docSnap.data();
                     
-                    // Version check
-                    if (saveData.version !== GAME_VERSION) {
-                        logEvent(`Save version mismatch: ${saveData.version} vs ${GAME_VERSION}`, 'bad');
+                    // Version check (warning only)
+                    if (saveData.version && saveData.version !== GAME_VERSION) {
+                        logEvent(`Save version: ${saveData.version}`, 'info');
                     }
                     
-                    // Restore game state
+                    // Restore game state using improved loading
                     if (saveData.game) {
-                        game = saveData.game;
+                        const importedGame = saveData.game;
                         
-                        // Ensure all required fields exist
-                        if (!game.prestige) game.prestige = 0;
-                        if (!game.routerHeat) game.routerHeat = 0;
-                        if (!game.res.audio) game.res.audio = 0;
-                        if (!game.codeBits) game.codeBits = 0;
-                        if (!game.optimizationCode) game.optimizationCode = 0;
-                        if (!game.drivers) game.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
-                        if (!game.stats) {
+                        // Validate and load
+                        game.money = Number(importedGame.money) || 2000;
+                        game.rp = Number(importedGame.rp) || 0;
+                        game.prestige = Number(importedGame.prestige) || 0;
+                        game.routerLevel = Number(importedGame.routerLevel) || 1;
+                        game.routerHeat = Number(importedGame.routerHeat) || 0;
+                        game.overheatMode = Boolean(importedGame.overheatMode);
+                        
+                        game.res = {
+                            files: Number(importedGame.res?.files) || 0,
+                            images: Number(importedGame.res?.images) || 0,
+                            videos: Number(importedGame.res?.videos) || 0,
+                            audio: Number(importedGame.res?.audio) || 0
+                        };
+                        
+                        game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
+                        game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
+                        game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
+                        game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                        
+                        game.codeBits = Number(importedGame.codeBits) || 0;
+                        game.optimizationCode = Number(importedGame.optimizationCode) || 0;
+                        game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                        
+                        if (importedGame.stats) {
                             game.stats = {
-                                totalMoney: game.money,
-                                peakMoney: game.money,
-                                moneySpent: 0,
-                                totalRP: game.rp,
-                                nodesCreated: game.nodes.length,
-                                nodesDeleted: 0,
-                                cablesPlaced: game.conns.length,
-                                upgrades: 0,
-                                contractsCompleted: 0,
-                                filesDownloaded: 0,
-                                virusesCleaned: 0,
-                                totalCodeBits: 0,
-                                totalDrivers: 0,
-                                playTime: 0,
-                                techsUnlocked: game.unlocked.length,
-                                prestigeCount: game.prestige,
+                                totalMoney: Number(importedGame.stats.totalMoney) || game.money,
+                                peakMoney: Number(importedGame.stats.peakMoney) || game.money,
+                                moneySpent: Number(importedGame.stats.moneySpent) || 0,
+                                totalRP: Number(importedGame.stats.totalRP) || game.rp,
+                                nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
+                                nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
+                                cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
+                                upgrades: Number(importedGame.stats.upgrades) || 0,
+                                contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
+                                filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
+                                virusesCleaned: Number(importedGame.stats.virusesCleaned) || 0,
+                                totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
+                                totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
+                                playTime: Number(importedGame.stats.playTime) || 0,
+                                techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
+                                prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
                                 startTime: Date.now()
                             };
                         }
-                        if (!game.achievements) game.achievements = [];
                         
-                        game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
+                        game.nodes.forEach(n => { 
+                            if (typeof n.infected === 'undefined') n.infected = false;
+                            if (typeof n.level === 'undefined') n.level = 1;
+                        });
                         
                         activeNodes.clear();
                         selectedNode = null;
