@@ -619,7 +619,7 @@
         .achievement-badge { position: absolute; top: -8px; right: -8px; background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
         
         /* Event Notifications */
-        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-1000px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .event-notification.show { transform: translateX(-50%) translateY(0); }
         .event-notification.good { border-color: var(--success); }
         .event-notification.bad { border-color: var(--danger); }
@@ -689,7 +689,7 @@
     </div>
     
     <!-- Event Notification -->
-    <div class="event-notification" id="eventNotification">
+    <div class="event-notification" id="eventNotification" style="transform: translateX(-50%) translateY(-1000px); display: none;">
         <h3 id="eventTitle">Event Title</h3>
         <p id="eventDesc">Event description goes here</p>
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
@@ -1650,8 +1650,12 @@
             document.getElementById('eventDesc').innerText = event.desc;
             document.getElementById('eventEffect').innerText = event.instant ? 'Instant effect applied!' : `Duration: ${event.duration} seconds`;
             
+            notif.style.display = 'block';
             notif.className = `event-notification ${event.type} show`;
-            setTimeout(() => notif.classList.remove('show'), event.instant ? 4000 : 6000);
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.style.display = 'none', 500);
+            }, event.instant ? 4000 : 6000);
         }
 
         function updateEvents(dt) {
