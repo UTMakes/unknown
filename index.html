@@ -557,6 +557,7 @@
         .changelog-badge.balance { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
         .changelog-badge.bug { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         .changelog-badge.ui { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .changelog-badge.new { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
 
         /* Custom Scrollbar Styling */
         ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -704,6 +705,10 @@
         .cloud-save-status.error { border-color: #ef4444; color: #ef4444; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
+        /* Notification animations */
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+        
         /* Sync indicator in sidebar */
         .sync-btn { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; }
         .sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -751,7 +756,7 @@
         <div class="welcome-container">
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.1.2</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.2</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -798,15 +803,31 @@
                     
                     <!-- Changelog Section - Moved to main area -->
                     <div class="help-section" style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.1.2)</h3>
+                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.2)</h3>
                         <ul class="changelog-list">
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Daily Rewards:</strong> Login every day for increasing bonuses!</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Offline Earnings:</strong> Earn 50% income while away (up to 12 hours)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Auto-Save:</strong> Automatic local saves every minute</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Milestones:</strong> Complete objectives for big rewards</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Settings Panel:</strong> Toggle auto-save, offline earnings, notifications</span>
+                            </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge fix">Fix</span>
                                 <span>Fixed cloud save loading not working after accounts update</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge balance">Balance</span>
-                                <span>Rebalanced all node costs for longer gameplay (2-4 hours instead of 20 minutes)</span>
                             </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge balance">Balance</span>
@@ -843,7 +864,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.1.2</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.2</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -1117,6 +1138,64 @@
         </div>
     </div>
 
+    <!-- Daily Rewards Modal -->
+    <div id="dailyRewardModal" class="modal-overlay">
+        <div class="modal" style="width: 500px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 style="color:#fbbf24"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</h2>
+                <button class="btn" onclick="document.getElementById('dailyRewardModal').style.display='none'">Close</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
+                    <h3 style="color: #fbbf24; margin-bottom: 5px;">Login Streak: <span id="streakDisplay">0</span> Days</h3>
+                    <p style="color: var(--text-muted); font-size: 12px;">Come back every day for bigger rewards!</p>
+                </div>
+                
+                <div id="dailyRewardsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <!-- Generated by JS -->
+                </div>
+                
+                <button class="btn" id="claimDailyBtn" style="width: 100%; padding: 15px; font-size: 16px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; font-weight: bold;" onclick="claimDailyReward()">
+                    <i class="fa-solid fa-gift"></i> Claim Today's Reward
+                </button>
+                <p id="dailyRewardStatus" style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--text-muted);"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Earnings Modal -->
+    <div id="offlineEarningsModal" class="modal-overlay">
+        <div class="modal" style="width: 450px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 style="color:#10b981"><i class="fa-solid fa-clock"></i> Welcome Back!</h2>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div style="font-size: 64px; margin-bottom: 15px;">💤</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">You were away for</h3>
+                <p id="offlineTime" style="font-size: 24px; color: #10b981; font-weight: bold; margin-bottom: 20px;">0 hours</p>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">While you were away, your network earned:</p>
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <div style="font-size: 24px; color: #fbbf24; font-weight: bold;">+<span id="offlineMoney">$0</span></div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Money</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; color: #8b5cf6; font-weight: bold;">+<span id="offlineRP">0</span></div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Research</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;" onclick="document.getElementById('offlineEarningsModal').style.display='none'">
+                    <i class="fa-solid fa-check"></i> Collect & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Account Modal -->
     <div id="accountModal" class="modal-overlay">
         <div class="modal" style="width: 450px; max-width: 95%;">
@@ -1282,7 +1361,7 @@
     <!-- Main Game -->
     <div class="game-container">
         <div class="header">
-            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.1.2</span></div>
+            <div class="header-title"><i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.2</span></div>
             <div class="header-stats">
                 <div class="stat-box money" onclick="addMoney(event)">
                     <i class="fa-solid fa-coins stat-icon"></i>
@@ -1349,6 +1428,41 @@
                     </div>
                     <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
                         Not logged in
+                    </div>
+                </div>
+                
+                <!-- Daily Rewards Panel -->
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
+                    <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
+                        Streak: <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold;">0</span> days
+                    </div>
+                    <div class="action-row">
+                        <button class="btn" style="flex: 1; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white;" onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
+                            <i class="fa-solid fa-gift"></i> Claim Reward
+                        </button>
+                    </div>
+                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
+                        Check in daily for bonuses!
+                    </div>
+                </div>
+                
+                <!-- Settings Panel -->
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
+                    <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
+                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" style="accent-color: #3b82f6;">
+                        </label>
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-clock"></i> Offline Earnings</span>
+                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                        </label>
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-bell"></i> Notifications</span>
+                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                        </label>
                     </div>
                 </div>
 
@@ -1471,9 +1585,31 @@
 
     <script>
         // GAME VERSION - Update by 0.1 for minor, +1 for major
-        const GAME_VERSION = "10.1.2";
+        const GAME_VERSION = "10.2";
 
         // --- CONFIGURATION ---
+        
+        // DAILY REWARDS CONFIGURATION
+        const DAILY_REWARDS = [
+            { day: 1, money: 500, rp: 50, label: "Day 1: Starter Pack" },
+            { day: 2, money: 750, rp: 75, label: "Day 2: Booster" },
+            { day: 3, money: 1000, rp: 100, label: "Day 3: Data Bundle" },
+            { day: 4, money: 1500, rp: 150, label: "Day 4: Server Upgrade" },
+            { day: 5, money: 2000, rp: 200, label: "Day 5: Premium Access" },
+            { day: 6, money: 3000, rp: 300, label: "Day 6: Elite Status" },
+            { day: 7, money: 5000, rp: 500, codeBits: 500, label: "Day 7: Weekly Jackpot!" }
+        ];
+        
+        // MILESTONES CONFIGURATION
+        const MILESTONES = [
+            { id: 'first_node', name: 'First Steps', desc: 'Place your first node', check: () => game.stats.nodesCreated >= 1, reward: { money: 100 } },
+            { id: 'network_builder', name: 'Network Builder', desc: 'Have 10 nodes at once', check: () => game.nodes.length >= 10, reward: { money: 1000 } },
+            { id: 'data_empire', name: 'Data Empire', desc: 'Have 50 nodes at once', check: () => game.nodes.length >= 50, reward: { money: 10000, rp: 500 } },
+            { id: 'first_million', name: 'First Million', desc: 'Earn $1,000,000 total', check: () => game.stats.totalMoney >= 1000000, reward: { money: 100000 } },
+            { id: 'researcher', name: 'Researcher', desc: 'Unlock 10 technologies', check: () => game.unlocked.length >= 10, reward: { rp: 1000 } },
+            { id: 'connected', name: 'Fully Connected', desc: 'Have 25 cables at once', check: () => game.conns.length >= 25, reward: { money: 2500 } }
+        ];
+        
         const NODE_DEFS = {
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
             
@@ -1684,8 +1820,25 @@
             
             // EVENTS
             activeEvent: null,
-            eventTimeLeft: 0
+            eventTimeLeft: 0,
+            
+            // DAILY REWARDS
+            lastLoginDate: null,
+            loginStreak: 0,
+            dailyRewardClaimed: false,
+            
+            // MILESTONES
+            milestonesCompleted: [],
+            
+            // SETTINGS
+            autoSaveEnabled: true,
+            notificationsEnabled: true,
+            offlineEarningsEnabled: true,
+            lastSaveTime: Date.now()
         };
+
+        // Offline earnings tracking
+        let offlineEarnings = { money: 0, rp: 0, timeAway: 0 };
 
         // Event multipliers
         let eventMultipliers = { money: 1, rp: 1, code: 1, speed: 1 };
@@ -3549,8 +3702,337 @@
             }
         }
 
+        // ==================== DAILY REWARDS SYSTEM ====================
+        function checkDailyReward() {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastLogin = game.lastLoginDate;
+            
+            // First time login
+            if (!lastLogin) {
+                game.lastLoginDate = today;
+                game.loginStreak = 1;
+                game.dailyRewardClaimed = false;
+                showDailyRewardModal();
+                return;
+            }
+            
+            const lastDate = new Date(lastLogin);
+            const diffTime = now - lastDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (lastLogin !== today) {
+                if (diffDays === 1) {
+                    // Consecutive day
+                    game.loginStreak = (game.loginStreak || 0) + 1;
+                    if (game.loginStreak > 7) game.loginStreak = 1; // Reset after 7 days
+                } else {
+                    // Streak broken
+                    game.loginStreak = 1;
+                }
+                game.lastLoginDate = today;
+                game.dailyRewardClaimed = false;
+                showDailyRewardModal();
+            }
+            
+            updateSidebarStreak();
+        }
+        
+        function showDailyRewardModal() {
+            updateDailyRewardsUI();
+            document.getElementById('dailyRewardModal').style.display = 'flex';
+        }
+        
+        function updateDailyRewardsUI() {
+            const grid = document.getElementById('dailyRewardsGrid');
+            const currentStreak = game.loginStreak || 1;
+            const claimed = game.dailyRewardClaimed;
+            
+            document.getElementById('streakDisplay').innerText = currentStreak;
+            
+            const claimBtn = document.getElementById('claimDailyBtn');
+            const statusText = document.getElementById('dailyRewardStatus');
+            
+            if (claimed) {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<i class="fa-solid fa-check"></i> Already Claimed';
+                claimBtn.style.opacity = '0.5';
+                statusText.innerText = 'Come back tomorrow for your next reward!';
+            } else {
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = '<i class="fa-solid fa-gift"></i> Claim Today\'s Reward';
+                claimBtn.style.opacity = '1';
+                statusText.innerText = `Day ${currentStreak} reward ready!`;
+            }
+            
+            grid.innerHTML = DAILY_REWARDS.map((reward, index) => {
+                const day = index + 1;
+                const isCurrent = day === currentStreak;
+                const isPast = day < currentStreak;
+                const isClaimed = isCurrent && claimed;
+                
+                let style = 'background: rgba(30, 40, 55, 0.5); border: 1px solid var(--border-color);';
+                let icon = '📦';
+                
+                if (isPast || isClaimed) {
+                    style = 'background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; opacity: 0.6;';
+                    icon = '✅';
+                } else if (isCurrent) {
+                    style = 'background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);';
+                    icon = '🎁';
+                }
+                
+                return `
+                    <div style="${style} border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 20px; margin-bottom: 5px;">${icon}</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Day ${day}</div>
+                        <div style="font-size: 11px; color: #fbbf24; font-weight: bold;">$${fmt(reward.money)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function claimDailyReward() {
+            if (game.dailyRewardClaimed) return;
+            
+            const streak = game.loginStreak || 1;
+            const reward = DAILY_REWARDS[Math.min(streak - 1, DAILY_REWARDS.length - 1)];
+            
+            game.money += reward.money;
+            game.rp += reward.rp;
+            if (reward.codeBits) game.codeBits += reward.codeBits;
+            
+            game.dailyRewardClaimed = true;
+            game.stats.totalMoney += reward.money;
+            
+            updateDailyRewardsUI();
+            updateSidebarStreak();
+            updateUI();
+            
+            showFloat(`🎁 +$${fmt(reward.money)} Daily Reward!`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            logEvent(`Claimed Day ${streak} daily reward!`, 'good');
+            
+            // Auto save after claiming
+            if (game.autoSaveEnabled) autoSaveLocal();
+        }
+        
+        function updateSidebarStreak() {
+            const streakEl = document.getElementById('sidebarStreak');
+            if (streakEl) streakEl.innerText = game.loginStreak || 0;
+            
+            const statusEl = document.getElementById('dailyRewardStatus');
+            if (statusEl) {
+                if (game.dailyRewardClaimed) {
+                    statusEl.innerText = '✅ Claimed today';
+                    statusEl.style.color = '#10b981';
+                } else {
+                    statusEl.innerText = '🎁 Reward available!';
+                    statusEl.style.color = '#fbbf24';
+                }
+            }
+        }
+
+        // ==================== OFFLINE EARNINGS SYSTEM ====================
+        function checkOfflineEarnings() {
+            if (!game.offlineEarningsEnabled) return;
+            
+            const now = Date.now();
+            const lastSave = game.lastSaveTime || now;
+            const timeAway = now - lastSave;
+            
+            // Only show if away for more than 5 minutes
+            if (timeAway < 5 * 60 * 1000) return;
+            
+            // Calculate max 12 hours of offline earnings
+            const maxOfflineTime = 12 * 60 * 60 * 1000; // 12 hours
+            const effectiveTime = Math.min(timeAway, maxOfflineTime);
+            const hoursAway = effectiveTime / (1000 * 60 * 60);
+            
+            // Calculate earnings based on current income rates
+            const moneyPerSecond = history.money || 10;
+            const rpPerSecond = history.rp || 0.5;
+            
+            // Offline earnings are 50% of normal rate
+            const offlineMoney = moneyPerSecond * hoursAway * 3600 * 0.5;
+            const offlineRP = rpPerSecond * hoursAway * 3600 * 0.5;
+            
+            if (offlineMoney > 100) {
+                game.money += offlineMoney;
+                game.rp += offlineRP;
+                game.stats.totalMoney += offlineMoney;
+                
+                // Format time display
+                let timeText;
+                if (hoursAway < 1) {
+                    timeText = Math.floor(hoursAway * 60) + ' minutes';
+                } else if (hoursAway < 24) {
+                    timeText = Math.floor(hoursAway * 10) / 10 + ' hours';
+                } else {
+                    timeText = Math.floor(hoursAway / 24 * 10) / 10 + ' days';
+                }
+                
+                document.getElementById('offlineTime').innerText = timeText;
+                document.getElementById('offlineMoney').innerText = '$' + fmt(offlineMoney);
+                document.getElementById('offlineRP').innerText = fmt(offlineRP);
+                document.getElementById('offlineEarningsModal').style.display = 'flex';
+                
+                logEvent(`Offline earnings: $${fmt(offlineMoney)}`, 'good');
+            }
+        }
+
+        // ==================== AUTO-SAVE SYSTEM ====================
+        let autoSaveInterval = null;
+        
+        function startAutoSave() {
+            if (autoSaveInterval) clearInterval(autoSaveInterval);
+            
+            autoSaveInterval = setInterval(() => {
+                if (game.autoSaveEnabled) {
+                    autoSaveLocal();
+                }
+            }, 60000); // Auto-save every minute
+        }
+        
+        function autoSaveLocal() {
+            try {
+                game.lastSaveTime = Date.now();
+                const saveData = {
+                    game: JSON.parse(JSON.stringify(game)),
+                    version: GAME_VERSION,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
+                console.log('Auto-saved to localStorage');
+            } catch (e) {
+                console.error('Auto-save failed:', e);
+            }
+        }
+        
+        function loadLocalSave() {
+            try {
+                const saveData = localStorage.getItem('uploadLabsSave');
+                if (saveData) {
+                    const parsed = JSON.parse(saveData);
+                    if (parsed.game) {
+                        // Merge saved game into current game state
+                        Object.assign(game, parsed.game);
+                        // Ensure new fields exist
+                        if (!game.milestonesCompleted) game.milestonesCompleted = [];
+                        if (!game.lastLoginDate) game.lastLoginDate = null;
+                        if (!game.loginStreak) game.loginStreak = 0;
+                        if (!game.dailyRewardClaimed) game.dailyRewardClaimed = false;
+                        if (!game.settings) {
+                            game.autoSaveEnabled = true;
+                            game.notificationsEnabled = true;
+                            game.offlineEarningsEnabled = true;
+                        }
+                        logEvent('Local save loaded', 'good');
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.error('Local load failed:', e);
+            }
+            return false;
+        }
+        
+        function toggleSetting(setting, value) {
+            game[setting] = value;
+            logEvent(`${setting.replace('Enabled', '')} ${value ? 'enabled' : 'disabled'}`, 'info');
+            autoSaveLocal();
+        }
+
+        // ==================== MILESTONES SYSTEM ====================
+        function checkMilestones() {
+            MILESTONES.forEach(milestone => {
+                if (!game.milestonesCompleted.includes(milestone.id)) {
+                    if (milestone.check()) {
+                        completeMilestone(milestone);
+                    }
+                }
+            });
+        }
+        
+        function completeMilestone(milestone) {
+            game.milestonesCompleted.push(milestone.id);
+            
+            // Give rewards
+            if (milestone.reward.money) {
+                game.money += milestone.reward.money;
+                game.stats.totalMoney += milestone.reward.money;
+            }
+            if (milestone.reward.rp) {
+                game.rp += milestone.reward.rp;
+            }
+            
+            // Show notification
+            showFloat(`🏆 Milestone: ${milestone.name}!`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            logEvent(`Milestone completed: ${milestone.name}!`, 'good');
+            
+            updateUI();
+        }
+
+        // ==================== ENHANCED NOTIFICATIONS ====================
+        function showNotification(title, message, type = 'info', duration = 4000) {
+            if (!game.notificationsEnabled) return;
+            
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: ${80 + document.querySelectorAll('.game-notification').length * 70}px;
+                right: 20px;
+                background: ${type === 'good' ? 'rgba(16, 185, 129, 0.95)' : type === 'bad' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                z-index: 5000;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid rgba(255,255,255,0.5);
+            `;
+            notif.className = 'game-notification';
+            notif.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 4px;">${title}</div>
+                <div style="font-size: 12px; opacity: 0.9;">${message}</div>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, duration);
+        }
+
+        // Initialize all systems
+        function initGameSystems() {
+            // Load local save first
+            loadLocalSave();
+            
+            // Check daily rewards
+            checkDailyReward();
+            
+            // Check offline earnings (after a short delay to let game initialize)
+            setTimeout(checkOfflineEarnings, 2000);
+            
+            // Start auto-save
+            startAutoSave();
+            
+            // Update settings UI
+            document.getElementById('autoSaveToggle').checked = game.autoSaveEnabled !== false;
+            document.getElementById('offlineEarningsToggle').checked = game.offlineEarningsEnabled !== false;
+            document.getElementById('notificationsToggle').checked = game.notificationsEnabled !== false;
+            
+            // Check milestones periodically
+            setInterval(checkMilestones, 5000);
+        }
+
         // Initialize Firebase when page loads
         document.addEventListener('DOMContentLoaded', initFirebase);
+
+        // Initialize game systems
+        initGameSystems();
 
         init();
         renderResearchTree();
