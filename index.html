@@ -26,7 +26,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         
         // Firebase configuration
@@ -49,6 +49,10 @@
         window.firebaseAuth = auth;
         window.firebaseDb = db;
         window.firebaseSignInAnonymously = signInAnonymously;
+        window.firebaseCreateUser = createUserWithEmailAndPassword;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseSignOut = signOut;
+        window.firebaseUpdateProfile = updateProfile;
         window.firebaseOnAuthStateChanged = onAuthStateChanged;
         window.firebaseDoc = doc;
         window.firebaseSetDoc = setDoc;
@@ -757,9 +761,16 @@
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-user"></i></div>
+                            <div class="feature-content">
+                                <h4>NEW: Account System!</h4>
+                                <p>Create an account with email/password. Access your saves on any device!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-cloud"></i></div>
                             <div class="feature-content">
-                                <h4>NEW: Cloud Save!</h4>
+                                <h4>Cloud Save!</h4>
                                 <p>Save your progress to Firebase and play anywhere! Automatic sync every 5 minutes.</p>
                             </div>
                         </li>
@@ -1019,6 +1030,75 @@
         </div>
     </div>
 
+    <!-- Account Modal -->
+    <div id="accountModal" class="modal-overlay">
+        <div class="modal" style="width: 450px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 style="color:#3b82f6"><i class="fa-solid fa-user"></i> Account</h2>
+                <button class="btn" onclick="document.getElementById('accountModal').style.display='none'">Close</button>
+            </div>
+            <div class="modal-body">
+                <!-- Logged Out View -->
+                <div id="accountLoggedOut">
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="loginUser()">
+                            <i class="fa-solid fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">— OR —</div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="registerDisplayName" placeholder="Display Name" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="email" id="registerEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="password" id="registerPassword" placeholder="Password (min 6 chars)" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                        </div>
+                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white;" onclick="registerUser()">
+                            <i class="fa-solid fa-user-plus"></i> Create Account
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="accountLoggedIn" style="display: none;">
+                    <div class="help-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <i class="fa-solid fa-circle-check" style="font-size: 48px; color: #10b981; margin-bottom: 15px;"></i>
+                        <h3 style="color: #3b82f6; margin-bottom: 10px;">Logged In</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 5px;">Welcome back,</p>
+                        <p id="accountDisplayName" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Player</p>
+                        <p id="accountEmail" style="font-size: 12px; color: var(--text-muted);">email@example.com</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-cloud"></i> Cloud Save Status</h3>
+                        <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Your progress is automatically saved to the cloud every 5 minutes.</p>
+                        <button class="btn sync-btn" style="width: 100%; margin-bottom: 10px;" onclick="syncToCloud()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Save Now
+                        </button>
+                        <button class="btn" style="width: 100%;" onclick="loadFromCloud()">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Load from Cloud
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;" onclick="logoutUser()">
+                            <i class="fa-solid fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="accountError" style="display: none; margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 6px; color: #ef4444; font-size: 12px;"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="helpModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -1052,7 +1132,18 @@
                         <li><span class="key">A</span> to open Achievements</li>
                         <li><span class="key">S</span> to open Statistics</li>
                         <li><span class="key">P</span> to open Prestige/Migration</li>
+                        <li><span class="key">L</span> to open Account/Login</li>
                         <li><span class="key">ESC</span> to close all modals</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-user"></i> Account System</h3>
+                    <ul class="instructions-list">
+                        <li><strong>Create an account</strong> to save your progress to the cloud</li>
+                        <li><strong>Login</strong> on any device to access your saves</li>
+                        <li><strong>Auto-save</strong> every 5 minutes when logged in</li>
+                        <li><strong>Manual save/load</strong> available in Account panel</li>
+                        <li>Your save is linked to your email address</li>
                     </ul>
                 </div>
                 <div class="help-section">
@@ -1158,22 +1249,19 @@
                     </button>
                 </div>
                 
-                <!-- Cloud Sync Panel -->
+                <!-- Account Panel -->
                 <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
-                    <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-cloud"></i> Cloud Sync</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-                        Save your progress to the cloud and play anywhere!
+                    <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
+                        Login to save your progress to the cloud!
                     </div>
                     <div class="action-row">
-                        <button class="btn sync-btn" id="cloudSyncBtn" onclick="syncToCloud()">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud
-                        </button>
-                        <button class="btn" id="cloudLoadBtn" onclick="loadFromCloud()">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> Load
+                        <button class="btn sync-btn" style="flex: 1;" onclick="document.getElementById('accountModal').style.display='flex'">
+                            <i class="fa-solid fa-user" id="accountIcon"></i> <span id="accountBtnText">Login / Register</span>
                         </button>
                     </div>
-                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="lastSyncTime">
-                        Never synced
+                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
+                        Not logged in
                     </div>
                 </div>
 
@@ -2804,6 +2892,7 @@
                 else if (e.key === 'a' || e.key === 'A') document.getElementById('achievementsModal').style.display='flex';
                 else if (e.key === 's' || e.key === 'S') document.getElementById('statsModal').style.display='flex';
                 else if (e.key === 'p' || e.key === 'P') document.getElementById('prestigeModal').style.display='flex';
+                else if (e.key === 'l' || e.key === 'L') document.getElementById('accountModal').style.display='flex';
                 else if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
                 }
@@ -2935,7 +3024,7 @@
             reader.readAsText(file);
         }
 
-        // ==================== FIREBASE CLOUD SAVE ====================
+        // ==================== FIREBASE ACCOUNT SYSTEM ====================
         let currentUser = null;
         let cloudSaveEnabled = false;
         let autoSyncInterval = null;
@@ -2951,17 +3040,15 @@
                 }
                 
                 const auth = window.firebaseAuth;
-                const signInAnonymously = window.firebaseSignInAnonymously;
                 const onAuthStateChanged = window.firebaseOnAuthStateChanged;
                 
-                // Sign in anonymously
-                await signInAnonymously(auth);
-                
+                // Listen for auth state changes
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         currentUser = user;
                         cloudSaveEnabled = true;
                         updateCloudSaveStatus('online', 'Cloud Save Active');
+                        updateAccountUI(user);
                         logEvent('Cloud save connected');
                         
                         // Try to load saved game
@@ -2970,16 +3057,170 @@
                         // Set up auto-sync every 5 minutes
                         if (autoSyncInterval) clearInterval(autoSyncInterval);
                         autoSyncInterval = setInterval(() => {
-                            if (cloudSaveEnabled) syncToCloud();
+                            if (cloudSaveEnabled && currentUser) syncToCloud();
                         }, 300000); // 5 minutes
                     } else {
+                        currentUser = null;
                         cloudSaveEnabled = false;
                         updateCloudSaveStatus('offline', 'Offline');
+                        updateAccountUI(null);
                     }
                 });
             } catch (error) {
                 console.error('Firebase init error:', error);
                 updateCloudSaveStatus('error', 'Cloud Save Error');
+            }
+        }
+
+        // Update account UI based on login state
+        function updateAccountUI(user) {
+            const loggedOutView = document.getElementById('accountLoggedOut');
+            const loggedInView = document.getElementById('accountLoggedIn');
+            const panelText = document.getElementById('accountPanelText');
+            const btnText = document.getElementById('accountBtnText');
+            const icon = document.getElementById('accountIcon');
+            const status = document.getElementById('accountStatus');
+            
+            if (user) {
+                // User is logged in
+                if (loggedOutView) loggedOutView.style.display = 'none';
+                if (loggedInView) loggedInView.style.display = 'block';
+                
+                if (panelText) panelText.innerText = 'Your progress is saved to the cloud!';
+                if (btnText) btnText.innerText = 'Account';
+                if (icon) icon.className = 'fa-solid fa-user-check';
+                if (status) status.innerText = 'Logged in as ' + (user.displayName || user.email);
+                
+                // Update account modal info
+                const displayNameEl = document.getElementById('accountDisplayName');
+                const emailEl = document.getElementById('accountEmail');
+                if (displayNameEl) displayNameEl.innerText = user.displayName || 'Player';
+                if (emailEl) emailEl.innerText = user.email;
+            } else {
+                // User is logged out
+                if (loggedOutView) loggedOutView.style.display = 'block';
+                if (loggedInView) loggedInView.style.display = 'none';
+                
+                if (panelText) panelText.innerText = 'Login to save your progress to the cloud!';
+                if (btnText) btnText.innerText = 'Login / Register';
+                if (icon) icon.className = 'fa-solid fa-user';
+                if (status) status.innerText = 'Not logged in';
+            }
+        }
+
+        // Register new user
+        async function registerUser() {
+            const displayName = document.getElementById('registerDisplayName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('accountError');
+            
+            if (!displayName || !email || !password) {
+                showAccountError('Please fill in all fields');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAccountError('Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                const auth = window.firebaseAuth;
+                const createUser = window.firebaseCreateUser;
+                const updateProfile = window.firebaseUpdateProfile;
+                
+                const userCredential = await createUser(auth, email, password);
+                const user = userCredential.user;
+                
+                // Set display name
+                await updateProfile(user, { displayName: displayName });
+                
+                // Save initial game data
+                await syncToCloud();
+                
+                showAccountError('');
+                logEvent('Account created successfully!', 'good');
+                showFloat('✅ Account Created!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                let message = 'Registration failed';
+                if (error.code === 'auth/email-already-in-use') message = 'Email already in use';
+                if (error.code === 'auth/invalid-email') message = 'Invalid email address';
+                if (error.code === 'auth/weak-password') message = 'Password is too weak';
+                showAccountError(message);
+            }
+        }
+
+        // Login existing user
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('accountError');
+            
+            if (!email || !password) {
+                showAccountError('Please enter email and password');
+                return;
+            }
+            
+            try {
+                const auth = window.firebaseAuth;
+                const signIn = window.firebaseSignIn;
+                
+                await signIn(auth, email, password);
+                
+                showAccountError('');
+                logEvent('Logged in successfully!', 'good');
+                showFloat('✅ Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                
+                // Load cloud save
+                await loadFromCloud();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                let message = 'Login failed';
+                if (error.code === 'auth/user-not-found') message = 'User not found';
+                if (error.code === 'auth/wrong-password') message = 'Incorrect password';
+                if (error.code === 'auth/invalid-email') message = 'Invalid email address';
+                if (error.code === 'auth/invalid-credential') message = 'Invalid email or password';
+                showAccountError(message);
+            }
+        }
+
+        // Logout user
+        async function logoutUser() {
+            try {
+                const auth = window.firebaseAuth;
+                const signOut = window.firebaseSignOut;
+                
+                await signOut(auth);
+                
+                // Clear auto-sync
+                if (autoSyncInterval) {
+                    clearInterval(autoSyncInterval);
+                    autoSyncInterval = null;
+                }
+                
+                logEvent('Logged out', 'info');
+                showFloat('👋 Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                showAccountError('Logout failed');
+            }
+        }
+
+        // Show account error
+        function showAccountError(message) {
+            const errorDiv = document.getElementById('accountError');
+            if (errorDiv) {
+                if (message) {
+                    errorDiv.innerText = message;
+                    errorDiv.style.display = 'block';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
             }
         }
 
