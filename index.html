@@ -1462,129 +1462,107 @@
 
         <div class="sidebar">
             <!-- System Controls Panel -->
-            <div class="panel backdrop-blur-md bg-slate-800/90 border border-slate-600 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
-                <div class="panel-title flex items-center gap-2">
-                    <i class="fa-solid fa-gamepad text-cyan-400"></i> 
-                    <span class="font-semibold tracking-wide">System Controls</span>
+            <div class="panel" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border-color: rgba(71, 85, 105, 0.5);">
+                <div class="panel-title" style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-gamepad" style="color: #22d3ee;"></i> 
+                    <span style="font-weight: 600; letter-spacing: 0.025em;">System Controls</span>
                 </div>
-                <div class="space-y-2">
-                    <div class="action-row">
-                        <button class="btn btn-research group relative overflow-hidden transition-all hover:scale-105" onclick="document.getElementById('researchModal').style.display='flex'">
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-flask group-hover:animate-bounce"></i> Research
-                            </span>
+                <div class="action-row">
+                        <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
+                            <i class="fa-solid fa-flask"></i> Research
                         </button>
-                        <button class="btn btn-code group relative overflow-hidden transition-all hover:scale-105" onclick="document.getElementById('codeModal').style.display='flex'">
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-terminal"></i> Code
-                            </span>
+                        <button class="btn btn-code" onclick="document.getElementById('codeModal').style.display='flex'">
+                            <i class="fa-solid fa-terminal"></i> Code
                         </button>
-                        <button class="btn btn-contract group relative overflow-hidden transition-all hover:scale-105" onclick="openContracts()">
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-file-contract"></i> Contracts
-                            </span>
+                        <button class="btn btn-contract" onclick="openContracts()">
+                            <i class="fa-solid fa-file-contract"></i> Contracts
                         </button>
                     </div>
                     <div class="action-row">
-                        <button class="btn relative overflow-hidden transition-all hover:scale-105 active:scale-95" 
-                                id="cableDeleteBtn" 
-                                onclick="toggleCableDeleteMode()" 
-                                style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                            <span class="flex items-center gap-2">
-                                <i class="fa-solid fa-scissors"></i> 
-                                <span id="cableDeleteText">Delete Cables</span>
-                            </span>
+                        <button class="btn" id="cableDeleteBtn" onclick="toggleCableDeleteMode()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                            <i class="fa-solid fa-scissors"></i> <span id="cableDeleteText">Delete Cables</span>
                         </button>
-                        <button class="btn transition-all hover:scale-105 active:scale-95" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+                        <button class="btn" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
                             <i class="fa-solid fa-trash"></i> Clear All
                         </button>
                     </div>
                     <div class="action-row">
-                        <button class="btn btn-help transition-all hover:scale-105" onclick="document.getElementById('helpModal').style.display='flex'">
+                        <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='flex'">
                             <i class="fa-solid fa-question"></i> Help
                         </button>
-                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('achievementsModal').style.display='flex'">
-                            <i class="fa-solid fa-trophy text-amber-400"></i> Achievements
+                        <button class="btn" onclick="document.getElementById('achievementsModal').style.display='flex'">
+                            <i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> Achievements
                         </button>
-                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('statsModal').style.display='flex'">
-                            <i class="fa-solid fa-chart-line text-cyan-400"></i> Stats
+                        <button class="btn" onclick="document.getElementById('statsModal').style.display='flex'">
+                            <i class="fa-solid fa-chart-line" style="color: #22d3ee;"></i> Stats
                         </button>
                     </div>
                     <div class="action-row">
-                        <button class="btn transition-all hover:scale-105" onclick="exportSave()">
-                            <i class="fa-solid fa-download text-emerald-400"></i> Save
+                        <button class="btn" onclick="exportSave()">
+                            <i class="fa-solid fa-download" style="color: #10b981;"></i> Save
                         </button>
-                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('importFile').click()">
-                            <i class="fa-solid fa-upload text-blue-400"></i> Load
+                        <button class="btn" onclick="document.getElementById('importFile').click()">
+                            <i class="fa-solid fa-upload" style="color: #3b82f6;"></i> Load
                         </button>
-                        <button class="btn prestige-btn transition-all hover:scale-105" onclick="document.getElementById('prestigeModal').style.display='flex'">
+                        <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
                             <i class="fa-solid fa-rotate"></i> Migrate
                         </button>
                     </div>
                 </div>
-                
-                <!-- Account Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/30 rounded-xl backdrop-blur-sm">
-                    <div class="panel-title text-blue-400 flex items-center gap-2">
-                        <i class="fa-solid fa-user"></i> Account
-                    </div>
-                    <div class="text-[10px] text-slate-400 mb-2" id="accountPanelText">
-                        Login to save your progress to the cloud!
-                    </div>
-                    <div class="action-row">
-                        <button class="btn w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white shadow-lg shadow-blue-500/25 transition-all hover:scale-105" 
-                                onclick="document.getElementById('accountModal').style.display='flex'">
-                            <i class="fa-solid fa-user" id="accountIcon"></i> 
-                            <span id="accountBtnText">Login / Register</span>
-                        </button>
-                    </div>
-                    <div class="text-[9px] text-slate-500 mt-2 text-center" id="accountStatus">Not logged in</div>
+            </div>
+            
+            <!-- Account Panel -->
+            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
+                <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
+                    Login to save your progress to the cloud!
                 </div>
+                <div class="action-row">
+                    <button class="btn sync-btn" style="flex: 1;" onclick="document.getElementById('accountModal').style.display='flex'">
+                        <i class="fa-solid fa-user" id="accountIcon"></i> <span id="accountBtnText">Login / Register</span>
+                    </button>
+                </div>
+                <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
+                    Not logged in
+                </div>
+            </div>
                 
                 <!-- Daily Rewards Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-xl backdrop-blur-sm">
-                    <div class="panel-title text-amber-400 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check"></i> Daily Rewards
-                    </div>
-                    <div class="text-[10px] text-slate-400 mb-2">
-                        Streak: <span id="sidebarStreak" class="text-amber-400 font-bold text-lg">0</span> days 🔥
-                    </div>
-                    <div class="action-row">
-                        <button class="btn w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-white shadow-lg shadow-amber-500/25 transition-all hover:scale-105" 
-                                onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
-                            <i class="fa-solid fa-gift"></i> Claim Reward
-                        </button>
-                    </div>
-                    <div class="text-[9px] text-slate-500 mt-2 text-center" id="dailyRewardStatus">
-                        Check in daily for bonuses!
+            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
+                <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
+                    Streak: <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold;">0</span> days
+                </div>
+                <div class="action-row">
+                    <button class="btn" style="flex: 1; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white;" onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
+                        <i class="fa-solid fa-gift"></i> Claim Reward
+                    </button>
+                </div>
+                <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
+                    Check in daily for bonuses!
                     </div>
                 </div>
                 
                 <!-- Settings Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-slate-500/10 to-slate-600/5 border border-slate-500/30 rounded-xl backdrop-blur-sm">
-                    <div class="panel-title text-slate-400 flex items-center gap-2">
-                        <i class="fa-solid fa-gear"></i> Settings
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-floppy-disk text-blue-400"></i> Auto-Save</span>
-                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" 
-                                   class="w-4 h-4 accent-blue-500 rounded cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-clock text-purple-400"></i> Offline Earnings</span>
-                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" 
-                                   class="w-4 h-4 accent-purple-500 rounded cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-bell text-amber-400"></i> Notifications</span>
-                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" 
-                                   class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
-                        </label>
-                    </div>
+            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
+                <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                        <span><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
+                        <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" style="accent-color: #3b82f6;">
+                    </label>
+                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                        <span><i class="fa-solid fa-clock"></i> Offline Earnings</span>
+                        <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                    </label>
+                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                        <span><i class="fa-solid fa-bell"></i> Notifications</span>
+                        <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                    </label>
                 </div>
+            </div>
 
-                <div class="contract-widget" id="activeContractWidget">
+            <div class="contract-widget" id="activeContractWidget">
                     <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
                         Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
                     </div>
@@ -1592,14 +1570,13 @@
                     <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
                 </div>
                 
-                <!-- Active Event Widget -->
-                <div class="contract-widget" id="activeEventWidget" style="display:none; border-color: var(--accent-color);">
-                    <div style="font-size:12px; font-weight:bold; color:var(--accent-color); margin-bottom:5px;">
-                        <i class="fa-solid fa-bolt"></i> <span id="eventName">Event Name</span>
-                        <span class="contract-timer" id="eventTimer">00:00</span>
-                    </div>
-                    <div style="font-size:11px; color:#d1d5db;" id="eventDesc">Event description</div>
+            <!-- Active Event Widget -->
+            <div class="contract-widget" id="activeEventWidget" style="display:none; border-color: var(--accent-color);">
+                <div style="font-size:12px; font-weight:bold; color:var(--accent-color); margin-bottom:5px;">
+                    <i class="fa-solid fa-bolt"></i> <span id="eventName">Event Name</span>
+                    <span class="contract-timer" id="eventTimer">00:00</span>
                 </div>
+                <div style="font-size:11px; color:#d1d5db;" id="eventDesc">Event description</div>
             </div>
 
             <!-- Code Panel -->
