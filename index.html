@@ -860,6 +860,22 @@
                         <ul class="changelog-list">
                             <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
+                                <span><strong>Cable Deletion:</strong> Press X or click "Delete Cables" to remove connections ($5 refund)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge ui">UI</span>
+                                <span><strong>Enhanced UI:</strong> Beautiful gradients, smooth animations, hover effects</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Smooth Rates:</strong> Money/RP rates now update smoothly every frame</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Compiler Upgrades:</strong> Compiler nodes now properly benefit from level upgrades</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
                                 <span><strong>Daily Rewards:</strong> Login every day for increasing bonuses!</span>
                             </li>
                             <li class="changelog-item">
@@ -922,9 +938,16 @@
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="feature-content">
+                                <h4>NEW: Cable Deletion!</h4>
+                                <p>Press X or click "Delete Cables" to remove connections. Get $5 refund per cable!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-user"></i></div>
                             <div class="feature-content">
-                                <h4>NEW: Account System!</h4>
+                                <h4>Account System!</h4>
                                 <p>Create an account with email/password. Access your saves on any device!</p>
                             </div>
                         </li>
@@ -1416,116 +1439,147 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.3</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v10.3</span>
             </div>
             <div class="header-stats">
-                <div class="stat-box money" onclick="addMoney(event)">
-                    <i class="fa-solid fa-coins stat-icon"></i>
-                    <div class="stat-value" id="moneyDisplay">$0</div>
-                    <div class="stat-rate" id="moneyRate">+$0/s</div>
+                <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">
+                    <i class="fa-solid fa-coins stat-icon text-emerald-400"></i>
+                    <div class="stat-value text-emerald-400 font-mono" id="moneyDisplay">$0</div>
+                    <div class="stat-rate text-emerald-500/70 font-mono text-xs" id="moneyRate">+$0/s</div>
                 </div>
-                <div class="stat-box research" onclick="document.getElementById('researchModal').style.display='flex'">
-                    <i class="fa-solid fa-flask stat-icon"></i>
-                    <div class="stat-value" id="rpDisplay">0 RP</div>
-                    <div class="stat-rate" id="rpRate">+0/s</div>
+                <div class="stat-box research group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('researchModal').style.display='flex'">
+                    <i class="fa-solid fa-flask stat-icon text-purple-400"></i>
+                    <div class="stat-value text-purple-400 font-mono" id="rpDisplay">0 RP</div>
+                    <div class="stat-rate text-purple-500/70 font-mono text-xs" id="rpRate">+0/s</div>
                 </div>
-                <div class="stat-box code" onclick="document.getElementById('codeModal').style.display='flex'">
-                    <i class="fa-solid fa-terminal stat-icon"></i>
-                    <div class="stat-value" id="codeDisplay">0</div>
-                    <div class="stat-rate">Code Bits</div>
+                <div class="stat-box code group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('codeModal').style.display='flex'">
+                    <i class="fa-solid fa-terminal stat-icon text-cyan-400"></i>
+                    <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">0</div>
+                    <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
                 </div>
             </div>
         </div>
 
         <div class="sidebar">
-            <div class="panel">
-                <div class="panel-title">System Controls</div>
-                <div class="action-row">
-                    <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
-                        <i class="fa-solid fa-flask"></i> Research
-                    </button>
-                    <button class="btn btn-code" onclick="document.getElementById('codeModal').style.display='flex'">
-                        <i class="fa-solid fa-terminal"></i> Code
-                    </button>
-                    <button class="btn btn-contract" onclick="openContracts()">
-                        <i class="fa-solid fa-file-contract"></i> Contracts
-                    </button>
+            <!-- System Controls Panel -->
+            <div class="panel backdrop-blur-md bg-slate-800/90 border border-slate-600 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
+                <div class="panel-title flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-cyan-400"></i> 
+                    <span class="font-semibold tracking-wide">System Controls</span>
                 </div>
-                <div class="action-row">
-                    <button class="btn" id="cableDeleteBtn" onclick="toggleCableDeleteMode()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                        <i class="fa-solid fa-scissors"></i> <span id="cableDeleteText">Delete Cables</span>
-                    </button>
-                    <button class="btn" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
-                        <i class="fa-solid fa-trash"></i> Clear All
-                    </button>
-                </div>
-                <div class="action-row">
-                    <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='flex'">
-                        <i class="fa-solid fa-question"></i> Help
-                    </button>
-                    <button class="btn" onclick="document.getElementById('achievementsModal').style.display='flex'">
-                        <i class="fa-solid fa-trophy"></i> Achievements
-                    </button>
-                    <button class="btn" onclick="document.getElementById('statsModal').style.display='flex'">
-                        <i class="fa-solid fa-chart-line"></i> Stats
-                    </button>
-                </div>
-                <div class="action-row">
-                    <button class="btn" onclick="exportSave()"><i class="fa-solid fa-download"></i> Save</button>
-                    <button class="btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Load</button>
-                    <input type="file" id="importFile" style="display:none" onchange="importSave(this)">
-                    <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
-                        <i class="fa-solid fa-rotate"></i> Migrate
-                    </button>
+                <div class="space-y-2">
+                    <div class="action-row">
+                        <button class="btn btn-research group relative overflow-hidden transition-all hover:scale-105" onclick="document.getElementById('researchModal').style.display='flex'">
+                            <span class="relative flex items-center gap-2">
+                                <i class="fa-solid fa-flask group-hover:animate-bounce"></i> Research
+                            </span>
+                        </button>
+                        <button class="btn btn-code group relative overflow-hidden transition-all hover:scale-105" onclick="document.getElementById('codeModal').style.display='flex'">
+                            <span class="relative flex items-center gap-2">
+                                <i class="fa-solid fa-terminal"></i> Code
+                            </span>
+                        </button>
+                        <button class="btn btn-contract group relative overflow-hidden transition-all hover:scale-105" onclick="openContracts()">
+                            <span class="relative flex items-center gap-2">
+                                <i class="fa-solid fa-file-contract"></i> Contracts
+                            </span>
+                        </button>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn relative overflow-hidden transition-all hover:scale-105 active:scale-95" 
+                                id="cableDeleteBtn" 
+                                onclick="toggleCableDeleteMode()" 
+                                style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-scissors"></i> 
+                                <span id="cableDeleteText">Delete Cables</span>
+                            </span>
+                        </button>
+                        <button class="btn transition-all hover:scale-105 active:scale-95" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+                            <i class="fa-solid fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn btn-help transition-all hover:scale-105" onclick="document.getElementById('helpModal').style.display='flex'">
+                            <i class="fa-solid fa-question"></i> Help
+                        </button>
+                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('achievementsModal').style.display='flex'">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Achievements
+                        </button>
+                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('statsModal').style.display='flex'">
+                            <i class="fa-solid fa-chart-line text-cyan-400"></i> Stats
+                        </button>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn transition-all hover:scale-105" onclick="exportSave()">
+                            <i class="fa-solid fa-download text-emerald-400"></i> Save
+                        </button>
+                        <button class="btn transition-all hover:scale-105" onclick="document.getElementById('importFile').click()">
+                            <i class="fa-solid fa-upload text-blue-400"></i> Load
+                        </button>
+                        <button class="btn prestige-btn transition-all hover:scale-105" onclick="document.getElementById('prestigeModal').style.display='flex'">
+                            <i class="fa-solid fa-rotate"></i> Migrate
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Account Panel -->
-                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
-                    <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
+                <div class="panel mt-3 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/30 rounded-xl backdrop-blur-sm">
+                    <div class="panel-title text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-user"></i> Account
+                    </div>
+                    <div class="text-[10px] text-slate-400 mb-2" id="accountPanelText">
                         Login to save your progress to the cloud!
                     </div>
                     <div class="action-row">
-                        <button class="btn sync-btn" style="flex: 1;" onclick="document.getElementById('accountModal').style.display='flex'">
-                            <i class="fa-solid fa-user" id="accountIcon"></i> <span id="accountBtnText">Login / Register</span>
+                        <button class="btn w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white shadow-lg shadow-blue-500/25 transition-all hover:scale-105" 
+                                onclick="document.getElementById('accountModal').style.display='flex'">
+                            <i class="fa-solid fa-user" id="accountIcon"></i> 
+                            <span id="accountBtnText">Login / Register</span>
                         </button>
                     </div>
-                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
-                        Not logged in
-                    </div>
+                    <div class="text-[9px] text-slate-500 mt-2 text-center" id="accountStatus">Not logged in</div>
                 </div>
                 
                 <!-- Daily Rewards Panel -->
-                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
-                    <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
-                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-                        Streak: <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold;">0</span> days
+                <div class="panel mt-3 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-xl backdrop-blur-sm">
+                    <div class="panel-title text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check"></i> Daily Rewards
+                    </div>
+                    <div class="text-[10px] text-slate-400 mb-2">
+                        Streak: <span id="sidebarStreak" class="text-amber-400 font-bold text-lg">0</span> days 🔥
                     </div>
                     <div class="action-row">
-                        <button class="btn" style="flex: 1; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white;" onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
+                        <button class="btn w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-white shadow-lg shadow-amber-500/25 transition-all hover:scale-105" 
+                                onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
                             <i class="fa-solid fa-gift"></i> Claim Reward
                         </button>
                     </div>
-                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
+                    <div class="text-[9px] text-slate-500 mt-2 text-center" id="dailyRewardStatus">
                         Check in daily for bonuses!
                     </div>
                 </div>
                 
                 <!-- Settings Panel -->
-                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
-                    <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                            <span><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
-                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" style="accent-color: #3b82f6;">
+                <div class="panel mt-3 bg-gradient-to-br from-slate-500/10 to-slate-600/5 border border-slate-500/30 rounded-xl backdrop-blur-sm">
+                    <div class="panel-title text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-gear"></i> Settings
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-floppy-disk text-blue-400"></i> Auto-Save</span>
+                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" 
+                                   class="w-4 h-4 accent-blue-500 rounded cursor-pointer">
                         </label>
-                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                            <span><i class="fa-solid fa-clock"></i> Offline Earnings</span>
-                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-clock text-purple-400"></i> Offline Earnings</span>
+                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" 
+                                   class="w-4 h-4 accent-purple-500 rounded cursor-pointer">
                         </label>
-                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                            <span><i class="fa-solid fa-bell"></i> Notifications</span>
-                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" style="accent-color: #3b82f6;">
+                        <label class="flex items-center justify-between text-[11px] text-slate-400 cursor-pointer hover:text-slate-300 transition-colors p-1 rounded hover:bg-white/5">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-bell text-amber-400"></i> Notifications</span>
+                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" 
+                                   class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
                         </label>
                     </div>
                 </div>
@@ -1910,6 +1964,8 @@
         let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
         let activeNodes = new Set();
         let history = { money: 0, rp: 0 };
+        let rateHistory = { money: [], rp: [] };
+        const RATE_WINDOW = 60; // 1 second at 60fps
         let activeContract = null; 
         
         // --- ZOOM FUNCTIONS ---
@@ -2308,9 +2364,10 @@
             game.codeBits += bitsGenerated;
             game.stats.totalCodeBits += bitsGenerated;
             
-            // Auto-compiler
+            // Auto-compiler - benefits from level (more conversion capacity per level)
             if (compilers.length > 0 && game.codeBits >= 100) {
-                const toConvert = Math.min(Math.floor(game.codeBits / 100), compilers.length * 10);
+                const totalCompilerPower = compilers.reduce((sum, c) => sum + Math.pow(1.2, c.level - 1), 0);
+                const toConvert = Math.min(Math.floor(game.codeBits / 100), Math.floor(totalCompilerPower * 10));
                 if (toConvert > 0) {
                     game.codeBits -= toConvert * 100;
                     game.optimizationCode += toConvert;
@@ -2507,6 +2564,18 @@
             updateCombo(dt);
             updateStatistics();
             updatePrestigeUI();
+            
+            // Calculate rolling average rates
+            rateHistory.money.push(history.money);
+            rateHistory.rp.push(history.rp);
+            if (rateHistory.money.length > RATE_WINDOW) rateHistory.money.shift();
+            if (rateHistory.rp.length > RATE_WINDOW) rateHistory.rp.shift();
+            
+            // Update rate displays every frame for smoothness
+            const avgMoneyRate = rateHistory.money.reduce((a, b) => a + b, 0) / rateHistory.money.length * 60;
+            const avgRpRate = rateHistory.rp.reduce((a, b) => a + b, 0) / rateHistory.rp.length * 60;
+            document.getElementById('moneyRate').innerText = `+$${fmt(avgMoneyRate)}/s`;
+            document.getElementById('rpRate').innerText = `+${fmt(avgRpRate)}/s`;
 
             updateUI(efficiency);
             requestAnimationFrame(gameLoop);
@@ -2538,8 +2607,7 @@
         }
 
         function secLoop() {
-            document.getElementById('moneyRate').innerText = `+$${fmt(history.money)}/s`;
-            document.getElementById('rpRate').innerText = `+${fmt(history.rp)}/s`;
+            // Reset history accumulator (rates are now calculated from rolling window in gameLoop)
             history = { money: 0, rp: 0 };
         }
         
