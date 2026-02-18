@@ -3,8 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Upload Labs: Network Empire - A cyberpunk network management idle game. Build your data empire, research technologies, and optimize your network!">
+    <meta name="theme-color" content="#0a0e14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Upload Labs: Network Empire">
+    <meta property="og:description" content="A cyberpunk network management idle game. Build your data empire!">
+    <meta property="og:site_name" content="Upload Labs">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Upload Labs: Network Empire">
+    <meta name="twitter:description" content="A cyberpunk network management idle game. Build your data empire!">
+    
     <title>Upload Labs: Network Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
+            authDomain: "upload-labs-game-d874a.firebaseapp.com",
+            projectId: "upload-labs-game-d874a",
+            storageBucket: "upload-labs-game-d874a.firebasestorage.app",
+            messagingSenderId: "642883299920",
+            appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Make available globally
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseSignInAnonymously = signInAnonymously;
+        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseOnSnapshot = onSnapshot;
+    </script>
+    
+    <!-- Vercel Speed Insights -->
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     <style>
         :root {
             --bg-color: #0a0e14;
@@ -520,7 +582,7 @@
             transition: all 0.2s;
         }
         .driver-card:hover:not(.locked) { border-color: var(--code); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2); }
-        .driver-card.locked { opacity: 0.5; cursor: not-allowed; background: rgba(30, 40, 50, 0.5); border-color: #4a5568; }
+        .driver-card.locked { opacity: 0.5; cursor: not-allowed; }
         .driver-card.installed { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); }
         .driver-icon { font-size: 20px; color: var(--code); margin-bottom: 5px; }
         .driver-name { font-size: 11px; font-weight: bold; color: #fff; }
@@ -557,7 +619,7 @@
         .achievement-badge { position: absolute; top: -8px; right: -8px; background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
         
         /* Event Notifications */
-        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; }
+        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .event-notification.show { transform: translateX(-50%) translateY(0); }
         .event-notification.good { border-color: var(--success); }
         .event-notification.bad { border-color: var(--danger); }
@@ -586,6 +648,17 @@
         /* Prestige Button */
         .prestige-btn { background: linear-gradient(135deg, #7c3aed, #db2777) !important; color: white !important; font-weight: bold; animation: prestige-pulse 2s infinite; }
         @keyframes prestige-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 50% { box-shadow: 0 0 20px 5px rgba(124, 58, 237, 0.2); } }
+        
+        /* Cloud Save Status */
+        .cloud-save-status { position: fixed; top: 20px; left: 20px; background: rgba(20, 26, 35, 0.95); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 20px; font-size: 11px; color: var(--text-muted); z-index: 2500; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .cloud-save-status.online { border-color: #10b981; color: #10b981; }
+        .cloud-save-status.syncing { border-color: #f59e0b; color: #f59e0b; animation: pulse 1s infinite; }
+        .cloud-save-status.error { border-color: #ef4444; color: #ef4444; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Sync indicator in sidebar */
+        .sync-btn { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; }
+        .sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -599,6 +672,12 @@
 
     <div class="event-log" id="eventLog"></div>
     
+    <!-- Cloud Save Status -->
+    <div class="cloud-save-status" id="cloudSaveStatus">
+        <i class="fa-solid fa-cloud"></i>
+        <span id="cloudSaveText">Offline</span>
+    </div>
+    
     <!-- Achievement Popup -->
     <div class="achievement-popup" id="achievementPopup">
         <div class="achievement-badge"><i class="fa-solid fa-trophy"></i></div>
@@ -610,7 +689,7 @@
     </div>
     
     <!-- Event Notification -->
-    <div class="event-notification" id="eventNotification" style="display: none;">
+    <div class="event-notification" id="eventNotification">
         <h3 id="eventTitle">Event Title</h3>
         <p id="eventDesc">Event description goes here</p>
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
@@ -677,6 +756,13 @@
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-cloud"></i></div>
+                            <div class="feature-content">
+                                <h4>NEW: Cloud Save!</h4>
+                                <p>Save your progress to Firebase and play anywhere! Automatic sync every 5 minutes.</p>
+                            </div>
+                        </li>
                         <li class="feature-item">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-trophy"></i></div>
                             <div class="feature-content">
@@ -1070,6 +1156,25 @@
                     <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
                         <i class="fa-solid fa-rotate"></i> Migrate
                     </button>
+                </div>
+                
+                <!-- Cloud Sync Panel -->
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
+                    <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-cloud"></i> Cloud Sync</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
+                        Save your progress to the cloud and play anywhere!
+                    </div>
+                    <div class="action-row">
+                        <button class="btn sync-btn" id="cloudSyncBtn" onclick="syncToCloud()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud
+                        </button>
+                        <button class="btn" id="cloudLoadBtn" onclick="loadFromCloud()">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Load
+                        </button>
+                    </div>
+                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="lastSyncTime">
+                        Never synced
+                    </div>
                 </div>
 
                 <div class="contract-widget" id="activeContractWidget">
@@ -1545,18 +1650,8 @@
             document.getElementById('eventDesc').innerText = event.desc;
             document.getElementById('eventEffect').innerText = event.instant ? 'Instant effect applied!' : `Duration: ${event.duration} seconds`;
             
-            notif.style.display = 'block';
             notif.className = `event-notification ${event.type} show`;
-            
-            // Clear any existing timeout to prevent early closing
-            if (notif.hideTimeout) clearTimeout(notif.hideTimeout);
-            
-            notif.hideTimeout = setTimeout(() => {
-                notif.classList.remove('show');
-                setTimeout(() => {
-                    notif.style.display = 'none';
-                }, 500); // Wait for CSS transition to finish
-            }, event.instant ? 4000 : 6000);
+            setTimeout(() => notif.classList.remove('show'), event.instant ? 4000 : 6000);
         }
 
         function updateEvents(dt) {
@@ -2148,24 +2243,8 @@
             const grid = document.getElementById('driverGrid');
             if (!grid) return;
             
-            // Check if Basic Coding research is unlocked
-            const codingUnlocked = game.unlocked.includes('tech_coding');
-            
             grid.innerHTML = Object.entries(DRIVERS).map(([id, driver]) => {
                 const level = game.drivers[id];
-                
-                // Check if Basic Coding research is unlocked
-                if (!codingUnlocked) {
-                    return `
-                        <div class="driver-card locked">
-                            <div class="driver-icon" style="color: #64748b;"><i class="fa-solid fa-lock"></i></div>
-                            <div class="driver-name">${driver.name}</div>
-                            <div class="driver-desc" style="color: #ef4444; font-weight: bold;">Requires: Basic Coding research</div>
-                            <div class="driver-cost" style="color: #64748b;">???</div>
-                        </div>
-                    `;
-                }
-                
                 const canAfford = game.optimizationCode >= driver.cost;
                 const installed = level > 0;
                 
@@ -2266,12 +2345,6 @@
                 game.rp -= tech.cost;
                 game.unlocked.push(id);
                 renderResearchTree();
-                
-                // Re-render driver grid if we unlocked coding
-                if (id === 'tech_coding') {
-                    renderDriverGrid();
-                }
-                
                 setTab(currTab);
                 logEvent(`Researched: ${tech.name}`);
             }
@@ -2857,6 +2930,197 @@
             };
             reader.readAsText(file);
         }
+
+        // ==================== FIREBASE CLOUD SAVE ====================
+        let currentUser = null;
+        let cloudSaveEnabled = false;
+        let autoSyncInterval = null;
+
+        // Initialize Firebase Auth
+        async function initFirebase() {
+            try {
+                // Wait for Firebase to be ready
+                if (!window.firebaseAuth) {
+                    console.log('Firebase not loaded yet, retrying...');
+                    setTimeout(initFirebase, 1000);
+                    return;
+                }
+                
+                const auth = window.firebaseAuth;
+                const signInAnonymously = window.firebaseSignInAnonymously;
+                const onAuthStateChanged = window.firebaseOnAuthStateChanged;
+                
+                // Sign in anonymously
+                await signInAnonymously(auth);
+                
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        cloudSaveEnabled = true;
+                        updateCloudSaveStatus('online', 'Cloud Save Active');
+                        logEvent('Cloud save connected');
+                        
+                        // Try to load saved game
+                        loadFromCloud();
+                        
+                        // Set up auto-sync every 5 minutes
+                        if (autoSyncInterval) clearInterval(autoSyncInterval);
+                        autoSyncInterval = setInterval(() => {
+                            if (cloudSaveEnabled) syncToCloud();
+                        }, 300000); // 5 minutes
+                    } else {
+                        cloudSaveEnabled = false;
+                        updateCloudSaveStatus('offline', 'Offline');
+                    }
+                });
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                updateCloudSaveStatus('error', 'Cloud Save Error');
+            }
+        }
+
+        // Sync game to cloud
+        async function syncToCloud() {
+            if (!cloudSaveEnabled || !currentUser) {
+                logEvent('Cloud save not available', 'bad');
+                return;
+            }
+            
+            const btn = document.getElementById('cloudSyncBtn');
+            if (btn) btn.disabled = true;
+            updateCloudSaveStatus('syncing', 'Syncing...');
+            
+            try {
+                const db = window.firebaseDb;
+                const doc = window.firebaseDoc;
+                const setDoc = window.firebaseSetDoc;
+                
+                const saveData = {
+                    game: game,
+                    version: GAME_VERSION,
+                    timestamp: Date.now(),
+                    device: navigator.userAgent
+                };
+                
+                await setDoc(doc(db, 'saves', currentUser.uid), saveData);
+                
+                updateCloudSaveStatus('online', 'Saved to Cloud');
+                document.getElementById('lastSyncTime').innerText = 'Last sync: ' + new Date().toLocaleTimeString();
+                logEvent('Game saved to cloud', 'good');
+                showFloat('☁️ Saved to Cloud', window.innerWidth/2, window.innerHeight/2, '#3b82f6');
+            } catch (error) {
+                console.error('Cloud save error:', error);
+                updateCloudSaveStatus('error', 'Sync Failed');
+                logEvent('Cloud save failed', 'bad');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Load game from cloud
+        async function loadFromCloud() {
+            if (!cloudSaveEnabled || !currentUser) {
+                logEvent('Cloud save not available', 'bad');
+                return;
+            }
+            
+            const btn = document.getElementById('cloudLoadBtn');
+            if (btn) btn.disabled = true;
+            updateCloudSaveStatus('syncing', 'Loading...');
+            
+            try {
+                const db = window.firebaseDb;
+                const doc = window.firebaseDoc;
+                const getDoc = window.firebaseGetDoc;
+                
+                const docSnap = await getDoc(doc(db, 'saves', currentUser.uid));
+                
+                if (docSnap.exists()) {
+                    const saveData = docSnap.data();
+                    
+                    // Version check
+                    if (saveData.version !== GAME_VERSION) {
+                        logEvent(`Save version mismatch: ${saveData.version} vs ${GAME_VERSION}`, 'bad');
+                    }
+                    
+                    // Restore game state
+                    if (saveData.game) {
+                        game = saveData.game;
+                        
+                        // Ensure all required fields exist
+                        if (!game.prestige) game.prestige = 0;
+                        if (!game.routerHeat) game.routerHeat = 0;
+                        if (!game.res.audio) game.res.audio = 0;
+                        if (!game.codeBits) game.codeBits = 0;
+                        if (!game.optimizationCode) game.optimizationCode = 0;
+                        if (!game.drivers) game.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                        if (!game.stats) {
+                            game.stats = {
+                                totalMoney: game.money,
+                                peakMoney: game.money,
+                                moneySpent: 0,
+                                totalRP: game.rp,
+                                nodesCreated: game.nodes.length,
+                                nodesDeleted: 0,
+                                cablesPlaced: game.conns.length,
+                                upgrades: 0,
+                                contractsCompleted: 0,
+                                filesDownloaded: 0,
+                                virusesCleaned: 0,
+                                totalCodeBits: 0,
+                                totalDrivers: 0,
+                                playTime: 0,
+                                techsUnlocked: game.unlocked.length,
+                                prestigeCount: game.prestige,
+                                startTime: Date.now()
+                            };
+                        }
+                        if (!game.achievements) game.achievements = [];
+                        
+                        game.nodes.forEach(n => { if (typeof n.infected === 'undefined') n.infected = false; });
+                        
+                        activeNodes.clear();
+                        selectedNode = null;
+                        
+                        renderWorld();
+                        renderResearchTree();
+                        renderDriverGrid();
+                        renderAchievements();
+                        updateUI();
+                        updateRouterCostDisplay();
+                        
+                        const saveDate = new Date(saveData.timestamp).toLocaleString();
+                        document.getElementById('lastSyncTime').innerText = 'Loaded: ' + saveDate;
+                        updateCloudSaveStatus('online', 'Loaded from Cloud');
+                        logEvent('Game loaded from cloud', 'good');
+                        showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                    }
+                } else {
+                    logEvent('No cloud save found');
+                    updateCloudSaveStatus('online', 'No Cloud Save');
+                }
+            } catch (error) {
+                console.error('Cloud load error:', error);
+                updateCloudSaveStatus('error', 'Load Failed');
+                logEvent('Cloud load failed', 'bad');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Update cloud save status UI
+        function updateCloudSaveStatus(status, text) {
+            const statusEl = document.getElementById('cloudSaveStatus');
+            const textEl = document.getElementById('cloudSaveText');
+            
+            if (statusEl && textEl) {
+                statusEl.className = 'cloud-save-status ' + status;
+                textEl.innerText = text;
+            }
+        }
+
+        // Initialize Firebase when page loads
+        document.addEventListener('DOMContentLoaded', initFirebase);
 
         init();
         renderResearchTree();
