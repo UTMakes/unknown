@@ -808,7 +808,7 @@
         <div class="welcome-container">
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.2</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.3</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -856,7 +856,7 @@
                     
                     <!-- Changelog Section - Moved to main area -->
                     <div class="help-section" style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.2)</h3>
+                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.3)</h3>
                         <ul class="changelog-list">
                             <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
@@ -917,7 +917,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.2</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.3</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -1413,210 +1413,119 @@
     </div>
 
     <!-- Main Game -->
-    <div class="game-container" x-data="gameUI()" x-init="init()">
+    <div class="game-container">
         <div class="header">
-            <div class="header-title group cursor-default">
-                <i class="fa-solid fa-server text-cyber-accent group-hover:animate-pulse"></i> 
-                <span class="font-display font-bold tracking-wider">UPLOAD LABS</span> 
-                <span class="version-badge bg-gradient-to-r from-cyber-500 to-cyber-accent">v10.2</span>
+            <div class="header-title">
+                <i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v10.3</span>
             </div>
             <div class="header-stats">
-                <!-- Money Stat -->
-                <div class="stat-box money group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20" 
-                     onclick="addMoney(event)"
-                     x-data="{ value: 0, rate: 0 }"
-                     x-init="setInterval(() => { value = Math.floor(game.money); rate = game.moneyPerSec || 0; }, 100)">
-                    <i class="fa-solid fa-coins stat-icon text-emerald-400 group-hover:animate-bounce"></i>
-                    <div class="stat-value text-emerald-400 font-mono" x-text="'$' + fmt(value)">$0</div>
-                    <div class="stat-rate text-emerald-500/70 font-mono text-xs" x-text="'+' + fmt(rate) + '/s'">+$0/s</div>
+                <div class="stat-box money" onclick="addMoney(event)">
+                    <i class="fa-solid fa-coins stat-icon"></i>
+                    <div class="stat-value" id="moneyDisplay">$0</div>
+                    <div class="stat-rate" id="moneyRate">+$0/s</div>
                 </div>
-                
-                <!-- Research Stat -->
-                <div class="stat-box research group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20" 
-                     onclick="document.getElementById('researchModal').style.display='flex'"
-                     x-data="{ value: 0, rate: 0 }"
-                     x-init="setInterval(() => { value = Math.floor(game.rp); rate = game.rpPerSec || 0; }, 100)">
-                    <i class="fa-solid fa-flask stat-icon text-purple-400 group-hover:animate-pulse"></i>
-                    <div class="stat-value text-purple-400 font-mono" x-text="fmt(value) + ' RP'">0 RP</div>
-                    <div class="stat-rate text-purple-500/70 font-mono text-xs" x-text="'+' + fmt(rate) + '/s'">+0/s</div>
+                <div class="stat-box research" onclick="document.getElementById('researchModal').style.display='flex'">
+                    <i class="fa-solid fa-flask stat-icon"></i>
+                    <div class="stat-value" id="rpDisplay">0 RP</div>
+                    <div class="stat-rate" id="rpRate">+0/s</div>
                 </div>
-                
-                <!-- Code Stat -->
-                <div class="stat-box code group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/20" 
-                     onclick="document.getElementById('codeModal').style.display='flex'"
-                     x-data="{ value: 0 }"
-                     x-init="setInterval(() => value = Math.floor(game.codeBits), 100)">
-                    <i class="fa-solid fa-terminal stat-icon text-cyan-400 group-hover:animate-pulse"></i>
-                    <div class="stat-value text-cyan-400 font-mono" x-text="fmt(value)">0</div>
-                    <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
+                <div class="stat-box code" onclick="document.getElementById('codeModal').style.display='flex'">
+                    <i class="fa-solid fa-terminal stat-icon"></i>
+                    <div class="stat-value" id="codeDisplay">0</div>
+                    <div class="stat-rate">Code Bits</div>
                 </div>
             </div>
         </div>
 
         <div class="sidebar">
-            <!-- System Controls Panel -->
-            <div class="panel backdrop-blur-md bg-cyber-800/90 border border-cyber-600 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyber-500/10" 
-                 x-data="{ expanded: true }">
-                <div class="panel-title flex items-center justify-between cursor-pointer" @click="expanded = !expanded">
-                    <span class="flex items-center gap-2">
-                        <i class="fa-solid fa-gamepad text-cyber-accent"></i> 
-                        <span class="font-display font-semibold tracking-wide">System Controls</span>
-                    </span>
-                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': !expanded }"></i>
+            <div class="panel">
+                <div class="panel-title">System Controls</div>
+                <div class="action-row">
+                    <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
+                        <i class="fa-solid fa-flask"></i> Research
+                    </button>
+                    <button class="btn btn-code" onclick="document.getElementById('codeModal').style.display='flex'">
+                        <i class="fa-solid fa-terminal"></i> Code
+                    </button>
+                    <button class="btn btn-contract" onclick="openContracts()">
+                        <i class="fa-solid fa-file-contract"></i> Contracts
+                    </button>
                 </div>
-                <div x-show="expanded" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2">
-                    <div class="action-row">
-                        <button class="btn btn-research group relative overflow-hidden" onclick="document.getElementById('researchModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-gradient-to-r from-cyber-500 to-cyber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-flask group-hover:animate-bounce"></i> Research
-                            </span>
-                        </button>
-                        <button class="btn btn-code group relative overflow-hidden" onclick="document.getElementById('codeModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-gradient-to-r from-cyber-code to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-terminal"></i> Code
-                            </span>
-                        </button>
-                        <button class="btn btn-contract group relative overflow-hidden" onclick="openContracts()">
-                            <span class="absolute inset-0 bg-gradient-to-r from-cyber-warning to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-file-contract"></i> Contracts
-                            </span>
-                        </button>
-                    </div>
-                    <div class="action-row">
-                        <button class="btn relative overflow-hidden transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]" 
-                                id="cableDeleteBtn" 
-                                onclick="toggleCableDeleteMode()" 
-                                :class="cableDeleteMode ? 'bg-cyber-success hover:bg-emerald-600 animate-pulse' : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-400 hover:to-red-500'"
-                                style="color: white;">
-                            <span class="flex items-center gap-2">
-                                <i class="fa-solid" :class="cableDeleteMode ? 'fa-check' : 'fa-scissors'"></i> 
-                                <span x-text="cableDeleteMode ? 'Click Cable to Delete' : 'Delete Cables'"></span>
-                            </span>
-                        </button>
-                        <button class="btn bg-red-500/10 border border-red-500/50 text-red-400 hover:bg-red-500/20 hover:border-red-400 transition-all duration-300" onclick="deleteAllCables()">
-                            <i class="fa-solid fa-trash"></i> Clear All
-                        </button>
-                    </div>
-                    <div class="action-row">
-                        <button class="btn btn-help group relative overflow-hidden" onclick="document.getElementById('helpModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-cyber-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-question"></i> Help
-                            </span>
-                        </button>
-                        <button class="btn group relative overflow-hidden" onclick="document.getElementById('achievementsModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-yellow-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-trophy text-yellow-400"></i> Achievements
-                            </span>
-                        </button>
-                        <button class="btn group relative overflow-hidden" onclick="document.getElementById('statsModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-cyan-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-cyan-400"></i> Stats
-                            </span>
-                        </button>
-                    </div>
-                    <div class="action-row">
-                        <button class="btn group relative overflow-hidden" onclick="exportSave()">
-                            <span class="absolute inset-0 bg-emerald-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-download text-emerald-400"></i> Save
-                            </span>
-                        </button>
-                        <button class="btn group relative overflow-hidden" onclick="document.getElementById('importFile').click()">
-                            <span class="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-upload text-blue-400"></i> Load
-                            </span>
-                        </button>
-                        <input type="file" id="importFile" style="display:none" onchange="importSave(this)">
-                        <button class="btn prestige-btn group relative overflow-hidden" onclick="document.getElementById('prestigeModal').style.display='flex'">
-                            <span class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                            <span class="relative flex items-center gap-2">
-                                <i class="fa-solid fa-rotate group-hover:animate-spin"></i> Migrate
-                            </span>
-                        </button>
-                    </div>
+                <div class="action-row">
+                    <button class="btn" id="cableDeleteBtn" onclick="toggleCableDeleteMode()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        <i class="fa-solid fa-scissors"></i> <span id="cableDeleteText">Delete Cables</span>
+                    </button>
+                    <button class="btn" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+                        <i class="fa-solid fa-trash"></i> Clear All
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='flex'">
+                        <i class="fa-solid fa-question"></i> Help
+                    </button>
+                    <button class="btn" onclick="document.getElementById('achievementsModal').style.display='flex'">
+                        <i class="fa-solid fa-trophy"></i> Achievements
+                    </button>
+                    <button class="btn" onclick="document.getElementById('statsModal').style.display='flex'">
+                        <i class="fa-solid fa-chart-line"></i> Stats
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button class="btn" onclick="exportSave()"><i class="fa-solid fa-download"></i> Save</button>
+                    <button class="btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Load</button>
+                    <input type="file" id="importFile" style="display:none" onchange="importSave(this)">
+                    <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
+                        <i class="fa-solid fa-rotate"></i> Migrate
+                    </button>
                 </div>
                 
                 <!-- Account Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/30 rounded-lg backdrop-blur-sm" 
-                     x-data="{ expanded: true }">
-                    <div class="panel-title flex items-center justify-between cursor-pointer text-blue-400" @click="expanded = !expanded">
-                        <span class="flex items-center gap-2">
-                            <i class="fa-solid fa-user"></i> Account
-                        </span>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': !expanded }"></i>
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
+                    <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
+                        Login to save your progress to the cloud!
                     </div>
-                    <div x-show="expanded" x-transition>
-                        <div class="text-[10px] text-gray-400 mb-2" id="accountPanelText">
-                            Login to save your progress to the cloud!
-                        </div>
-                        <div class="action-row">
-                            <button class="btn w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white shadow-lg shadow-blue-500/25 transition-all duration-300 transform hover:scale-[1.02]" 
-                                    onclick="document.getElementById('accountModal').style.display='flex'">
-                                <i class="fa-solid fa-user" id="accountIcon"></i> 
-                                <span id="accountBtnText">Login / Register</span>
-                            </button>
-                        </div>
-                        <div class="text-[9px] text-gray-500 mt-2 text-center" id="accountStatus">Not logged in</div>
+                    <div class="action-row">
+                        <button class="btn sync-btn" style="flex: 1;" onclick="document.getElementById('accountModal').style.display='flex'">
+                            <i class="fa-solid fa-user" id="accountIcon"></i> <span id="accountBtnText">Login / Register</span>
+                        </button>
+                    </div>
+                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
+                        Not logged in
                     </div>
                 </div>
                 
                 <!-- Daily Rewards Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-lg backdrop-blur-sm"
-                     x-data="{ expanded: true, streak: 0 }"
-                     x-init="$watch('game.loginStreak', val => streak = val)">
-                    <div class="panel-title flex items-center justify-between cursor-pointer text-amber-400" @click="expanded = !expanded">
-                        <span class="flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-check"></i> Daily Rewards
-                        </span>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': !expanded }"></i>
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
+                    <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
+                        Streak: <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold;">0</span> days
                     </div>
-                    <div x-show="expanded" x-transition>
-                        <div class="text-[10px] text-gray-400 mb-2">
-                            Streak: <span class="text-amber-400 font-bold text-lg" x-text="streak">0</span> days 🔥
-                        </div>
-                        <div class="action-row">
-                            <button class="btn w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-white shadow-lg shadow-amber-500/25 transition-all duration-300 transform hover:scale-[1.02] group" 
-                                    onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
-                                <i class="fa-solid fa-gift group-hover:animate-bounce"></i> Claim Reward
-                            </button>
-                        </div>
-                        <div class="text-[9px] text-gray-500 mt-2 text-center" id="dailyRewardStatus">
-                            Check in daily for bonuses!
-                        </div>
+                    <div class="action-row">
+                        <button class="btn" style="flex: 1; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white;" onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
+                            <i class="fa-solid fa-gift"></i> Claim Reward
+                        </button>
+                    </div>
+                    <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
+                        Check in daily for bonuses!
                     </div>
                 </div>
                 
                 <!-- Settings Panel -->
-                <div class="panel mt-3 bg-gradient-to-br from-gray-500/10 to-gray-600/5 border border-gray-500/30 rounded-lg backdrop-blur-sm"
-                     x-data="{ expanded: false, settings: { autoSave: true, offline: true, notifications: true } }">
-                    <div class="panel-title flex items-center justify-between cursor-pointer text-gray-400" @click="expanded = !expanded">
-                        <span class="flex items-center gap-2">
-                            <i class="fa-solid fa-gear"></i> Settings
-                        </span>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300" :class="{ 'rotate-180': !expanded }"></i>
-                    </div>
-                    <div x-show="expanded" x-transition class="flex flex-col gap-2 mt-2">
-                        <label class="flex items-center justify-between text-[11px] text-gray-400 cursor-pointer hover:text-gray-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-floppy-disk text-blue-400"></i> Auto-Save</span>
-                            <input type="checkbox" x-model="settings.autoSave" @change="toggleSetting('autoSaveEnabled', settings.autoSave)" 
-                                   class="w-4 h-4 accent-blue-500 rounded cursor-pointer">
+                <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
+                    <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
+                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" style="accent-color: #3b82f6;">
                         </label>
-                        <label class="flex items-center justify-between text-[11px] text-gray-400 cursor-pointer hover:text-gray-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-clock text-purple-400"></i> Offline Earnings</span>
-                            <input type="checkbox" x-model="settings.offline" @change="toggleSetting('offlineEarningsEnabled', settings.offline)" 
-                                   class="w-4 h-4 accent-purple-500 rounded cursor-pointer">
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-clock"></i> Offline Earnings</span>
+                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" style="accent-color: #3b82f6;">
                         </label>
-                        <label class="flex items-center justify-between text-[11px] text-gray-400 cursor-pointer hover:text-gray-300 transition-colors p-1 rounded hover:bg-white/5">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-bell text-amber-400"></i> Notifications</span>
-                            <input type="checkbox" x-model="settings.notifications" @change="toggleSetting('notificationsEnabled', settings.notifications)" 
-                                   class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
+                            <span><i class="fa-solid fa-bell"></i> Notifications</span>
+                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" style="accent-color: #3b82f6;">
                         </label>
                     </div>
                 </div>
@@ -4300,65 +4209,7 @@
         renderDriverGrid();
         setTab('infra');
         
-        // ==================== ALPINE.JS COMPONENTS ====================
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('gameUI', () => ({
-                cableDeleteMode: false,
-                money: 0,
-                rp: 0,
-                codeBits: 0,
-                loginStreak: 0,
-                cableCount: 0,
-                
-                init() {
-                    // Sync with game state
-                    this.$watch('cableDeleteMode', value => {
-                        if (window.cableDeleteMode !== value) {
-                            toggleCableDeleteMode();
-                        }
-                    });
-                    
-                    // Update loop
-                    setInterval(() => {
-                        this.money = Math.floor(game.money);
-                        this.rp = Math.floor(game.rp);
-                        this.codeBits = Math.floor(game.codeBits);
-                        this.loginStreak = game.loginStreak || 0;
-                        this.cableCount = game.conns.length;
-                        this.cableDeleteMode = window.cableDeleteMode;
-                    }, 100);
-                },
-                
-                formatMoney(val) {
-                    return '$' + fmt(val);
-                },
-                
-                toggleCableDelete() {
-                    toggleCableDeleteMode();
-                }
-            }));
-            
-            // Toast notification system
-            Alpine.data('toastSystem', () => ({
-                toasts: [],
-                
-                add(message, type = 'info') {
-                    const id = Date.now();
-                    const colors = {
-                        info: 'bg-blue-500',
-                        success: 'bg-emerald-500', 
-                        warning: 'bg-amber-500',
-                        error: 'bg-red-500'
-                    };
-                    this.toasts.push({ id, message, type, color: colors[type] || colors.info });
-                    setTimeout(() => this.remove(id), 4000);
-                },
-                
-                remove(id) {
-                    this.toasts = this.toasts.filter(t => t.id !== id);
-                }
-            }));
-        });
+
     </script>
 </body>
 </html>
