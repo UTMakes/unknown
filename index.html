@@ -3113,6 +3113,7 @@
         }
 
         // Update cloud save status UI
+        let cloudStatusTimeout = null;
         function updateCloudSaveStatus(status, text) {
             const statusEl = document.getElementById('cloudSaveStatus');
             const textEl = document.getElementById('cloudSaveText');
@@ -3120,6 +3121,15 @@
             if (statusEl && textEl) {
                 statusEl.className = 'cloud-save-status ' + status;
                 textEl.innerText = text;
+                statusEl.style.opacity = '1';
+                
+                // Auto-hide success messages after 3 seconds
+                if (status === 'online' || status === 'error') {
+                    if (cloudStatusTimeout) clearTimeout(cloudStatusTimeout);
+                    cloudStatusTimeout = setTimeout(() => {
+                        statusEl.style.opacity = '0';
+                    }, 3000);
+                }
             }
         }
 
