@@ -449,14 +449,21 @@
         }
 
         svg.connections-layer { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; z-index: 1; }
-        .cable { fill: none; stroke: #4a5568; stroke-width: 4px; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; }
-        .cable-inner { fill: none; stroke: #2dd4bf; stroke-width: 2px; stroke-linecap: round; stroke-dasharray: 6 6; animation: flow 0.5s linear infinite; opacity: 0; }
+        .cable { fill: none; stroke: #4a5568; stroke-width: 4px; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; transition: all 0.2s; cursor: pointer; }
+        .cable:hover { stroke: #ef4444; stroke-width: 6px; opacity: 1; filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5)); }
+        .cable-inner { fill: none; stroke: #2dd4bf; stroke-width: 2px; stroke-linecap: round; stroke-dasharray: 6 6; animation: flow 0.5s linear infinite; opacity: 0; pointer-events: none; }
         .cable-group.active .cable-inner { opacity: 1; }
         .cable-group.active .cable { stroke: #1f2937; stroke-width: 6px; opacity: 1; } 
         .cable-group.power .cable-inner { stroke: #f59e0b; }
         .cable-group.money .cable-inner { stroke: #10b981; }
         .cable-group.code .cable-inner { stroke: var(--code); }
         @keyframes flow { to { stroke-dashoffset: -12; } }
+        
+        /* Cable Delete Mode */
+        .cable-delete-mode .cable { cursor: crosshair; animation: pulse-delete 1s infinite; }
+        .cable-delete-mode .cable:hover { stroke: #ef4444; stroke-width: 8px; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
+        @keyframes pulse-delete { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+        #cableDeleteBtn.active { background: linear-gradient(135deg, #10b981, #059669) !important; animation: pulse 2s infinite; }
 
         .node {
             position: absolute;
@@ -789,6 +796,7 @@
                             <li><span class="key">Drag</span> empty space to pan the view</li>
                             <li><span class="key">Right-click</span> a node to open upgrade/delete menu</li>
                             <li><span class="key">Drag</span> from green port to blue port to connect nodes ($10 per cable)</li>
+                            <li><span class="key">X</span> to toggle cable delete mode (click cables to delete, $5 refund)</li>
                         </ul>
                     </div>
                     <div class="help-section">
@@ -1292,6 +1300,7 @@
                         <li><span class="key">Drag</span> empty space to pan the view</li>
                         <li><span class="key">Right-click</span> a node to upgrade/delete</li>
                         <li><span class="key">Drag</span> from green port to blue port to connect ($10/cable)</li>
+                        <li><span class="key">X</span> to toggle cable delete mode ($5 refund per cable)</li>
                         <li><span class="key">?</span> to open this help modal</li>
                         <li><span class="key">R</span> to open Research Tree</li>
                         <li><span class="key">C</span> to open Code Studio</li>
@@ -1393,6 +1402,14 @@
                     </button>
                     <button class="btn btn-contract" onclick="openContracts()">
                         <i class="fa-solid fa-file-contract"></i> Contracts
+                    </button>
+                </div>
+                <div class="action-row">
+                    <button class="btn" id="cableDeleteBtn" onclick="toggleCableDeleteMode()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        <i class="fa-solid fa-scissors"></i> <span id="cableDeleteText">Delete Cables</span>
+                    </button>
+                    <button class="btn" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+                        <i class="fa-solid fa-trash"></i> Clear All
                     </button>
                 </div>
                 <div class="action-row">
@@ -2682,6 +2699,98 @@
              checkAchievements();
         }
 
+        // ==================== CABLE DELETION SYSTEM ====================
+        let cableDeleteMode = false;
+        
+        function toggleCableDeleteMode() {
+            cableDeleteMode = !cableDeleteMode;
+            const btn = document.getElementById('cableDeleteBtn');
+            const btnText = document.getElementById('cableDeleteText');
+            const world = document.getElementById('world');
+            
+            if (cableDeleteMode) {
+                btn.classList.add('active');
+                btnText.innerText = 'Click Cable to Delete';
+                world.classList.add('cable-delete-mode');
+                logEvent('Cable delete mode: ON - Click any cable to delete it', 'info');
+                showFloat('🖱️ Click any cable to delete it', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+            } else {
+                btn.classList.remove('active');
+                btnText.innerText = 'Delete Cables';
+                world.classList.remove('cable-delete-mode');
+            }
+        }
+        
+        function handleCableClick(fromId, toId, event) {
+            if (!cableDeleteMode) return;
+            
+            event.stopPropagation();
+            event.preventDefault();
+            
+            deleteCable(fromId, toId, event);
+        }
+        
+        function deleteCable(fromId, toId, event) {
+            // Find and remove the cable
+            const cableIndex = game.conns.findIndex(c => 
+                (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
+            );
+            
+            if (cableIndex === -1) return;
+            
+            // Get cable position for particle effect
+            const n1 = game.nodes.find(n => n.id === fromId);
+            const n2 = game.nodes.find(n => n.id === toId);
+            
+            game.conns.splice(cableIndex, 1);
+            
+            // Spawn particles at cable midpoint
+            if (n1 && n2) {
+                const midX = (n1.x + 90 + n2.x) / 2;
+                const midY = (n1.y + 40 + n2.y + 40) / 2;
+                spawnParticles(midX, midY, '#ef4444', 5);
+            }
+            
+            // Refund $5 for the cable
+            game.money += 5;
+            showFloat('+ $5 (Cable Refund)', window.innerWidth/2, window.innerHeight/2, '#10b981');
+            
+            renderCables();
+            updateConnectivity();
+            logEvent('Cable deleted (+$5 refund)', 'info');
+            
+            // Auto-exit delete mode if shift isn't held
+            if (!event.shiftKey) {
+                toggleCableDeleteMode();
+            }
+        }
+        
+        function deleteAllCables() {
+            if (game.conns.length === 0) {
+                showFloat('No cables to delete', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                return;
+            }
+            
+            const cableCount = game.conns.length;
+            const refund = cableCount * 5;
+            
+            if (!confirm(`Delete all ${cableCount} cables? You'll get $${refund} refunded.`)) {
+                return;
+            }
+            
+            game.conns = [];
+            game.money += refund;
+            
+            showFloat(`+ $${refund} (${cableCount} cables deleted)`, window.innerWidth/2, window.innerHeight/2, '#10b981');
+            logEvent(`Deleted all ${cableCount} cables (+$${refund})`, 'good');
+            
+            renderCables();
+            updateConnectivity();
+            
+            // Exit delete mode if active
+            if (cableDeleteMode) toggleCableDeleteMode();
+        }
+
         function unlockTech(id) {
             const tech = TECH_TREE.find(t => t.id === id);
             if (!game.unlocked.includes(id) && game.rp >= tech.cost && canUnlockTech(id)) {
@@ -2864,6 +2973,9 @@
                 const bgLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 bgLine.classList.add("cable");
                 bgLine.setAttribute("d", pathStr);
+                bgLine.dataset.from = c.from;
+                bgLine.dataset.to = c.to;
+                bgLine.onclick = (e) => handleCableClick(c.from, c.to, e);
                 
                 const dashLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 dashLine.classList.add("cable-inner");
@@ -3141,6 +3253,7 @@
                 else if (e.key === 'r' || e.key === 'R') document.getElementById('researchModal').style.display='flex';
                 else if (e.key === 'c' || e.key === 'C') document.getElementById('codeModal').style.display='flex';
                 else if (e.key === 'a' || e.key === 'A') document.getElementById('achievementsModal').style.display='flex';
+                else if (e.key === 'x' || e.key === 'X') toggleCableDeleteMode();
                 else if (e.key === 's' || e.key === 'S') document.getElementById('statsModal').style.display='flex';
                 else if (e.key === 'p' || e.key === 'P') document.getElementById('prestigeModal').style.display='flex';
                 else if (e.key === 'l' || e.key === 'L') document.getElementById('accountModal').style.display='flex';
