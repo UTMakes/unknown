@@ -3102,7 +3102,8 @@
             zoomIn, zoomOut, resetZoom, 
             emergencyRecover, repairSaveData, validateSaveData,
             clearSaveAndReset, showGameInfo, toggleSetting,
-            batchUpgrade, toggleAutoBalancer, showNetworkAnalysis
+            batchUpgrade, toggleAutoBalancer, showNetworkAnalysis,
+            installDriver, handleDriverClick
         };
         
         // Log help message for debugging
@@ -4021,6 +4022,9 @@
             if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
             
             updateInstalledDriversList();
+            
+            // Re-render driver grid to update affordability states
+            renderDriverGrid();
         }
         
         function updateInstalledDriversList() {
@@ -4051,15 +4055,24 @@
                 const installed = level > 0;
                 
                 return `
-                    <div class="driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}" onclick="${canAfford ? `installDriver('${id}')` : ''}">
+                    <div class="driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}" onclick="handleDriverClick('${id}')">
                         <div class="driver-icon"><i class="${driver.icon}"></i></div>
                         <div class="driver-name">${driver.name}</div>
                         <div class="driver-desc">${driver.desc}</div>
-                        <div class="driver-cost">Cost: ${driver.cost} Opt Code</div>
+                        <div class="driver-cost">${canAfford ? `Cost: ${driver.cost} Opt Code` : `<span style="color: #ef4444;">Need ${driver.cost} Opt Code</span>`}</div>
                         ${installed ? `<div class="driver-level">Level ${level} (+${Math.round(level * driver.effect * 100)}%)</div>` : ''}
                     </div>
                 `;
             }).join('');
+        }
+        
+        function handleDriverClick(driverId) {
+            const driver = DRIVERS[driverId];
+            if (game.optimizationCode >= driver.cost) {
+                installDriver(driverId);
+            } else {
+                showFloat(`Need ${driver.cost} Optimization Code`, window.innerWidth/2, window.innerHeight/2, '#ef4444');
+            }
         }
 
         // --- ACTIONS ---
