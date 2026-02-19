@@ -2027,10 +2027,26 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.2</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.3</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Money Bug:</strong> Fixed income dropping to $0 at high money values</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge balance">Balance</span>
+                            <span><strong>Economy:</strong> Reduced income from all sources by 20-50%</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge new">New</span>
+                            <span><strong>Cryo Cooler:</strong> End-game cooling node (req: Cryogenic Cooling tech)</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge new">New</span>
+                            <span><strong>Overclock Scaling:</strong> Each level adds +0.5x speed but +5 heat/sec</span>
+                        </li>
                         <li class="changelog-item">
                             <span class="changelog-badge fix">Fix</span>
                             <span><strong>Cable Rendering:</strong> Fixed black background on cables, smoother dragging</span>
@@ -2065,7 +2081,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.2</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.3</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -2115,22 +2131,43 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v11.2</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v11.3</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
-                            <div class="feature-icon new"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="feature-icon new" style="background: linear-gradient(135deg, #22d3ee, #0891b2);"><i class="fa-solid fa-snowflake"></i></div>
                             <div class="feature-content">
-                                <h4>NEW: Cable Deletion!</h4>
-                                <p>Press X or click "Delete Cables" to remove connections. Get $5 refund per cable!</p>
+                                <h4>NEW: Cryo Cooling!</h4>
+                                <p>End-game cooling nodes to counteract overclocking heat. Unlock with Cryogenic Cooling tech!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-user"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-bolt"></i></div>
                             <div class="feature-content">
-                                <h4>Account System!</h4>
-                                <p>Create an account with email/password. Access your saves on any device!</p>
+                                <h4>Overclock Scaling!</h4>
+                                <p>Each overclocker level now adds +0.5x speed but generates more heat. Strategy matters!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <div class="feature-content">
+                                <h4>Game Rebalanced!</h4>
+                                <p>Reduced income from nodes, resources, and boosts. Longer progression, more strategic depth!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-bug"></i></div>
+                            <div class="feature-content">
+                                <h4>Bug Fixes!</h4>
+                                <p>Fixed money display issues and added safety checks for large numbers. More stable economy!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="feature-content">
+                                <h4>Cable Deletion!</h4>
+                                <p>Press X or click "Delete Cables" to remove connections. Get $5 refund per cable!</p>
                             </div>
                         </li>
                         <li class="feature-item">
@@ -2148,36 +2185,15 @@
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fa-solid fa-bolt"></i></div>
-                            <div class="feature-content">
-                                <h4>Random Events!</h4>
-                                <p>Market booms, DDoS attacks, research breakthroughs, and more! Adapt to changing conditions.</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-rotate"></i></div>
                             <div class="feature-content">
                                 <h4>Prestige System!</h4>
                                 <p>Migrate your data center to gain permanent +100% speed bonuses. Stackable rewards!</p>
                             </div>
                         </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-chart-line"></i></div>
-                            <div class="feature-content">
-                                <h4>Statistics Tracking!</h4>
-                                <p>Detailed stats for money earned, nodes created, play time, and much more!</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-sparkles"></i></div>
-                            <div class="feature-content">
-                                <h4>Visual Effects!</h4>
-                                <p>Particle effects when placing nodes, upgrading, and achieving milestones!</p>
-                            </div>
-                        </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-code-branch"></i> Version 11.2 - "Performance Update"
+                        <i class="fa-solid fa-code-branch"></i> Version 11.3 - "Balance & Cooling Update"
                     </div>
                 </div>
             </div>
@@ -2689,7 +2705,7 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.2</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.3</span>
             </div>
             <div class="header-stats">
                 <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">
@@ -2907,7 +2923,7 @@
 
     <script>
         // GAME VERSION - Update by 0.1 for minor, +1 for major
-        const GAME_VERSION = "11.2";
+        const GAME_VERSION = "11.3";
 
         // --- CONFIGURATION ---
         
@@ -2941,6 +2957,7 @@
             firewall: { name: "Firewall", type: "infra", cost: 1500, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
             balancer: { name: "Load Balancer", type: "infra", cost: 4500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
             overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
+            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo" },
             
             // Downloaders - Tiered progression
             dl_file: { name: "File Downloader", type: "download", out: "files", cost: 300, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
@@ -2973,10 +2990,10 @@
         };
 
         const RESOURCES = {
-            files: { size: 20, price: 8, rp: 2 },
-            images: { size: 80, price: 35, rp: 8 },
-            videos: { size: 350, price: 150, rp: 40 },
-            audio: { size: 120, price: 55, rp: 15 }
+            files: { size: 20, price: 6, rp: 2 },      // Reduced from 8
+            images: { size: 80, price: 28, rp: 8 },    // Reduced from 35
+            videos: { size: 350, price: 120, rp: 40 }, // Reduced from 150
+            audio: { size: 120, price: 42, rp: 15 }    // Reduced from 55
         };
 
         // DRIVER CONFIGURATION
@@ -3024,6 +3041,7 @@
             
             // Tier 6: Endgame (Very late game)
             { id: "tech_quantum", name: "Quantum Computing", cost: 500000, desc: "Unlock Quantum Core (2.5x global speed)", tier: 6, icon: "fa-solid fa-atom", requires: ["tech_ai", "tech_cluster"] },
+            { id: "tech_cryo", name: "Cryogenic Cooling", cost: 500000, desc: "Unlock Cryo Coolers to counteract overheating", tier: 6, icon: "fa-solid fa-snowflake", requires: ["tech_quantum"] },
             { id: "tech_crypto_farm", name: "Mining Farm", cost: 750000, desc: "Unlock Crypto Farms (massive passive income)", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster", "tech_warehouse"] },
             { id: "tech_neural", name: "Neural Network", cost: 1000000, desc: "All nodes +50% efficiency. The ultimate upgrade.", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
         ];
@@ -3103,6 +3121,9 @@
             routerLevel: 1,
             routerHeat: 0,
             overheatMode: false,
+            overclockMult: 1.0,
+            coolingPower: 0,
+            overclockHeatGen: 0,
             unlocked: [],
             nextId: 1,
             activeContract: null,
@@ -3614,36 +3635,68 @@
                 }
             }
             
-            // Heat management
-            let isOverclocked = false;
+            // Heat management with Overclock and Cooling
+            let overclockMult = 1.0;
+            let coolingPower = 0;
+            let overclockHeatGen = 0;
+            
             try {
                 const router = game.nodes.find(n => n.type === 'router');
                 if (router && activeNodes.has(router.id)) {
+                    // Find all overclockers connected to router
                     game.conns.forEach(c => {
                         if (c.to === router.id) {
                             const source = game.nodes.find(n => n.id === c.from);
-                            if (source && source.type === 'overclock' && activeNodes.has(source.id) && !source.infected) {
-                                isOverclocked = true;
+                            if (source && activeNodes.has(source.id) && !source.infected) {
+                                if (source.type === 'overclock') {
+                                    // Each overclocker level adds 0.5x multiplier (Lv1=2x, Lv2=2.5x, Lv3=3x)
+                                    overclockMult += 0.5 * source.level;
+                                    // Heat generation: 15 base + 5 per level
+                                    overclockHeatGen += 15 + (5 * (source.level - 1));
+                                }
                             }
                         }
                     });
+                    
+                    // Find all cooling nodes (connected anywhere in network)
+                    game.nodes.forEach(n => {
+                        if (n.type === 'cryo_cooler' && activeNodes.has(n.id) && !n.infected) {
+                            // Each cryo cooler level reduces heat by 20 base + 10 per level
+                            coolingPower += 20 + (10 * (n.level - 1));
+                        }
+                    });
 
-                if (isOverclocked) {
-                    game.routerHeat = Math.min(100, game.routerHeat + (15 * dt));
-                } else {
-                    game.routerHeat = Math.max(0, game.routerHeat - (5 * dt));
+                    // Calculate net heat change
+                    const netHeatChange = overclockHeatGen - coolingPower;
+                    
+                    if (netHeatChange > 0) {
+                        game.routerHeat = Math.min(100, game.routerHeat + (netHeatChange * dt));
+                    } else {
+                        // Cooling can reduce heat faster than normal (up to -10 per second per cooler)
+                        game.routerHeat = Math.max(0, game.routerHeat + (netHeatChange * dt));
+                    }
+                    
+                    // Natural cooling when no overclockers active
+                    if (overclockHeatGen === 0) {
+                        game.routerHeat = Math.max(0, game.routerHeat - (5 * dt));
+                    }
                 }
                 
                 if (game.routerHeat >= 100) game.overheatMode = true;
                 if (game.routerHeat <= 50) game.overheatMode = false;
-                }
+                
             } catch (e) {
                 console.error('Router heat calculation failed:', e);
             }
+            
+            // Store values for UI display
+            game.overclockMult = overclockMult;
+            game.coolingPower = coolingPower;
+            game.overclockHeatGen = overclockHeatGen;
 
             // Calculate multipliers
             let efficiency = 1.0;
-            if (isOverclocked) efficiency *= 2.0;
+            efficiency *= overclockMult;  // Apply scaled overclock multiplier
             if (game.overheatMode) efficiency *= 0.7;
             
             // Driver effects
@@ -3697,10 +3750,10 @@
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
             const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
-            const cdnBoost = 1 + (game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.25);
-            const aiBoost = 1 + (game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 1.0);
+            const cdnBoost = 1 + (game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.20); // Reduced from 0.25
+            const aiBoost = 1 + (game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 0.5); // Reduced from 1.0
             const clusterCount = game.nodes.filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).length;
-            const clusterBoost = 1 + (clusterCount * 0.2);
+            const clusterBoost = 1 + (clusterCount * 0.15); // Reduced from 0.2
             let quantumMult = 1;
             game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
             
@@ -3795,17 +3848,21 @@
                     workAnim(node);
                 }
                 else if (node.type === 'miner') {
-                    const gain = effectiveSpeed * 0.05 * driverMiningMult * eventMoneyMult;
-                    game.money += gain;
-                    history.money += gain;
-                    game.stats.totalMoney += gain;
+                    const gain = effectiveSpeed * 0.025 * driverMiningMult * eventMoneyMult; // Reduced from 0.05
+                    if (gain > 0 && isFinite(gain)) {
+                        game.money += gain;
+                        history.money = (history.money || 0) + gain;
+                        game.stats.totalMoney += gain;
+                    }
                     workAnim(node);
                 }
                 else if (node.type === 'crypto_farm') {
-                    const gain = effectiveSpeed * 0.15 * driverMiningMult * eventMoneyMult;
-                    game.money += gain;
-                    history.money += gain;
-                    game.stats.totalMoney += gain;
+                    const gain = effectiveSpeed * 0.08 * driverMiningMult * eventMoneyMult; // Reduced from 0.15
+                    if (gain > 0 && isFinite(gain)) {
+                        game.money += gain;
+                        history.money = (history.money || 0) + gain;
+                        game.stats.totalMoney += gain;
+                    }
                     workAnim(node);
                 }
 
@@ -3831,10 +3888,12 @@
                         game.res[k] -= count;
                         cap -= count * size;
                         
-                        const gain = count * RESOURCES[k].price * eventMoneyMult;
-                        game.money += gain;
-                        history.money += gain;
-                        game.stats.totalMoney += gain;
+                        const gain = count * RESOURCES[k].price * eventMoneyMult * 0.7; // Reduced by 30%
+                        if (gain > 0 && isFinite(gain)) {
+                            game.money += gain;
+                            history.money = (history.money || 0) + gain;
+                            game.stats.totalMoney += gain;
+                        }
                         workAnim(node);
                         if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                     });
@@ -3880,16 +3939,20 @@
                         game.res.files -= count;
                         
                         if (c.type === 'upload') {
-                            const gain = count * RESOURCES.files.price * eventMoneyMult;
-                            game.money += gain;
-                            history.money += gain;
-                            game.stats.totalMoney += gain;
+                            const gain = count * RESOURCES.files.price * eventMoneyMult * 0.7; // Reduced by 30%
+                            if (gain > 0 && isFinite(gain)) {
+                                game.money += gain;
+                                history.money = (history.money || 0) + gain;
+                                game.stats.totalMoney += gain;
+                            }
                             if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                         } else {
                             const gain = count * RESOURCES.files.rp * rpBoost * driverResearchMult * eventRPMult;
-                            game.rp += gain;
-                            history.rp += gain;
-                            game.stats.totalRP += gain;
+                            if (gain > 0 && isFinite(gain)) {
+                                game.rp += gain;
+                                history.rp = (history.rp || 0) + gain;
+                                game.stats.totalRP += gain;
+                            }
                         }
                         workAnim(c.node);
                     }
@@ -3900,9 +3963,11 @@
                 if ((n.type === 'backup' || n.type === 'warehouse') && activeNodes.has(n.id) && !n.infected) {
                     const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
                     if (stored > 1000) {
-                        const bonus = stored * 0.002 * dt * (n.type === 'warehouse' ? 2 : 1);
-                        game.money += bonus;
-                        history.money += bonus;
+                        const bonus = stored * 0.001 * dt * (n.type === 'warehouse' ? 2 : 1); // Reduced from 0.002
+                        if (bonus > 0 && isFinite(bonus)) {
+                            game.money += bonus;
+                            history.money = (history.money || 0) + bonus;
+                        }
                     }
                 }
             });
@@ -3967,8 +4032,8 @@
 
         function secLoop() {
             // Calculate actual per-second rates
-            const moneyThisSecond = history.money;
-            const rpThisSecond = history.rp;
+            const moneyThisSecond = history.money || 0;
+            const rpThisSecond = history.rp || 0;
             
             // Update current rates
             rateTracking.money.current = moneyThisSecond;
@@ -3987,12 +4052,16 @@
             }
             
             // Calculate smoothed rates (average of last N seconds)
-            rateTracking.money.smoothed = rateTracking.money.history.reduce((a, b) => a + b, 0) / rateTracking.money.history.length;
-            rateTracking.rp.smoothed = rateTracking.rp.history.reduce((a, b) => a + b, 0) / rateTracking.rp.history.length;
+            const moneySum = rateTracking.money.history.reduce((a, b) => (a || 0) + (b || 0), 0);
+            const rpSum = rateTracking.rp.history.reduce((a, b) => (a || 0) + (b || 0), 0);
+            rateTracking.money.smoothed = moneySum / rateTracking.money.history.length;
+            rateTracking.rp.smoothed = rpSum / rateTracking.rp.history.length;
             
-            // Update display
-            document.getElementById('moneyRate').innerText = `+$${fmt(Math.round(rateTracking.money.smoothed))}/s`;
-            document.getElementById('rpRate').innerText = `+${fmt(Math.round(rateTracking.rp.smoothed))}/s`;
+            // Update display (ensure we always show a valid number)
+            const displayMoneyRate = Math.max(0, Math.round(rateTracking.money.smoothed || 0));
+            const displayRPRate = Math.max(0, Math.round(rateTracking.rp.smoothed || 0));
+            document.getElementById('moneyRate').innerText = `+$${fmt(displayMoneyRate)}/s`;
+            document.getElementById('rpRate').innerText = `+${fmt(displayRPRate)}/s`;
             
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
@@ -4817,19 +4886,31 @@
             heatBar.style.width = game.routerHeat + '%';
             heatText.innerText = Math.floor(game.routerHeat) + '°C';
             
+            // Build detailed heat status
+            let statusText = '';
             if (game.overheatMode) {
                 heatBar.style.background = '#ef4444';
-                heatStatus.innerText = 'Status: OVERHEATING (Speed -30%)';
+                statusText = 'OVERHEATING (-30% speed)';
                 heatStatus.style.color = '#ef4444';
             } else if (game.routerHeat > 50) {
                 heatBar.style.background = '#f59e0b';
-                heatStatus.innerText = 'Status: Warm';
+                statusText = 'Warm';
                 heatStatus.style.color = '#f59e0b';
             } else {
                 heatBar.style.background = '#10b981';
-                heatStatus.innerText = 'Status: Normal';
+                statusText = 'Normal';
                 heatStatus.style.color = '#a0aec0';
             }
+            
+            // Add overclock info if active
+            if (game.overclockMult > 1) {
+                statusText += ` | OC: ${game.overclockMult.toFixed(1)}x`;
+            }
+            if (game.coolingPower > 0) {
+                statusText += ` | Cryo: -${game.coolingPower}/s`;
+            }
+            
+            heatStatus.innerText = 'Status: ' + statusText;
             
             if (game.money >= 10000000 || game.prestige > 0) document.getElementById('prestigeSection').style.display = 'block';
             document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 100)}%`;
@@ -5318,6 +5399,11 @@
             if (isNaN(repaired.rp) || repaired.rp < 0) repaired.rp = 0;
             if (isNaN(repaired.codeBits) || repaired.codeBits < 0) repaired.codeBits = 0;
             if (isNaN(repaired.optimizationCode) || repaired.optimizationCode < 0) repaired.optimizationCode = 0;
+            if (isNaN(repaired.routerHeat)) repaired.routerHeat = 0;
+            if (typeof repaired.overheatMode !== 'boolean') repaired.overheatMode = false;
+            if (isNaN(repaired.overclockMult)) repaired.overclockMult = 1.0;
+            if (isNaN(repaired.coolingPower)) repaired.coolingPower = 0;
+            if (isNaN(repaired.overclockHeatGen)) repaired.overclockHeatGen = 0;
             
             // Fix arrays
             if (!Array.isArray(repaired.nodes)) repaired.nodes = [];
@@ -6188,6 +6274,22 @@
                 game.routerHeat = 0;
                 fixesApplied.push('Fixed NaN routerHeat');
             }
+            if (isNaN(game.overclockMult) || game.overclockMult === null) {
+                game.overclockMult = 1.0;
+                fixesApplied.push('Fixed NaN overclockMult');
+            }
+            if (isNaN(game.coolingPower) || game.coolingPower === null) {
+                game.coolingPower = 0;
+                fixesApplied.push('Fixed NaN coolingPower');
+            }
+            if (isNaN(game.overclockHeatGen) || game.overclockHeatGen === null) {
+                game.overclockHeatGen = 0;
+                fixesApplied.push('Fixed NaN overclockHeatGen');
+            }
+            if (typeof game.overheatMode !== 'boolean') {
+                game.overheatMode = false;
+                fixesApplied.push('Fixed invalid overheatMode');
+            }
             if (isNaN(game.routerLevel) || game.routerLevel === null || game.routerLevel < 1) {
                 game.routerLevel = 1;
                 fixesApplied.push('Fixed invalid routerLevel');
@@ -6279,7 +6381,17 @@
             combo.count = 0;
             combo.timer = 0;
             
-            // Fix 11: Clear any stuck modals
+            // Fix 11: Reset rate tracking history (fixes money display stuck at 0)
+            if (!Array.isArray(rateTracking.money.history)) rateTracking.money.history = [];
+            if (!Array.isArray(rateTracking.rp.history)) rateTracking.rp.history = [];
+            rateTracking.money.history = rateTracking.money.history.filter(n => isFinite(n) && n >= 0);
+            rateTracking.rp.history = rateTracking.rp.history.filter(n => isFinite(n) && n >= 0);
+            if (rateTracking.money.history.length === 0) {
+                rateTracking.money.history = [10, 10, 10, 10, 10]; // Seed with default values
+                fixesApplied.push('Reset money rate tracking');
+            }
+            
+            // Fix 12: Clear any stuck modals
             document.querySelectorAll('.modal-overlay').forEach(m => {
                 if (m.id !== 'welcomeModal') m.style.display = 'none';
             });
