@@ -808,7 +808,7 @@
         <div class="welcome-container">
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v10.3</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.0</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -856,23 +856,59 @@
                     
                     <!-- Changelog Section - Moved to main area -->
                     <div class="help-section" style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.3)</h3>
+                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v11.0)</h3>
                         <ul class="changelog-list">
                             <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Fixed Rate Display:</strong> Money/RP per second now shows accurate, stable values</span>
+                            </li>
+                            <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
-                                <span><strong>Cable Deletion:</strong> Press X or click "Delete Cables" to remove connections ($5 refund)</span>
+                                <span><strong>Auto-Compilers:</strong> Compiler nodes now automatically convert code bits to optimization code</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Node Synergies:</strong> Certain node combinations now provide bonus efficiency</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge balance">Balance</span>
+                                <span><strong>Prestige Rework:</strong> Migration now gives +100% speed per level (was +50%)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Export Enhancement:</strong> Save files now include player name and checksum validation</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Corruption Recovery:</strong> Automatic detection and repair of corrupted save data</span>
                             </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge ui">UI</span>
-                                <span><strong>Enhanced UI:</strong> Beautiful gradients, smooth animations, hover effects</span>
+                                <span><strong>Rate Smoothing:</strong> Income rates now display as 5-second averages for stability</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Emergency Recovery:</strong> Console command Game.emergencyRecover() to fix stuck games</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge balance">Balance</span>
+                                <span><strong>Coder Node Buff:</strong> Increased base code bit generation by 25%</span>
                             </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge fix">Fix</span>
-                                <span><strong>Smooth Rates:</strong> Money/RP rates now update smoothly every frame</span>
+                                <span><strong>Active Nodes Fix:</strong> Resolved issue where nodes wouldn't activate after loading save</span>
                             </li>
                             <li class="changelog-item">
-                                <span class="changelog-badge fix">Fix</span>
-                                <span><strong>Compiler Upgrades:</strong> Compiler nodes now properly benefit from level upgrades</span>
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Save Metadata:</strong> Exports now include timestamps, version, and integrity checks</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge ui">UI</span>
+                                <span><strong>Debug Tools:</strong> Added console commands for game state inspection</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Cable Deletion:</strong> Press X or click "Delete Cables" to remove connections ($5 refund)</span>
                             </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
@@ -884,47 +920,7 @@
                             </li>
                             <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
-                                <span><strong>Auto-Save:</strong> Automatic local saves every minute</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge new">New</span>
                                 <span><strong>Milestones:</strong> Complete objectives for big rewards</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge new">New</span>
-                                <span><strong>Settings Panel:</strong> Toggle auto-save, offline earnings, notifications</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge fix">Fix</span>
-                                <span>Fixed cloud save loading not working after accounts update</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge balance">Balance</span>
-                                <span>Adjusted resource sizes and prices for better progression</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge balance">Balance</span>
-                                <span>Technology costs increased, especially late-game tiers (up to 1M RP)</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge fix">Fix</span>
-                                <span>Fixed 1 million money bug that stopped earnings after refresh</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge fix">Fix</span>
-                                <span>Improved save/load system with better number handling</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge ui">UI</span>
-                                <span>Enhanced research tree with 6 tiers and color-coded labels</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge ui">UI</span>
-                                <span>Added animated connection lines in research tree</span>
-                            </li>
-                            <li class="changelog-item">
-                                <span class="changelog-badge fix">Fix</span>
-                                <span>Cloud saves now properly validate all data types</span>
                             </li>
                         </ul>
                     </div>
@@ -933,7 +929,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.3</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v11.0</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -976,7 +972,7 @@
                             <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-rotate"></i></div>
                             <div class="feature-content">
                                 <h4>Prestige System!</h4>
-                                <p>Migrate your data center to gain permanent +50% speed bonuses. Stackable rewards!</p>
+                                <p>Migrate your data center to gain permanent +100% speed bonuses. Stackable rewards!</p>
                             </div>
                         </li>
                         <li class="feature-item">
@@ -995,7 +991,7 @@
                         </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-code-branch"></i> Version 10.1.1 - "Evolution Update"
+                        <i class="fa-solid fa-code-branch"></i> Version 11.0 - "Synergy Update"
                     </div>
                 </div>
             </div>
@@ -1439,7 +1435,7 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v10.3</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.0</span>
             </div>
             <div class="header-stats">
                 <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">
@@ -1629,8 +1625,11 @@
                     <span style="color:#8b92a8">Up Speed</span>
                     <span style="color:#10b981; font-weight:bold;" id="globalUp">0 B/s</span>
                 </div>
-                <div style="font-size:11px; color:#db2777; margin-bottom:10px; text-align:right;" id="prestigeBonusDisplay">
+                <div style="font-size:11px; color:#db2777; margin-bottom:5px; text-align:right;" id="prestigeBonusDisplay">
                     Data Center Bonus: 0%
+                </div>
+                <div style="font-size:11px; color:#10b981; margin-bottom:10px; text-align:right;" id="synergyBonusDisplay">
+                    Node Synergy: +0%
                 </div>
                 <button class="btn btn-primary" style="width:100%" id="btnUpgradeRouter" onclick="upgradeRouter()">
                     <i class="fa-solid fa-arrow-up"></i> Upgrade Router
@@ -1839,6 +1838,11 @@
             { id: 'security_1', name: 'Virus Hunter', desc: 'Clean 10 viruses', icon: 'fa-solid fa-shield-virus', condition: (s) => s.virusesCleaned >= 10, reward: 200 },
             { id: 'time_1', name: 'Dedicated', desc: 'Play for 1 hour', icon: 'fa-solid fa-clock', condition: (s) => s.playTime >= 3600, reward: 500 },
             { id: 'time_2', name: 'Addicted', desc: 'Play for 10 hours', icon: 'fa-solid fa-hourglass-half', condition: (s) => s.playTime >= 36000, reward: 3000 },
+            
+            // Synergy Achievements (New in v11)
+            { id: 'synergy_1', name: 'Synergy Starter', desc: 'Activate your first node synergy', icon: 'fa-solid fa-link', condition: (s) => s.synergyBonus >= 15, reward: 300 },
+            { id: 'synergy_2', name: 'Synergy Master', desc: 'Activate 3+ synergies at once', icon: 'fa-solid fa-project-diagram', condition: (s) => s.synergyBonus >= 50, reward: 1000 },
+            { id: 'synergy_3', name: 'Full Stack', desc: 'Activate all 5 synergy bonuses', icon: 'fa-solid fa-layer-group', condition: (s) => s.synergyBonus >= 100, reward: 2500 },
         ];
 
         // RANDOM EVENTS CONFIGURATION
@@ -1905,6 +1909,7 @@
                 playTime: 0,
                 techsUnlocked: 0,
                 prestigeCount: 0,
+                synergyBonus: 0, // Track max synergy bonus achieved
                 startTime: Date.now()
             },
             
@@ -1946,8 +1951,12 @@
         let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
         let activeNodes = new Set();
         let history = { money: 0, rp: 0 };
-        let rateHistory = { money: [], rp: [] };
-        const RATE_WINDOW = 60; // 1 second at 60fps
+        // Rate tracking - actual per-second rates
+        let rateTracking = {
+            money: { current: 0, smoothed: 0, history: [] },
+            rp: { current: 0, smoothed: 0, history: [] }
+        };
+        const RATE_SMOOTHING_WINDOW = 5; // Average over 5 seconds
         let activeContract = null; 
         
         // --- ZOOM FUNCTIONS ---
@@ -2340,7 +2349,48 @@
             const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect);
             const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect);
 
-            const prestigeMult = 1 + (game.prestige * 0.5); 
+            // Prestige multiplier (doubled in v11: +100% per prestige)
+            const prestigeMult = 1 + (game.prestige * 1.0);
+            
+            // NODE SYNERGY BONUSES (New in v11)
+            let synergyBoost = 1.0;
+            const activeNodeTypes = new Set(game.nodes.filter(n => activeNodes.has(n.id) && !n.infected).map(n => n.type));
+            let synergyPercent = 0;
+            
+            // Cache + Downloader synergy: +15% download speed
+            if (activeNodeTypes.has('cache') && (activeNodeTypes.has('dl_file') || activeNodeTypes.has('dl_img') || activeNodeTypes.has('dl_vid') || activeNodeTypes.has('dl_audio'))) {
+                synergyBoost *= 1.15;
+                synergyPercent += 15;
+            }
+            
+            // Lab + Analyzer synergy: +20% RP generation
+            if (activeNodeTypes.has('lab') && activeNodeTypes.has('analyzer')) {
+                synergyBoost *= 1.20;
+                synergyPercent += 20;
+            }
+            
+            // Firewall + any node: +10% protection bonus (reduces virus chance further)
+            if (activeNodeTypes.has('firewall')) {
+                synergyBoost *= 1.10;
+                synergyPercent += 10;
+            }
+            
+            // Coding node trio: Coder + Dev Station + Compiler = +25% code generation
+            if (activeNodeTypes.has('coder') && activeNodeTypes.has('dev_station') && activeNodeTypes.has('compiler')) {
+                synergyBoost *= 1.25;
+                synergyPercent += 25;
+            }
+            
+            // Miner + Crypto Farm synergy: +30% mining income
+            if (activeNodeTypes.has('miner') && activeNodeTypes.has('crypto_farm')) {
+                synergyBoost *= 1.30;
+                synergyPercent += 30;
+            }
+            
+            // Track max synergy bonus for achievements
+            if (synergyPercent > game.stats.synergyBonus) {
+                game.stats.synergyBonus = synergyPercent;
+            } 
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
             const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
@@ -2357,7 +2407,7 @@
             const eventRPMult = eventMultipliers.rp;
             const eventCodeMult = eventMultipliers.code;
             
-            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult;
+            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost;
             
             // CODE GENERATION
             const coders = game.nodes.filter(n => n.type === 'coder' && activeNodes.has(n.id) && !n.infected);
@@ -2367,11 +2417,11 @@
             let codeGenRate = 0;
             coders.forEach(coder => {
                 const lvlMult = Math.pow(1.2, coder.level - 1);
-                codeGenRate += 5 * lvlMult * eventCodeMult; // 5 bits per second base
+                codeGenRate += 6.25 * lvlMult * eventCodeMult; // 6.25 bits per second base (buffed +25% in v11)
             });
             devStations.forEach(station => {
                 const lvlMult = Math.pow(1.2, station.level - 1);
-                codeGenRate += 10 * lvlMult * eventCodeMult; // 10 bits per second
+                codeGenRate += 12.5 * lvlMult * eventCodeMult; // 12.5 bits per second (buffed +25% in v11)
             });
             
             const bitsGenerated = codeGenRate * dt;
@@ -2578,19 +2628,6 @@
             updateCombo(dt);
             updateStatistics();
             updatePrestigeUI();
-            
-            // Calculate rolling average rates
-            rateHistory.money.push(history.money);
-            rateHistory.rp.push(history.rp);
-            if (rateHistory.money.length > RATE_WINDOW) rateHistory.money.shift();
-            if (rateHistory.rp.length > RATE_WINDOW) rateHistory.rp.shift();
-            
-            // Update rate displays every frame for smoothness
-            const avgMoneyRate = rateHistory.money.reduce((a, b) => a + b, 0) / rateHistory.money.length * 60;
-            const avgRpRate = rateHistory.rp.reduce((a, b) => a + b, 0) / rateHistory.rp.length * 60;
-            document.getElementById('moneyRate').innerText = `+$${fmt(avgMoneyRate)}/s`;
-            document.getElementById('rpRate').innerText = `+${fmt(avgRpRate)}/s`;
-
             updateUI(efficiency);
             requestAnimationFrame(gameLoop);
         }
@@ -2621,7 +2658,35 @@
         }
 
         function secLoop() {
-            // Reset history accumulator (rates are now calculated from rolling window in gameLoop)
+            // Calculate actual per-second rates
+            const moneyThisSecond = history.money;
+            const rpThisSecond = history.rp;
+            
+            // Update current rates
+            rateTracking.money.current = moneyThisSecond;
+            rateTracking.rp.current = rpThisSecond;
+            
+            // Add to history for smoothing
+            rateTracking.money.history.push(moneyThisSecond);
+            rateTracking.rp.history.push(rpThisSecond);
+            
+            // Keep only last N seconds
+            if (rateTracking.money.history.length > RATE_SMOOTHING_WINDOW) {
+                rateTracking.money.history.shift();
+            }
+            if (rateTracking.rp.history.length > RATE_SMOOTHING_WINDOW) {
+                rateTracking.rp.history.shift();
+            }
+            
+            // Calculate smoothed rates (average of last N seconds)
+            rateTracking.money.smoothed = rateTracking.money.history.reduce((a, b) => a + b, 0) / rateTracking.money.history.length;
+            rateTracking.rp.smoothed = rateTracking.rp.history.reduce((a, b) => a + b, 0) / rateTracking.rp.history.length;
+            
+            // Update display
+            document.getElementById('moneyRate').innerText = `+$${fmt(Math.round(rateTracking.money.smoothed))}/s`;
+            document.getElementById('rpRate').innerText = `+${fmt(Math.round(rateTracking.rp.smoothed))}/s`;
+            
+            // Reset accumulators for next second
             history = { money: 0, rp: 0 };
         }
         
@@ -3171,7 +3236,17 @@
             }
             
             if (game.money >= 10000000 || game.prestige > 0) document.getElementById('prestigeSection').style.display = 'block';
-            document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 50)}%`;
+            document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 100)}%`;
+            
+            // Calculate and display synergy bonus
+            let synergyPercent = 0;
+            const activeNodeTypes = new Set(game.nodes.filter(n => activeNodes.has(n.id) && !n.infected).map(n => n.type));
+            if (activeNodeTypes.has('cache') && (activeNodeTypes.has('dl_file') || activeNodeTypes.has('dl_img') || activeNodeTypes.has('dl_vid') || activeNodeTypes.has('dl_audio'))) synergyPercent += 15;
+            if (activeNodeTypes.has('lab') && activeNodeTypes.has('analyzer')) synergyPercent += 20;
+            if (activeNodeTypes.has('firewall')) synergyPercent += 10;
+            if (activeNodeTypes.has('coder') && activeNodeTypes.has('dev_station') && activeNodeTypes.has('compiler')) synergyPercent += 25;
+            if (activeNodeTypes.has('miner') && activeNodeTypes.has('crypto_farm')) synergyPercent += 30;
+            document.getElementById('synergyBonusDisplay').innerText = `Node Synergy: +${synergyPercent}%`;
             
             const cw = document.getElementById('activeContractWidget');
             if (activeContract) {
