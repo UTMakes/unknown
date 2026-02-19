@@ -24,7 +24,7 @@ async function initFirebase() {
                 cloudSaveEnabled = true;
                 updateCloudSaveStatus('online', 'Cloud Save Active');
                 updateAccountUI(user);
-                logEvent('Cloud save connected');
+                window.logEvent('Cloud save connected');
                 
                 // Try to load saved game
                 loadFromCloud();
@@ -115,8 +115,8 @@ async function registerUser() {
         await syncToCloud();
         
         showAccountError('');
-        logEvent('Account created successfully!', 'good');
-        showFloat('✅ Account Created!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+        window.logEvent('Account created successfully!', 'good');
+        window.showFloat('✅ Account Created!', window.innerWidth/2, window.innerHeight/2, '#10b981');
         
     } catch (error) {
         console.error('Registration error:', error);
@@ -146,8 +146,8 @@ async function loginUser() {
         await signIn(auth, email, password);
         
         showAccountError('');
-        logEvent('Logged in successfully!', 'good');
-        showFloat('✅ Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+        window.logEvent('Logged in successfully!', 'good');
+        window.showFloat('✅ Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
         
         // Load cloud save
         await loadFromCloud();
@@ -177,8 +177,8 @@ async function logoutUser() {
             autoSyncInterval = null;
         }
         
-        logEvent('Logged out', 'info');
-        showFloat('👋 Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
+        window.logEvent('Logged out', 'info');
+        window.showFloat('👋 Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
         
     } catch (error) {
         console.error('Logout error:', error);
@@ -202,8 +202,8 @@ function showAccountError(message) {
 // Sync game to cloud
 async function syncToCloud() {
     if (!cloudSaveEnabled || !currentUser) {
-        logEvent('Cloud save not available - please login first', 'bad');
-        showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+        window.logEvent('Cloud save not available - please login first', 'bad');
+        window.showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
         document.getElementById('accountModal').style.display='flex';
         return;
     }
@@ -231,13 +231,13 @@ async function syncToCloud() {
         const lastSyncEl = document.getElementById('lastSyncTime');
         if (lastSyncEl) lastSyncEl.innerText = 'Last sync: ' + new Date().toLocaleTimeString();
         
-        logEvent('Game saved to cloud', 'good');
-        showFloat('☁️ Saved to Cloud', window.innerWidth/2, window.innerHeight/2, '#3b82f6');
+        window.logEvent('Game saved to cloud', 'good');
+        window.showFloat('☁️ Saved to Cloud', window.innerWidth/2, window.innerHeight/2, '#3b82f6');
     } catch (error) {
         console.error('Cloud save error:', error);
         updateCloudSaveStatus('error', 'Sync Failed');
-        logEvent('Cloud save failed: ' + error.message, 'bad');
-        showFloat('❌ Save Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+        window.logEvent('Cloud save failed: ' + error.message, 'bad');
+        window.showFloat('❌ Save Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
     }
 }
 
@@ -341,14 +341,14 @@ async function loadFromCloud() {
                 showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
             }
         } else {
-            logEvent('No cloud save found');
+            window.logEvent('No cloud save found');
             updateCloudSaveStatus('online', 'No Cloud Save');
         }
     } catch (error) {
         console.error('Cloud load error:', error);
         updateCloudSaveStatus('error', 'Load Failed');
-        logEvent('Cloud load failed: ' + error.message, 'bad');
-        showFloat('❌ Load Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+        window.logEvent('Cloud load failed: ' + error.message, 'bad');
+        window.showFloat('❌ Load Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
     }
 }
 

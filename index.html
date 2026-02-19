@@ -82,7 +82,6 @@
 </head>
 <body>
 
-    <!-- Zoom Controls -->
     <div class="zoom-controls">
         <button class="zoom-btn" onclick="Game.zoomIn()" title="Zoom In (+)"><i class="fa-solid fa-plus"></i></button>
         <div class="zoom-level" id="zoomLevel">100%</div>
@@ -90,16 +89,13 @@
         <button class="zoom-btn" onclick="Game.resetZoom()" title="Reset Zoom (0)"><i class="fa-solid fa-compress"></i></button>
     </div>
 
-    <!-- Event Log -->
     <div class="event-log" id="eventLog"></div>
     
-    <!-- Cloud Save Status -->
     <div class="cloud-save-status" id="cloudSaveStatus">
         <i class="fa-solid fa-cloud"></i>
         <span id="cloudSaveText">Offline</span>
     </div>
     
-    <!-- Achievement Popup -->
     <div class="achievement-popup" id="achievementPopup">
         <div class="achievement-badge"><i class="fa-solid fa-trophy"></i></div>
         <i class="fa-solid fa-medal"></i>
@@ -109,14 +105,12 @@
         </div>
     </div>
     
-    <!-- Event Notification -->
     <div class="event-notification" id="eventNotification" style="transform: translateX(-50%) translateY(-1000px); display: none;">
         <h3 id="eventTitle">Event Title</h3>
         <p id="eventDesc">Event description goes here</p>
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
     </div>
     
-    <!-- Combo Indicator -->
     <div class="combo-indicator" id="comboIndicator">COMBO x2!</div>
 
     <!-- Welcome Modal -->
@@ -128,15 +122,146 @@
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
-                    <!-- Content loaded dynamically -->
+                    <!-- Getting Started -->
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
+                        <ul class="instructions-list">
+                            <li>Start with your <strong>Router</strong> - it's your network core</li>
+                            <li>Buy nodes from the toolbar at the bottom (5 tabs now!)</li>
+                            <li>Connect nodes by dragging between <span style="color:#10b981">green</span> and <span style="color:#3b82f6">blue</span> ports</li>
+                            <li>Nodes must be connected to the Router to work!</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+                        <ul class="instructions-list">
+                            <li><strong>Downloaders</strong> (blue) collect files/images/videos/audio</li>
+                            <li><strong>Uploaders</strong> (teal) sell data for money</li>
+                            <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
+                            <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
+                            <li><strong>Overclock</strong> doubles speed but generates heat!</li>
+                            <li><strong>Coder Nodes</strong> (cyan) produce code bits for drivers</li>
+                            <li>Check the <strong>Advanced</strong> tab for powerful late-game nodes</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+                        <ul class="instructions-list">
+                            <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
+                            <li><span class="key">0</span> to reset zoom to 100%</li>
+                            <li><span class="key">Drag</span> empty space to pan the view</li>
+                            <li><span class="key">Right-click</span> a node to open upgrade/delete menu</li>
+                            <li><span class="key">Drag</span> from green port to blue port to connect ($10 per cable)</li>
+                            <li><span class="key">X</span> to toggle cable delete mode ($5 refund per cable)</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-code"></i> NEW: Coding System</h3>
+                        <ul class="instructions-list">
+                            <li><strong>Coder Nodes</strong> generate code bits over time</li>
+                            <li>Convert 100 code bits → 1 Optimization Code</li>
+                            <li>Use optimization code to create <strong>Drivers</strong></li>
+                            <li>Drivers provide permanent global bonuses!</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Changelog Section -->
+                    <div class="help-section" style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                        <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.3)</h3>
+                        <ul class="changelog-list">
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Cable Deletion:</strong> Press X or click "Delete Cables" to remove connections ($5 refund)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge ui">UI</span>
+                                <span><strong>Enhanced UI:</strong> Beautiful gradients, smooth animations, hover effects</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Smooth Rates:</strong> Money/RP rates now update smoothly every frame</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span><strong>Compiler Upgrades:</strong> Compiler nodes now properly benefit from level upgrades</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Daily Rewards:</strong> Login every day for increasing bonuses!</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Offline Earnings:</strong> Earn 50% income while away (up to 12 hours)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Auto-Save:</strong> Automatic local saves every minute</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Milestones:</strong> Complete objectives for big rewards</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge new">New</span>
+                                <span><strong>Settings Panel:</strong> Toggle auto-save, offline earnings, notifications</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
                     <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v10.3</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
-                    <!-- Content loaded dynamically -->
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <div class="feature-icon new"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="feature-content">
+                                <h4>NEW: Cable Deletion!</h4>
+                                <p>Press X or click "Delete Cables" to remove connections. Get $5 refund per cable!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-user"></i></div>
+                            <div class="feature-content">
+                                <h4>Account System!</h4>
+                                <p>Create an account with email/password. Access your saves on any device!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-cloud"></i></div>
+                            <div class="feature-content">
+                                <h4>Cloud Save!</h4>
+                                <p>Save your progress to Firebase and play anywhere! Automatic sync every 5 minutes.</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-trophy"></i></div>
+                            <div class="feature-content">
+                                <h4>Achievements System!</h4>
+                                <p>25+ achievements to unlock! Earn rewards for reaching milestones and completing challenges.</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="feature-content">
+                                <h4>Random Events!</h4>
+                                <p>Market booms, DDoS attacks, research breakthroughs, and more! Adapt to changing conditions.</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-rotate"></i></div>
+                            <div class="feature-content">
+                                <h4>Prestige System!</h4>
+                                <p>Migrate your data center to gain permanent +50% speed bonuses. Stackable rewards!</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="version-tag">
+                        <i class="fa-solid fa-code-branch"></i> Version 10.3 - "Evolution Update"
+                    </div>
                 </div>
             </div>
         </div>
@@ -235,7 +360,69 @@
                 <button class="btn" onclick="document.getElementById('statsModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <!-- Stats content loaded dynamically -->
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-coins"></i> Financial</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Total Money Earned</div>
+                            <div class="stat-value-large" id="statTotalMoney">$0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Highest Money</div>
+                            <div class="stat-value-large" id="statPeakMoney">$0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Money Spent</div>
+                            <div class="stat-value-large" id="statMoneySpent">$0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Contracts Completed</div>
+                            <div class="stat-value-large" id="statContracts">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-network-wired"></i> Network</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Nodes Created</div>
+                            <div class="stat-value-large" id="statNodesCreated">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Nodes Deleted</div>
+                            <div class="stat-value-large" id="statNodesDeleted">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Cables Placed</div>
+                            <div class="stat-value-large" id="statCablesPlaced">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Upgrades</div>
+                            <div class="stat-value-large" id="statUpgrades">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-box"></i> Resources</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Files Downloaded</div>
+                            <div class="stat-value-large" id="statFilesDownloaded">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Total Research</div>
+                            <div class="stat-value-large" id="statTotalRP">0 RP</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Play Time</div>
+                            <div class="stat-value-large" id="statPlayTime">0h 0m</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Viruses Cleaned</div>
+                            <div class="stat-value-large" id="statViruses">0</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -248,7 +435,43 @@
                 <button class="btn" onclick="document.getElementById('prestigeModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <!-- Prestige content loaded dynamically -->
+                <div class="help-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1)); border-radius: 12px; border: 1px solid rgba(124, 58, 237, 0.3);">
+                    <i class="fa-solid fa-server" style="font-size: 48px; color: #a855f7; margin-bottom: 15px;"></i>
+                    <h3 style="color: #a855f7; margin-bottom: 10px;">Migrate to New Data Center</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Reset your progress for permanent bonuses. Your network will be rebuilt stronger than ever!</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div class="stat-item">
+                            <div class="stat-label">Current Bonus</div>
+                            <div class="stat-value-large" style="color: #a855f7;" id="currentPrestigeBonus">+0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Next Bonus</div>
+                            <div class="stat-value-large" style="color: #10b981;" id="nextPrestigeBonus">+50%</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Requirements:</div>
+                        <div id="prestigeRequirements" style="font-size: 14px;">Own at least 20 nodes and $50,000</div>
+                    </div>
+                    
+                    <button class="btn prestige-btn" id="prestigeBtn" onclick="performPrestige()" style="width: 100%; padding: 15px; font-size: 16px;">
+                        <i class="fa-solid fa-rotate"></i> Migrate Now
+                    </button>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-gift"></i> Prestige Rewards</h3>
+                    <ul class="instructions-list">
+                        <li><strong>+50% Speed Bonus</strong> per migration (stacking)</li>
+                        <li><strong>Keep:</strong> All Research unlocks</li>
+                        <li><strong>Keep:</strong> All Drivers</li>
+                        <li><strong>Keep:</strong> Achievement progress</li>
+                        <li><strong>Reset:</strong> Money, Nodes, Resources</li>
+                        <li><strong>Bonus:</strong> Start with $5,000 (instead of $2,000)</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -261,7 +484,18 @@
                 <button class="btn" onclick="document.getElementById('dailyRewardModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <!-- Daily rewards content loaded dynamically -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
+                    <h3 style="color: #fbbf24; margin-bottom: 5px;">Login Streak: <span id="streakDisplay">0</span> Days</h3>
+                    <p style="color: var(--text-muted); font-size: 12px;">Come back every day for bigger rewards!</p>
+                </div>
+                
+                <div id="dailyRewardsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+                
+                <button class="btn" id="claimDailyBtn" style="width: 100%; padding: 15px; font-size: 16px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; font-weight: bold;" onclick="claimDailyReward()">
+                    <i class="fa-solid fa-gift"></i> Claim Today's Reward
+                </button>
+                <p id="dailyRewardStatus" style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--text-muted);"></p>
             </div>
         </div>
     </div>
@@ -273,7 +507,27 @@
                 <h2 style="color:#10b981"><i class="fa-solid fa-clock"></i> Welcome Back!</h2>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <!-- Offline earnings content loaded dynamically -->
+                <div style="font-size: 64px; margin-bottom: 15px;">💤</div>
+                <h3 style="color: #fff; margin-bottom: 10px;">You were away for</h3>
+                <p id="offlineTime" style="font-size: 24px; color: #10b981; font-weight: bold; margin-bottom: 20px;">0 hours</p>
+                
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">While you were away, your network earned:</p>
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <div style="font-size: 24px; color: #fbbf24; font-weight: bold;">+<span id="offlineMoney">$0</span></div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Money</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; color: #8b5cf6; font-weight: bold;">+<span id="offlineRP">0</span></div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Research</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;" onclick="document.getElementById('offlineEarningsModal').style.display='none'">
+                    <i class="fa-solid fa-check"></i> Collect & Continue
+                </button>
             </div>
         </div>
     </div>
@@ -286,7 +540,63 @@
                 <button class="btn" onclick="document.getElementById('accountModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <!-- Account content loaded dynamically -->
+                <!-- Logged Out View -->
+                <div id="accountLoggedOut">
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="loginUser()">
+                            <i class="fa-solid fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">— OR —</div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="registerDisplayName" placeholder="Display Name" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="email" id="registerEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                            <input type="password" id="registerPassword" placeholder="Password (min 6 chars)" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
+                        </div>
+                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white;" onclick="registerUser()">
+                            <i class="fa-solid fa-user-plus"></i> Create Account
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="accountLoggedIn" style="display: none;">
+                    <div class="help-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <i class="fa-solid fa-circle-check" style="font-size: 48px; color: #10b981; margin-bottom: 15px;"></i>
+                        <h3 style="color: #3b82f6; margin-bottom: 10px;">Logged In</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 5px;">Welcome back,</p>
+                        <p id="accountDisplayName" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Player</p>
+                        <p id="accountEmail" style="font-size: 12px; color: var(--text-muted);">email@example.com</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3><i class="fa-solid fa-cloud"></i> Cloud Save Status</h3>
+                        <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Your progress is automatically saved to the cloud every 5 minutes.</p>
+                        <button class="btn sync-btn" style="width: 100%; margin-bottom: 10px;" onclick="syncToCloud()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Save Now
+                        </button>
+                        <button class="btn" style="width: 100%;" onclick="loadFromCloud()">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Load from Cloud
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;" onclick="logoutUser()">
+                            <i class="fa-solid fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="accountError" style="display: none; margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 6px; color: #ef4444; font-size: 12px;"></div>
             </div>
         </div>
     </div>
@@ -299,7 +609,80 @@
                 <button class="btn" onclick="document.getElementById('helpModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <!-- Help content loaded dynamically -->
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+                    <ul class="instructions-list">
+                        <li><strong>Downloaders</strong> (blue) collect files/images/videos/audio</li>
+                        <li><strong>Uploaders</strong> (teal) sell data for money</li>
+                        <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
+                        <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
+                        <li><strong>Overclock</strong> doubles speed but generates heat!</li>
+                        <li><strong>Coder Nodes</strong> (cyan) produce code bits for drivers</li>
+                        <li>Check the <strong>Research Tree</strong> for permanent upgrades!</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+                    <ul class="instructions-list">
+                        <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
+                        <li><span class="key">0</span> to reset zoom to 100%</li>
+                        <li><span class="key">Drag</span> empty space to pan the view</li>
+                        <li><span class="key">Right-click</span> a node to upgrade/delete</li>
+                        <li><span class="key">Drag</span> from green port to blue port to connect ($10/cable)</li>
+                        <li><span class="key">X</span> to toggle cable delete mode ($5 refund per cable)</li>
+                        <li><span class="key">?</span> to open this help modal</li>
+                        <li><span class="key">R</span> to open Research Tree</li>
+                        <li><span class="key">C</span> to open Code Studio</li>
+                        <li><span class="key">A</span> to open Achievements</li>
+                        <li><span class="key">S</span> to open Statistics</li>
+                        <li><span class="key">P</span> to open Prestige/Migration</li>
+                        <li><span class="key">L</span> to open Account/Login</li>
+                        <li><span class="key">ESC</span> to close all modals</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-user"></i> Account System</h3>
+                    <ul class="instructions-list">
+                        <li><strong>Create an account</strong> to save your progress to the cloud</li>
+                        <li><strong>Login</strong> on any device to access your saves</li>
+                        <li><strong>Auto-save</strong> every 5 minutes when logged in</li>
+                        <li><strong>Manual save/load</strong> available in Account panel</li>
+                        <li>Your save is linked to your email address</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-code"></i> Coding System</h3>
+                    <div class="help-grid">
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-terminal"></i> Coder Node</div>
+                            <div class="help-item-desc">Generates code bits based on coding speed. Connect to Router!</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-cube"></i> Code Bits</div>
+                            <div class="help-item-desc">Basic resource. 100 bits = 1 Optimization Code.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-file-code"></i> Optimization Code</div>
+                            <div class="help-item-desc">Refined code used to compile drivers.</div>
+                        </div>
+                        <div class="help-item">
+                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-microchip"></i> Drivers</div>
+                            <div class="help-item-desc">Permanent global upgrades. Stackable and level up!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="help-section">
+                    <h3><i class="fa-solid fa-microchip"></i> Driver Types</h3>
+                    <ul class="instructions-list">
+                        <li><strong style="color:var(--code)">Network Driver:</strong> +10% connection speed per level</li>
+                        <li><strong style="color:var(--code)">Compression Driver:</strong> +5% file compression per level</li>
+                        <li><strong style="color:var(--code)">Security Driver:</strong> -10% virus chance per level</li>
+                        <li><strong style="color:var(--code)">Mining Driver:</strong> +15% crypto mining per level</li>
+                        <li><strong style="color:var(--code)">Research Driver:</strong> +10% RP generation per level</li>
+                        <li><strong style="color:var(--code)">Upload Driver:</strong> +10% upload speed per level</li>
+                        <li><strong style="color:var(--code)">Download Driver:</strong> +10% download speed per level</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -316,7 +699,6 @@
 
     <!-- Main Game -->
     <div class="game-container">
-        <!-- Header -->
         <div class="header">
             <div class="header-title">
                 <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v10.3</span>
@@ -340,9 +722,7 @@
             </div>
         </div>
 
-        <!-- Sidebar -->
         <div class="sidebar">
-            <!-- System Controls Panel -->
             <div class="panel" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border-color: rgba(71, 85, 105, 0.5);">
                 <div class="panel-title" style="display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-gamepad" style="color: #22d3ee;"></i> 
@@ -391,7 +771,6 @@
                 </div>
             </div>
             
-            <!-- Account Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
                 <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
                 <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
@@ -407,7 +786,6 @@
                 </div>
             </div>
             
-            <!-- Daily Rewards Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
                 <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
                 <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
@@ -423,7 +801,6 @@
                 </div>
             </div>
             
-            <!-- Settings Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
                 <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -442,7 +819,6 @@
                 </div>
             </div>
 
-            <!-- Active Contract Widget -->
             <div class="contract-widget" id="activeContractWidget">
                 <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
                     Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
@@ -451,7 +827,6 @@
                 <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
             </div>
             
-            <!-- Active Event Widget -->
             <div class="contract-widget" id="activeEventWidget" style="display:none; border-color: var(--accent-color);">
                 <div style="font-size:12px; font-weight:bold; color:var(--accent-color); margin-bottom:5px;">
                     <i class="fa-solid fa-bolt"></i> <span id="eventName">Event Name</span>
@@ -460,7 +835,6 @@
                 <div style="font-size:11px; color:#d1d5db;" id="eventDesc">Event description</div>
             </div>
 
-            <!-- Code Panel -->
             <div class="panel code-panel">
                 <div class="panel-title"><i class="fa-solid fa-code"></i> Code Studio</div>
                 <div class="code-stats">
@@ -486,7 +860,6 @@
                 </div>
             </div>
 
-            <!-- Global Network Panel -->
             <div class="panel">
                 <div class="panel-title">
                     <span>Global Network</span>
@@ -523,7 +896,6 @@
                 </div>
             </div>
 
-            <!-- Storage Panel -->
             <div class="panel">
                 <div class="panel-title">Storage</div>
                 <div class="storage-bar-container">
@@ -541,7 +913,6 @@
             </div>
         </div>
 
-        <!-- Canvas Viewport -->
         <div class="canvas-viewport" id="viewport">
             <div class="world" id="world">
                 <div class="grid-bg"></div>
@@ -550,7 +921,6 @@
             </div>
         </div>
 
-        <!-- Toolbar -->
         <div class="toolbar">
             <div class="tabs">
                 <div class="tab active" data-tab="infra" onclick="setTab('infra', this)">Infrastructure</div>
@@ -563,16 +933,14 @@
         </div>
     </div>
 
-    <!-- Hidden File Input for Import -->
     <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSave(this)">
 
-    <!-- Firebase Configuration -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
             authDomain: "upload-labs-game-d874a.firebaseapp.com",
@@ -582,12 +950,10 @@
             appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
         };
         
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // Make available globally
         window.firebaseApp = app;
         window.firebaseAuth = auth;
         window.firebaseDb = db;
