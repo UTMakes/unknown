@@ -2952,22 +2952,22 @@
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
             
             // Infra - Early game utility
-            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
-            cache: { name: "Cache Server", type: "infra", cost: 2500, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
-            firewall: { name: "Firewall", type: "infra", cost: 1500, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
-            balancer: { name: "Load Balancer", type: "infra", cost: 4500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
+            miner: { name: "Crypto Miner", type: "infra", cost: 750, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
+            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
+            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
+            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
             overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
             cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo" },
             
             // Downloaders - Tiered progression
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 300, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
-            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 1800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
-            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 6000, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
-            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 15000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 400, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
             
             // Upload & Labs - Money and RP generation
-            uploader: { name: "Uploader", type: "upload", cost: 600, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
-            lab: { name: "Research Lab", type: "lab", cost: 3500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
+            uploader: { name: "Uploader", type: "upload", cost: 800, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
+            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
             rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
             quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
             
@@ -2990,10 +2990,10 @@
         };
 
         const RESOURCES = {
-            files: { size: 20, price: 6, rp: 2 },      // Reduced from 8
-            images: { size: 80, price: 28, rp: 8 },    // Reduced from 35
-            videos: { size: 350, price: 120, rp: 40 }, // Reduced from 150
-            audio: { size: 120, price: 42, rp: 15 }    // Reduced from 55
+            files: { size: 20, price: 4, rp: 2 },      // Reduced from 6
+            images: { size: 80, price: 18, rp: 8 },    // Reduced from 28
+            videos: { size: 350, price: 75, rp: 40 },  // Reduced from 120
+            audio: { size: 120, price: 28, rp: 15 }    // Reduced from 42
         };
 
         // DRIVER CONFIGURATION
@@ -3044,6 +3044,7 @@
             { id: "tech_cryo", name: "Cryogenic Cooling", cost: 500000, desc: "Unlock Cryo Coolers to counteract overheating", tier: 6, icon: "fa-solid fa-snowflake", requires: ["tech_quantum"] },
             { id: "tech_crypto_farm", name: "Mining Farm", cost: 750000, desc: "Unlock Crypto Farms (massive passive income)", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster", "tech_warehouse"] },
             { id: "tech_neural", name: "Neural Network", cost: 1000000, desc: "All nodes +50% efficiency. The ultimate upgrade.", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
+            { id: "tech_automation", name: "Network Automation", cost: 2500000, desc: "Unlock Auto-Research - automatically buy tech you can afford", tier: 6, icon: "fa-solid fa-robot", requires: ["tech_neural", "tech_compiler"] },
         ];
 
         // ACHIEVEMENTS CONFIGURATION
@@ -3112,7 +3113,7 @@
 
         // --- STATE ---
         let game = {
-            money: 2000,
+            money: 1500,  // Reduced from 2000
             rp: 0,
             prestige: 0, 
             res: { files: 0, images: 0, videos: 0, audio: 0 },
@@ -3189,7 +3190,11 @@
             playerName: '',
             playerId: '',
             saveCreated: Date.now(),
-            saveVersion: GAME_VERSION
+            saveVersion: GAME_VERSION,
+            
+            // PLAYTIME
+            playTime: 0,  // Total seconds played
+            lastPlayTimeUpdate: Date.now()
         };
 
         // Offline earnings tracking
@@ -3270,17 +3275,36 @@
             return { game, activeNodes: [...activeNodes] };
         }
         
+        // Debug function for money issues
+        function debugMoney() {
+            console.log('%c Money Debug Info ', 'background: #f59e0b; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;');
+            console.log({
+                money: game.money,
+                moneyIsFinite: isFinite(game.money),
+                historyMoney: history.money,
+                historyIsFinite: isFinite(history.money),
+                rateTrackingSmoothed: rateTracking.money.smoothed,
+                rateTrackingCurrent: rateTracking.money.current,
+                rateHistoryLength: rateTracking.money.history.length,
+                rateHistorySample: rateTracking.money.history.slice(-3),
+                activeNodes: game.nodes.filter(n => activeNodes.has(n.id) && !n.infected).length,
+                totalNodes: game.nodes.length,
+                infectedNodes: game.nodes.filter(n => n.infected).length
+            });
+            return 'Money debug info printed to console';
+        }
+        
         window.Game = { 
             zoomIn, zoomOut, resetZoom, 
             emergencyRecover, repairSaveData, validateSaveData,
             clearSaveAndReset, showGameInfo, toggleSetting,
             batchUpgrade, toggleAutoBalancer, showNetworkAnalysis,
             installDriver, handleDriverClick, openModal, closeModal, closeAllModals,
-            clearDriverGridCache
+            clearDriverGridCache, debugMoney
         };
         
         // Log help message for debugging
-        console.log('%c Upload Labs: Network Empire ', 'background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
+        console.log('%c Upload Labs: Network Empire ', 'background: linear-gradient(135deg: #3b82f6, #8b5cf6); color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
         console.log('%c Debug Commands: ', 'color: #3b82f6; font-weight: bold; font-size: 14px;');
         console.log('  Game.emergencyRecover() - Fix stuck game state');
         console.log('  Game.showGameInfo() - Show current game state');
@@ -3290,6 +3314,7 @@
         console.log('  Game.batchUpgrade("type") - Upgrade all nodes of type');
         console.log('  Game.toggleAutoBalancer() - Toggle auto-balancer');
         console.log('  Game.showNetworkAnalysis() - Analyze network efficiency');
+        console.log('  Game.debugMoney() - Debug money generation issues');
         
         // --- CORE FUNCTIONS ---
 
@@ -3763,7 +3788,7 @@
             const eventRPMult = eventMultipliers.rp;
             const eventCodeMult = eventMultipliers.code;
             
-            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost;
+            const baseSpeed = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost; // Reduced from 25/1.5
             
             // CODE GENERATION
             const coders = game.nodes.filter(n => n.type === 'coder' && activeNodes.has(n.id) && !n.infected);
@@ -3801,6 +3826,9 @@
             let rpBoost = 1 + (analyzerCount * 0.5);
             const warehouseCount = game.nodes.filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).length;
 
+            // PERFORMANCE: Cache node lookups in a Map for O(1) access
+            const nodeMap = new Map(game.nodes.map(n => [n.id, n]));
+            
             game.nodes.forEach(node => {
                 if (!activeNodes.has(node.id)) return;
                 if (node.infected) { 
@@ -3816,9 +3844,10 @@
                 let boost = 1 * aiBoost * clusterBoost;
                 let hasCompressor = false;
                 
+                // PERFORMANCE: Use cached nodeMap instead of find()
                 game.conns.forEach(c => {
                     const nid = c.from === node.id ? c.to : c.from;
-                    const n = game.nodes.find(x => x.id === nid);
+                    const n = nodeMap.get(nid);
                     if (n && activeNodes.has(nid) && !n.infected) {
                         if (n.type === 'cache') boost *= 1.5;
                         if (n.type === 'rack') boost *= 1.2;
@@ -3961,16 +3990,44 @@
 
             game.nodes.forEach(n => {
                 if ((n.type === 'backup' || n.type === 'warehouse') && activeNodes.has(n.id) && !n.infected) {
-                    const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
+                    const stored = Object.values(game.res).reduce((a, b) => (a || 0) + (b || 0), 0);
                     if (stored > 1000) {
                         const bonus = stored * 0.001 * dt * (n.type === 'warehouse' ? 2 : 1); // Reduced from 0.002
-                        if (bonus > 0 && isFinite(bonus)) {
+                        if (bonus > 0 && isFinite(bonus) && bonus < 1e15) {
                             game.money += bonus;
                             history.money = (history.money || 0) + bonus;
+                            game.stats.totalMoney += bonus;
                         }
                     }
                 }
             });
+            
+            // CRITICAL FIX: Ensure money never becomes invalid
+            if (!isFinite(game.money) || game.money < 0 || game.money > 1e308) {
+                console.error('Invalid money detected:', game.money);
+                game.money = 2000;
+                history.money = 0;
+            }
+            
+            // Ensure history.money is always valid
+            if (!isFinite(history.money) || history.money < 0) {
+                history.money = 0;
+            }
+            
+            // AUTO-RESEARCH: If unlocked, automatically buy affordable tech
+            if (game.unlocked.includes('tech_automation') && frameCount % 60 === 0) {
+                TECH_TREE.forEach(tech => {
+                    if (!game.unlocked.includes(tech.id) && game.rp >= tech.cost) {
+                        const canUnlock = !tech.requires || tech.requires.every(req => game.unlocked.includes(req));
+                        if (canUnlock) {
+                            game.rp -= tech.cost;
+                            game.unlocked.push(tech.id);
+                            game.stats.totalRP += tech.cost;
+                            logEvent(`Auto-Researched: ${tech.name}`, 'good');
+                        }
+                    }
+                });
+            }
 
             if (activeContract) {
                 activeContract.time -= dt;
@@ -4031,9 +4088,23 @@
         }
 
         function secLoop() {
-            // Calculate actual per-second rates
-            const moneyThisSecond = history.money || 0;
-            const rpThisSecond = history.rp || 0;
+            // Validate history values
+            const rawMoney = history.money;
+            const rawRP = history.rp;
+            
+            // Ensure valid numbers
+            const moneyThisSecond = (isFinite(rawMoney) && rawMoney > 0) ? rawMoney : 0;
+            const rpThisSecond = (isFinite(rawRP) && rawRP > 0) ? rawRP : 0;
+            
+            // Debug logging for high money scenarios
+            if (game.money > 5000000 && moneyThisSecond === 0) {
+                console.warn('Zero money income detected at high money:', {
+                    totalMoney: game.money,
+                    rawHistory: rawMoney,
+                    activeNodes: game.nodes.filter(n => activeNodes.has(n.id)).length,
+                    timestamp: Date.now()
+                });
+            }
             
             // Update current rates
             rateTracking.money.current = moneyThisSecond;
@@ -4052,16 +4123,23 @@
             }
             
             // Calculate smoothed rates (average of last N seconds)
-            const moneySum = rateTracking.money.history.reduce((a, b) => (a || 0) + (b || 0), 0);
-            const rpSum = rateTracking.rp.history.reduce((a, b) => (a || 0) + (b || 0), 0);
-            rateTracking.money.smoothed = moneySum / rateTracking.money.history.length;
-            rateTracking.rp.smoothed = rpSum / rateTracking.rp.history.length;
+            const validMoneyHistory = rateTracking.money.history.filter(n => isFinite(n) && n >= 0);
+            const validRPHistory = rateTracking.rp.history.filter(n => isFinite(n) && n >= 0);
+            
+            const moneySum = validMoneyHistory.reduce((a, b) => a + b, 0);
+            const rpSum = validRPHistory.reduce((a, b) => a + b, 0);
+            
+            rateTracking.money.smoothed = validMoneyHistory.length > 0 ? moneySum / validMoneyHistory.length : 0;
+            rateTracking.rp.smoothed = validRPHistory.length > 0 ? rpSum / validRPHistory.length : 0;
             
             // Update display (ensure we always show a valid number)
             const displayMoneyRate = Math.max(0, Math.round(rateTracking.money.smoothed || 0));
             const displayRPRate = Math.max(0, Math.round(rateTracking.rp.smoothed || 0));
-            document.getElementById('moneyRate').innerText = `+$${fmt(displayMoneyRate)}/s`;
-            document.getElementById('rpRate').innerText = `+${fmt(displayRPRate)}/s`;
+            
+            const moneyRateEl = document.getElementById('moneyRate');
+            const rpRateEl = document.getElementById('rpRate');
+            if (moneyRateEl) moneyRateEl.innerText = `+$${fmt(displayMoneyRate)}/s`;
+            if (rpRateEl) rpRateEl.innerText = `+${fmt(displayRPRate)}/s`;
             
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
@@ -4707,10 +4785,17 @@
         }
 
         function fmt(n) {
-            if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
-            if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
-            if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
-            return Math.floor(n);
+            // Safety check for invalid numbers
+            if (n === null || n === undefined || isNaN(n) || !isFinite(n)) {
+                console.warn('fmt() received invalid number:', n);
+                return '0';
+            }
+            const num = Number(n);
+            if (num >= 1e12) return (num/1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num/1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num/1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num/1e3).toFixed(1) + 'k';
+            return Math.floor(num).toString();
         }
         
         function updateRouterCostDisplay() {
@@ -4875,7 +4960,7 @@
             
             const prestigeMult = 1 + (game.prestige * 0.5);
             const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
-            const base = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * driverDownloadMult;
+            const base = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * driverDownloadMult; // Reduced from 25/1.5
             document.getElementById('globalDown').innerText = fmt(base * eff) + ' B/s';
             document.getElementById('globalUp').innerText = fmt(base * eff) + ' B/s';
             document.getElementById('routerLvl').innerText = 'LVL ' + game.routerLevel;
