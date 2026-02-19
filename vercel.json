@@ -24,7 +24,7 @@
       ]
     },
     {
-      "source": "/public/(.*\\.(js|css))",
+      "source": "/(.*\\.(js|css))",
       "headers": [
         {
           "key": "Cache-Control",
@@ -33,19 +33,13 @@
       ]
     },
     {
-      "source": "/public/(.*\\.(png|jpg|jpeg|gif|webp|svg|ico))",
+      "source": "/(.*\\.(png|jpg|jpeg|gif|webp|svg|ico))",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=2592000"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ],
   "cleanUrls": true,
