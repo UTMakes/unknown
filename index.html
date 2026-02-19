@@ -20,10 +20,57 @@
     <meta name="twitter:description" content="A cyberpunk network management idle game. Build your data empire!">
     
     <title>Upload Labs: Network Empire</title>
-    
-    <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
+            authDomain: "upload-labs-game-d874a.firebaseapp.com",
+            projectId: "upload-labs-game-d874a",
+            storageBucket: "upload-labs-game-d874a.firebasestorage.app",
+            messagingSenderId: "642883299920",
+            appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Make available globally
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseSignInAnonymously = signInAnonymously;
+        window.firebaseCreateUser = createUserWithEmailAndPassword;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseSignOut = signOut;
+        window.firebaseUpdateProfile = updateProfile;
+        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseOnSnapshot = onSnapshot;
+    </script>
+    
+    <!-- Vercel Speed Insights -->
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -60,26 +107,664 @@
         }
     </script>
     
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Vercel Speed Insights -->
-    <script>
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
-    
-    <!-- Vercel Web Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    
-    <!-- Game Styles -->
-    <link rel="stylesheet" href="public/css/game.css">
-    <link rel="stylesheet" href="public/css/game-visual.css">
+    <style>
+        :root {
+            --bg-color: #0a0e14;
+            --panel-bg: rgba(20, 26, 35, 0.95);
+            --border-color: #2a3447;
+            --accent-color: #3b82f6;
+            --text-color: #e0e6ed;
+            --text-muted: #8b92a8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --research: #8b5cf6;
+            --code: #00d4aa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            user-select: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "sidebar canvas"
+                "toolbar toolbar";
+            grid-template-columns: 360px 1fr;
+            grid-template-rows: 70px 1fr 160px;
+            height: 100vh;
+            width: 100vw;
+            gap: 0;
+        }
+
+        .header {
+            grid-area: header;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .version-badge {
+            background: linear-gradient(45deg, #7c3aed, #db2777);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: rgba(10, 14, 20, 0.5);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 75px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .stat-box:hover { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.1); }
+        .stat-box:active { transform: scale(0.95); }
+
+        .stat-icon { font-size: 14px; margin-bottom: 2px; color: var(--text-muted); }
+        .stat-value { font-weight: 700; font-size: 13px; color: #fff; }
+        .stat-rate { font-size: 9px; color: var(--success); font-family: monospace; }
+        
+        .stat-box.money .stat-icon { color: #fbbf24; }
+        .stat-box.research .stat-icon { color: #8b5cf6; }
+        .stat-box.code .stat-icon { color: var(--code); }
+        .stat-box.code { border-color: rgba(0, 212, 170, 0.3); }
+        .stat-box.code:hover { border-color: var(--code); background: rgba(0, 212, 170, 0.1); }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            z-index: 40;
+        }
+
+        .panel {
+            background: rgba(30, 37, 50, 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); }
+        .btn-primary { background: var(--accent-color); border-color: var(--accent-color); }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-research { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; color: #a78bfa; }
+        .btn-research:hover { background: rgba(139, 92, 246, 0.4); }
+        .btn-code { background: rgba(0, 212, 170, 0.2); border-color: var(--code); color: var(--code); }
+        .btn-code:hover { background: rgba(0, 212, 170, 0.4); }
+        .btn-contract { background: rgba(245, 158, 11, 0.2); border-color: var(--warning); color: var(--warning); }
+        .btn-contract:hover { background: rgba(245, 158, 11, 0.4); }
+        .btn-prestige { background: linear-gradient(45deg, #7c3aed, #db2777); border: none; color: white; font-weight: bold; }
+        .btn-prestige:hover { filter: brightness(1.2); }
+        .btn-help { background: rgba(6, 182, 212, 0.2); border-color: var(--info); color: var(--info); }
+        .btn-help:hover { background: rgba(6, 182, 212, 0.4); }
+        .btn-small { padding: 6px; font-size: 10px; }
+
+        .storage-bar-container { margin-top: 6px; }
+        .storage-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+        .storage-track { height: 4px; background: #1a202c; border-radius: 2px; overflow: hidden; }
+        .storage-fill { height: 100%; width: 0%; transition: width 0.3s; }
+
+        .heat-container { margin-top: 5px; }
+        .heat-track { height: 8px; background: #1a202c; border-radius: 4px; overflow: hidden; border:1px solid #4a5568; position: relative; }
+        .heat-fill { height: 100%; width: 0%; transition: width 0.2s, background-color 0.2s; background: #10b981; }
+        
+        .router-cost {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 6px;
+            padding: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        .router-cost .cost-value { color: #fbbf24; font-weight: bold; }
+        .router-cost .cost-value.affordable { color: var(--success); }
+        .router-cost .cost-value.expensive { color: var(--danger); }
+
+        /* Code Panel Styles */
+        .code-panel {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
+            border-color: rgba(0, 212, 170, 0.3);
+        }
+        
+        .code-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .code-stat {
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .code-stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        
+        .code-stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--code);
+            font-family: monospace;
+        }
+        
+        .code-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .code-btn {
+            background: rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.4);
+            color: var(--code);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        
+        .code-btn:hover:not(:disabled) {
+            background: rgba(0, 212, 170, 0.25);
+            transform: translateX(3px);
+        }
+        
+        .code-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .code-btn-cost {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Driver Badges */
+        .driver-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .driver-badge {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 212, 170, 0.1));
+            border: 1px solid rgba(0, 212, 170, 0.4);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 10px;
+            color: var(--code);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .driver-badge i {
+            font-size: 9px;
+        }
+
+        .contract-widget {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        .contract-timer { font-family: monospace; font-weight: bold; color: var(--warning); float: right; }
+
+        .event-log {
+            position: absolute;
+            bottom: 180px;
+            right: 20px;
+            width: 250px;
+            max-height: 150px;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 5px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .log-entry {
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            border-left: 3px solid var(--accent-color);
+            animation: fade-in 0.3s ease-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .log-entry.code { border-left-color: var(--code); }
+        @keyframes fade-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 180px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 100;
+        }
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .zoom-btn:hover { border-color: var(--accent-color); background: rgba(59, 130, 246, 0.2); }
+        .zoom-level { text-align: center; font-size: 10px; color: var(--text-muted); padding: 4px; background: rgba(0,0,0,0.5); border-radius: 4px; }
+
+        .instructions-list { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+        .instructions-list li { margin-bottom: 6px; list-style: none; padding-left: 16px; position: relative; }
+        .instructions-list li::before { content: '▸'; position: absolute; left: 0; color: var(--accent-color); }
+        .instructions-list .key { background: rgba(255,255,255,0.1); padding: 1px 5px; border-radius: 3px; font-family: monospace; color: var(--text-color); }
+
+        .canvas-viewport {
+            grid-area: canvas;
+            position: relative;
+            background: #0f1218;
+            overflow: hidden;
+            cursor: grab;
+            z-index: 1;
+        }
+        .canvas-viewport:active { cursor: grabbing; }
+
+        .world { position: absolute; top: 0; left: 0; transform-origin: 0 0; width: 0; height: 0; }
+
+        .grid-bg {
+            position: absolute;
+            top: -5000px; left: -5000px;
+            width: 10000px; height: 10000px;
+            background-image: 
+                linear-gradient(rgba(40, 50, 70, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(40, 50, 70, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        svg.connections-layer { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: all; z-index: 1; }
+        .cable { fill: none; stroke: #4a5568; stroke-width: 4px; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; transition: all 0.2s; cursor: pointer; pointer-events: stroke; }
+        .cable:hover { stroke: #ef4444; stroke-width: 6px; opacity: 1; filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5)); }
+        .cable-inner { fill: none; stroke: #2dd4bf; stroke-width: 2px; stroke-linecap: round; stroke-dasharray: 6 6; animation: flow 0.5s linear infinite; opacity: 0; pointer-events: none; }
+        .cable-group.active .cable-inner { opacity: 1; }
+        .cable-group.active .cable { stroke: #1f2937; stroke-width: 6px; opacity: 1; } 
+        .cable-group.power .cable-inner { stroke: #f59e0b; }
+        .cable-group.money .cable-inner { stroke: #10b981; }
+        .cable-group.code .cable-inner { stroke: var(--code); }
+        @keyframes flow { to { stroke-dashoffset: -12; } }
+        
+        /* Cable Delete Mode */
+        .cable-delete-mode .cable { cursor: crosshair !important; animation: pulse-delete 1s infinite; pointer-events: stroke !important; }
+        .cable-delete-mode .cable-group { pointer-events: all !important; }
+        .cable-delete-mode .cable:hover { stroke: #ef4444 !important; stroke-width: 8px !important; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)) !important; }
+        @keyframes pulse-delete { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+        #cableDeleteBtn.active { background: linear-gradient(135deg, #10b981, #059669) !important; animation: pulse 2s infinite; }
+
+        .node {
+            position: absolute;
+            width: 180px; height: 80px; 
+            background: rgba(20, 25, 35, 0.98);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transition: border-color 0.2s, opacity 0.3s, transform 0.2s;
+            z-index: 10;
+        }
+
+        .node.coding { border-color: var(--code) !important; box-shadow: 0 0 20px rgba(0, 212, 170, 0.3); }
+        .node.coding .node-icon-box { animation: pulse-code 1.5s infinite; }
+        @keyframes pulse-code {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 212, 170, 0); }
+        }
+
+        .node.disconnected { border-color: var(--danger) !important; opacity: 0.8; }
+        .node.overheating { animation: shake 0.5s infinite; border-color: #ef4444 !important; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            25% { transform: translate(-1px, -2px) rotate(-1deg); }
+            50% { transform: translate(-3px, 0px) rotate(1deg); }
+            75% { transform: translate(3px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -1px) rotate(-1deg); }
+        }
+        .node.infected { border-color: #8b5cf6 !important; box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
+        .clean-btn {
+            display: none; position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%);
+            background: #10b981; color: white; border: 2px solid #fff;
+            padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 11px;
+            cursor: pointer; z-index: 1000; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .clean-btn:hover { background: #059669; transform: translateX(-50%) scale(1.1); }
+        .node.infected .clean-btn { display: block; }
+        .node:hover { border-color: var(--text-muted); }
+        .node.selected { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6); z-index: 20; }
+
+        .node-header { padding: 10px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05); border-radius: 10px 10px 0 0; height: 100%; }
+        .node-icon-box { width: 40px; height: 40px; border-radius: 8px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid rgba(255,255,255,0.1); }
+        .node.working .node-icon-box { animation: pulse-work 1s infinite; }
+        @keyframes pulse-work { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } }
+        .node-info { flex: 1; overflow: hidden; }
+        .node-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .node-lvl { font-size: 11px; color: var(--text-muted); }
+
+        .port { width: 14px; height: 14px; background: #1a202c; border: 2px solid #64748b; border-radius: 50%; position: absolute; z-index: 30; cursor: crosshair; transition: transform 0.2s; }
+        .port:hover { transform: scale(1.6); background: #fff; border-color: var(--accent-color); }
+        .port.in { left: -7px; top: 50%; transform: translateY(-50%); border-color: #3b82f6; }
+        .port.out { right: -7px; top: 50%; transform: translateY(-50%); border-color: #10b981; }
+
+        .toolbar { grid-area: toolbar; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 50; }
+        .tabs { display: flex; border-bottom: 1px solid var(--border-color); padding: 0 10px; }
+        .tab { padding: 10px 15px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab:hover { color: #fff; }
+        .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+
+        .items-tray { flex: 1; padding: 10px 15px; overflow-x: auto; display: flex; gap: 12px; align-items: center; }
+        .shop-item { min-width: 140px; height: 100px; background: rgba(30, 37, 50, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; position: relative; transition: all 0.2s; display: flex; flex-direction: column; }
+        .shop-item:hover:not(.disabled) { border-color: var(--accent-color); transform: translateY(-3px); background: rgba(40, 50, 70, 0.8); }
+        .shop-item.disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
+        .item-cost { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.4); color: #fbbf24; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 4px; }
+        .item-icon { font-size: 20px; margin-bottom: 6px; color: #fff; }
+        .item-name { font-size: 12px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .item-desc { font-size: 10px; color: var(--text-muted); line-height: 1.2; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal { background: #1a202c; border: 1px solid #4a5568; border-radius: 12px; padding: 0; width: 700px; max-width: 90%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+
+        .welcome-container { display: flex; gap: 0; max-width: 1000px; width: 95%; max-height: 85vh; }
+        .welcome-main { flex: 1.2; background: #1a202c; border: 1px solid #4a5568; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 85vh; }
+        .welcome-sidebar { flex: 0.8; background: linear-gradient(135deg, #1a202c, #151922); border: 1px solid #4a5568; border-radius: 12px; margin-left: 15px; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-height: 85vh; }
+        .welcome-sidebar-header { padding: 20px; border-bottom: 1px solid #2d3748; background: rgba(59, 130, 246, 0.1); border-radius: 12px 12px 0 0; }
+        .welcome-sidebar-header h2 { color: var(--accent-color); font-size: 18px; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .welcome-sidebar-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .update-badge { display: inline-block; background: linear-gradient(45deg, #7c3aed, #db2777); color: white; font-size: 10px; font-weight: bold; padding: 3px 10px; border-radius: 20px; margin-left: 10px; text-transform: uppercase; }
+        .feature-list { list-style: none; padding: 0; margin: 0; }
+        .feature-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 12px; }
+        .feature-item:last-child { border-bottom: none; }
+        .feature-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--accent-color); flex-shrink: 0; }
+        .feature-icon.new { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .feature-icon.code { background: rgba(0, 212, 170, 0.15); color: var(--code); }
+        .feature-content h4 { color: var(--text-color); font-size: 13px; margin: 0 0 4px 0; }
+        .feature-content p { color: var(--text-muted); font-size: 11px; margin: 0; line-height: 1.4; }
+        .version-tag { font-size: 10px; color: var(--text-muted); margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Changelog Panel */
+        .changelog-section { margin-top: 20px; padding-top: 20px; border-top: 2px solid rgba(255,255,255,0.1); }
+        .changelog-header { font-size: 14px; color: #fff; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .changelog-list { list-style: none; padding: 0; margin: 0; }
+        .changelog-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 8px; }
+        .changelog-item:last-child { border-bottom: none; }
+        .changelog-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; text-transform: uppercase; flex-shrink: 0; }
+        .changelog-badge.fix { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .changelog-badge.balance { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .changelog-badge.bug { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .changelog-badge.ui { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .changelog-badge.new { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+
+        /* Custom Scrollbar Styling */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(20, 26, 35, 0.8); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 5px; border: 2px solid rgba(20, 26, 35, 0.8); }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+        ::-webkit-scrollbar-corner { background: rgba(20, 26, 35, 0.8); }
+        
+        /* Firefox scrollbar */
+        * { scrollbar-width: thin; scrollbar-color: #3b82f6 rgba(20, 26, 35, 0.8); }
+        
+        /* Modal body scrollbars */
+        .modal-body::-webkit-scrollbar { width: 12px; }
+        .modal-body::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #4a5568, #2d3748); border-radius: 6px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #64748b, #4a5568); }
+        
+        /* Welcome sidebar scrollbar */
+        .welcome-sidebar-body::-webkit-scrollbar { width: 8px; }
+        .welcome-sidebar-body::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #7c3aed, #db2777); border-radius: 4px; }
+        .welcome-sidebar-body::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+        
+        /* Research tree scrollbar */
+        .research-tree-container::-webkit-scrollbar { height: 12px; }
+        .research-tree-container::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 6px; }
+        .research-tree-container::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+
+        .modal-header { padding: 20px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; overflow-y: auto; }
+
+        .research-tree-container { position: relative; min-height: 700px; overflow: auto; background: radial-gradient(circle at center, rgba(30, 40, 55, 0.8) 0%, rgba(15, 20, 30, 0.95) 100%); border-radius: 12px; border: 1px solid var(--border-color); }
+        .research-tree-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: all 0.5s ease; }
+        .research-tree-line.unlocked { stroke: var(--research); stroke-width: 4; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8)); animation: linePulse 2s infinite; }
+        @keyframes linePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .research-tree-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px; padding: 40px; position: relative; z-index: 2; min-width: 1200px; }
+        .research-tier { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .tier-label { font-size: 11px; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; padding: 6px 16px; background: linear-gradient(135deg, #4a5568, #2d3748); border-radius: 20px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .tier-label.tier-1 { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .tier-label.tier-2 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tier-label.tier-3 { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+        .tier-label.tier-4 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .tier-label.tier-5 { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .tier-label.tier-6 { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+        .tech-card { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #4a5568; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; width: 140px; z-index: 3; }
+        .tech-card:hover:not(.locked):not(.owned) { border-color: var(--research); transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+        .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        .tech-card.owned { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .tech-card.owned::after { content: "✓"; position: absolute; top: -8px; right: -8px; background: var(--success); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .tech-card.available { border-color: var(--research); animation: pulse-available 2s infinite; }
+        @keyframes pulse-available { 0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); } }
+        .tech-icon { font-size: 28px; margin-bottom: 10px; color: var(--research); }
+        .tech-card.owned .tech-icon { color: var(--success); }
+        .tech-card.locked .tech-icon { color: #64748b; }
+        .tech-name { font-weight: bold; color: #fff; font-size: 12px; margin-bottom: 5px; }
+        .tech-desc { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.3; }
+        .tech-cost { color: var(--research); font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .tech-cost.affordable { color: var(--success); }
+        .tech-req { font-size: 9px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        /* Code Modal */
+        .code-modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .code-section { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px; border: 1px solid var(--border-color); }
+        .code-section h3 { color: var(--code); font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .driver-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .driver-card {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .driver-card:hover:not(.locked) { border-color: var(--code); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2); }
+        .driver-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .driver-card.installed { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); }
+        .driver-icon { font-size: 20px; color: var(--code); margin-bottom: 5px; }
+        .driver-name { font-size: 11px; font-weight: bold; color: #fff; }
+        .driver-desc { font-size: 9px; color: var(--text-muted); margin: 4px 0; }
+        .driver-cost { font-size: 10px; color: var(--code); }
+        .driver-level { font-size: 9px; color: var(--success); margin-top: 4px; }
+
+        .contract-item { background: rgba(40, 50, 70, 0.4); border: 1px solid #4a5568; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .contract-item h4 { color: #fff; font-size: 14px; margin-bottom: 4px; }
+        .contract-item p { color: #a0aec0; font-size: 12px; }
+        .contract-reward { color: #fbbf24; font-weight: bold; font-size: 13px; text-align: right; }
+
+        #contextMenu { position: fixed; background: #1a202c; border: 1px solid #4a5568; border-radius: 6px; padding: 5px; z-index: 5000; display: none; min-width: 150px; }
+        .ctx-item { padding: 8px 12px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; justify-content: space-between; }
+        .ctx-item:hover { background: #2d3748; border-radius: 4px; }
+        .ctx-item.danger { color: var(--danger); }
+
+        .help-section { margin-bottom: 20px; }
+        .help-section h3 { color: var(--accent-color); font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .help-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .help-item { background: rgba(30, 40, 55, 0.5); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .help-item-title { font-weight: bold; font-size: 12px; margin-bottom: 4px; }
+        .help-item-desc { font-size: 11px; color: var(--text-muted); }
+
+        .floating-text { position: fixed; pointer-events: none; font-weight: bold; font-size: 14px; z-index: 3000; animation: float-up 1s ease-out forwards; }
+        @keyframes float-up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
+
+        /* Achievements */
+        .achievement-popup { position: fixed; top: 80px; right: -400px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95)); color: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 4000; transition: right 0.5s ease; max-width: 350px; border: 2px solid rgba(255,255,255,0.3); }
+        .achievement-popup.show { right: 20px; }
+        .achievement-popup i { font-size: 24px; margin-right: 12px; }
+        .achievement-popup h4 { margin: 0 0 5px 0; font-size: 14px; }
+        .achievement-popup p { margin: 0; font-size: 12px; opacity: 0.9; }
+        .achievement-badge { position: absolute; top: -8px; right: -8px; background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        
+        /* Event Notifications */
+        .event-notification { position: fixed; top: 100px; left: 50%; transform: translateX(-50%) translateY(-1000px); background: rgba(20, 26, 35, 0.98); border: 2px solid var(--accent-color); padding: 20px 30px; border-radius: 16px; z-index: 3500; transition: transform 0.5s ease; text-align: center; min-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .event-notification.show { transform: translateX(-50%) translateY(0); }
+        .event-notification.good { border-color: var(--success); }
+        .event-notification.bad { border-color: var(--danger); }
+        .event-notification h3 { margin: 0 0 10px 0; color: var(--accent-color); }
+        .event-notification.good h3 { color: var(--success); }
+        .event-notification.bad h3 { color: var(--danger); }
+        
+        /* Stats Panel */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stat-item { background: rgba(30, 40, 55, 0.5); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value-large { font-size: 18px; font-weight: bold; color: var(--accent-color); margin-top: 4px; }
+        
+        /* Particle Effects */
+        .particle { position: absolute; pointer-events: none; border-radius: 50%; animation: particle-fade 1s ease-out forwards; }
+        @keyframes particle-fade { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); } }
+        
+        /* Multi-select */
+        .selection-box { position: absolute; border: 2px dashed var(--accent-color); background: rgba(59, 130, 246, 0.1); pointer-events: none; z-index: 100; }
+        .node.selected-multi { border-color: #f59e0b !important; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3); }
+        
+        /* Combo indicator */
+        .combo-indicator { position: fixed; top: 140px; right: 20px; background: linear-gradient(135deg, #ec4899, #8b5cf6); padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 2500; }
+        .combo-indicator.show { opacity: 1; transform: scale(1.1); }
+        
+        /* Prestige Button */
+        .prestige-btn { background: linear-gradient(135deg, #7c3aed, #db2777) !important; color: white !important; font-weight: bold; animation: prestige-pulse 2s infinite; }
+        @keyframes prestige-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); } 50% { box-shadow: 0 0 20px 5px rgba(124, 58, 237, 0.2); } }
+        
+        /* Cloud Save Status */
+        .cloud-save-status { position: fixed; top: 20px; left: 20px; background: rgba(20, 26, 35, 0.95); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 20px; font-size: 11px; color: var(--text-muted); z-index: 2500; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .cloud-save-status.online { border-color: #10b981; color: #10b981; }
+        .cloud-save-status.syncing { border-color: #f59e0b; color: #f59e0b; animation: pulse 1s infinite; }
+        .cloud-save-status.error { border-color: #ef4444; color: #ef4444; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Notification animations */
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+        
+        /* Sync indicator in sidebar */
+        .sync-btn { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; }
+        .sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
 </head>
 <body>
 
@@ -92,11 +777,13 @@
 
     <div class="event-log" id="eventLog"></div>
     
+    <!-- Cloud Save Status -->
     <div class="cloud-save-status" id="cloudSaveStatus">
         <i class="fa-solid fa-cloud"></i>
         <span id="cloudSaveText">Offline</span>
     </div>
     
+    <!-- Achievement Popup -->
     <div class="achievement-popup" id="achievementPopup">
         <div class="achievement-badge"><i class="fa-solid fa-trophy"></i></div>
         <i class="fa-solid fa-medal"></i>
@@ -106,12 +793,14 @@
         </div>
     </div>
     
+    <!-- Event Notification -->
     <div class="event-notification" id="eventNotification" style="transform: translateX(-50%) translateY(-1000px); display: none;">
         <h3 id="eventTitle">Event Title</h3>
         <p id="eventDesc">Event description goes here</p>
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
     </div>
     
+    <!-- Combo Indicator -->
     <div class="combo-indicator" id="comboIndicator">COMBO x2!</div>
 
     <!-- Welcome Modal -->
@@ -123,7 +812,6 @@
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
-                    <!-- Getting Started -->
                     <div class="help-section">
                         <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
                         <ul class="instructions-list">
@@ -152,8 +840,8 @@
                             <li><span class="key">0</span> to reset zoom to 100%</li>
                             <li><span class="key">Drag</span> empty space to pan the view</li>
                             <li><span class="key">Right-click</span> a node to open upgrade/delete menu</li>
-                            <li><span class="key">Drag</span> from green port to blue port to connect ($10 per cable)</li>
-                            <li><span class="key">X</span> to toggle cable delete mode ($5 refund per cable)</li>
+                            <li><span class="key">Drag</span> from green port to blue port to connect nodes ($10 per cable)</li>
+                            <li><span class="key">X</span> to toggle cable delete mode (click cables to delete, $5 refund)</li>
                         </ul>
                     </div>
                     <div class="help-section">
@@ -166,7 +854,7 @@
                         </ul>
                     </div>
                     
-                    <!-- Changelog Section -->
+                    <!-- Changelog Section - Moved to main area -->
                     <div class="help-section" style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
                         <h3 style="color: #f59e0b;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes (v10.3)</h3>
                         <ul class="changelog-list">
@@ -205,6 +893,38 @@
                             <li class="changelog-item">
                                 <span class="changelog-badge new">New</span>
                                 <span><strong>Settings Panel:</strong> Toggle auto-save, offline earnings, notifications</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span>Fixed cloud save loading not working after accounts update</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge balance">Balance</span>
+                                <span>Adjusted resource sizes and prices for better progression</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge balance">Balance</span>
+                                <span>Technology costs increased, especially late-game tiers (up to 1M RP)</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span>Fixed 1 million money bug that stopped earnings after refresh</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span>Improved save/load system with better number handling</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge ui">UI</span>
+                                <span>Enhanced research tree with 6 tiers and color-coded labels</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge ui">UI</span>
+                                <span>Added animated connection lines in research tree</span>
+                            </li>
+                            <li class="changelog-item">
+                                <span class="changelog-badge fix">Fix</span>
+                                <span>Cloud saves now properly validate all data types</span>
                             </li>
                         </ul>
                     </div>
@@ -259,16 +979,29 @@
                                 <p>Migrate your data center to gain permanent +50% speed bonuses. Stackable rewards!</p>
                             </div>
                         </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-chart-line"></i></div>
+                            <div class="feature-content">
+                                <h4>Statistics Tracking!</h4>
+                                <p>Detailed stats for money earned, nodes created, play time, and much more!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-sparkles"></i></div>
+                            <div class="feature-content">
+                                <h4>Visual Effects!</h4>
+                                <p>Particle effects when placing nodes, upgrading, and achieving milestones!</p>
+                            </div>
+                        </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-code-branch"></i> Version 10.3 - "Evolution Update"
+                        <i class="fa-solid fa-code-branch"></i> Version 10.1.1 - "Evolution Update"
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Research Modal -->
     <div id="researchModal" class="modal-overlay">
         <div class="modal" style="width: 900px; max-width: 95%;">
             <div class="modal-header">
@@ -320,15 +1053,17 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="code-section">
                     <h3><i class="fa-solid fa-microchip"></i> Compile Drivers</h3>
-                    <div class="driver-grid" id="driverGrid"></div>
+                    <div class="driver-grid" id="driverGrid">
+                        <!-- Generated by JS -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Contract Modal -->
     <div id="contractModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -349,7 +1084,9 @@
                     <button class="btn" onclick="document.getElementById('achievementsModal').style.display='none'">Close</button>
                 </div>
             </div>
-            <div class="modal-body" id="achievementsList" style="max-height: 60vh; overflow-y: auto;"></div>
+            <div class="modal-body" id="achievementsList" style="max-height: 60vh; overflow-y: auto;">
+                <!-- Generated by JS -->
+            </div>
         </div>
     </div>
 
@@ -491,7 +1228,9 @@
                     <p style="color: var(--text-muted); font-size: 12px;">Come back every day for bigger rewards!</p>
                 </div>
                 
-                <div id="dailyRewardsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+                <div id="dailyRewardsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <!-- Generated by JS -->
+                </div>
                 
                 <button class="btn" id="claimDailyBtn" style="width: 100%; padding: 15px; font-size: 16px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; font-weight: bold;" onclick="claimDailyReward()">
                     <i class="fa-solid fa-gift"></i> Claim Today's Reward
@@ -602,7 +1341,6 @@
         </div>
     </div>
 
-    <!-- Help Modal -->
     <div id="helpModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -688,7 +1426,6 @@
         </div>
     </div>
 
-    <!-- Context Menu -->
     <div id="contextMenu">
         <div class="ctx-item" onclick="upgradeSelectedNode()">
             <span>Upgrade</span> <span style="color:#fbbf24" id="ctxCost">$0</span>
@@ -724,6 +1461,7 @@
         </div>
 
         <div class="sidebar">
+            <!-- System Controls Panel -->
             <div class="panel" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border-color: rgba(71, 85, 105, 0.5);">
                 <div class="panel-title" style="display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-gamepad" style="color: #22d3ee;"></i> 
@@ -772,6 +1510,7 @@
                 </div>
             </div>
             
+            <!-- Account Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
                 <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
                 <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
@@ -786,7 +1525,8 @@
                     Not logged in
                 </div>
             </div>
-            
+                
+                <!-- Daily Rewards Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
                 <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
                 <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
@@ -799,9 +1539,10 @@
                 </div>
                 <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
                     Check in daily for bonuses!
+                    </div>
                 </div>
-            </div>
-            
+                
+                <!-- Settings Panel -->
             <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
                 <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -821,13 +1562,14 @@
             </div>
 
             <div class="contract-widget" id="activeContractWidget">
-                <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
-                    Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
+                    <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
+                        Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
+                    </div>
+                    <div style="font-size:11px; color:#d1d5db;" id="contractDesc">Upload 500 Files</div>
+                    <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
                 </div>
-                <div style="font-size:11px; color:#d1d5db;" id="contractDesc">Upload 500 Files</div>
-                <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
-            </div>
-            
+                
+            <!-- Active Event Widget -->
             <div class="contract-widget" id="activeEventWidget" style="display:none; border-color: var(--accent-color);">
                 <div style="font-size:12px; font-weight:bold; color:var(--accent-color); margin-bottom:5px;">
                     <i class="fa-solid fa-bolt"></i> <span id="eventName">Event Name</span>
@@ -836,6 +1578,7 @@
                 <div style="font-size:11px; color:#d1d5db;" id="eventDesc">Event description</div>
             </div>
 
+            <!-- Code Panel -->
             <div class="panel code-panel">
                 <div class="panel-title"><i class="fa-solid fa-code"></i> Code Studio</div>
                 <div class="code-stats">
@@ -934,45 +1677,2583 @@
         </div>
     </div>
 
-    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSave(this)">
+    <script>
+        // GAME VERSION - Update by 0.1 for minor, +1 for major
+        const GAME_VERSION = "10.2";
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        // --- CONFIGURATION ---
         
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
-            authDomain: "upload-labs-game-d874a.firebaseapp.com",
-            projectId: "upload-labs-game-d874a",
-            storageBucket: "upload-labs-game-d874a.firebasestorage.app",
-            messagingSenderId: "642883299920",
-            appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
+        // DAILY REWARDS CONFIGURATION
+        const DAILY_REWARDS = [
+            { day: 1, money: 500, rp: 50, label: "Day 1: Starter Pack" },
+            { day: 2, money: 750, rp: 75, label: "Day 2: Booster" },
+            { day: 3, money: 1000, rp: 100, label: "Day 3: Data Bundle" },
+            { day: 4, money: 1500, rp: 150, label: "Day 4: Server Upgrade" },
+            { day: 5, money: 2000, rp: 200, label: "Day 5: Premium Access" },
+            { day: 6, money: 3000, rp: 300, label: "Day 6: Elite Status" },
+            { day: 7, money: 5000, rp: 500, codeBits: 500, label: "Day 7: Weekly Jackpot!" }
+        ];
+        
+        // MILESTONES CONFIGURATION
+        const MILESTONES = [
+            { id: 'first_node', name: 'First Steps', desc: 'Place your first node', check: () => game.stats.nodesCreated >= 1, reward: { money: 100 } },
+            { id: 'network_builder', name: 'Network Builder', desc: 'Have 10 nodes at once', check: () => game.nodes.length >= 10, reward: { money: 1000 } },
+            { id: 'data_empire', name: 'Data Empire', desc: 'Have 50 nodes at once', check: () => game.nodes.length >= 50, reward: { money: 10000, rp: 500 } },
+            { id: 'first_million', name: 'First Million', desc: 'Earn $1,000,000 total', check: () => game.stats.totalMoney >= 1000000, reward: { money: 100000 } },
+            { id: 'researcher', name: 'Researcher', desc: 'Unlock 10 technologies', check: () => game.unlocked.length >= 10, reward: { rp: 1000 } },
+            { id: 'connected', name: 'Fully Connected', desc: 'Have 25 cables at once', check: () => game.conns.length >= 25, reward: { money: 2500 } }
+        ];
+        
+        const NODE_DEFS = {
+            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
+            
+            // Infra - Early game utility
+            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
+            cache: { name: "Cache Server", type: "infra", cost: 2500, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
+            firewall: { name: "Firewall", type: "infra", cost: 1500, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
+            balancer: { name: "Load Balancer", type: "infra", cost: 4500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
+            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
+            
+            // Downloaders - Tiered progression
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 300, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 1800, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 6000, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 15000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
+            
+            // Upload & Labs - Money and RP generation
+            uploader: { name: "Uploader", type: "upload", cost: 600, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
+            lab: { name: "Research Lab", type: "lab", cost: 3500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
+            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
+            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
+            
+            // Advanced - Late game specialization
+            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
+            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress" },
+            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup" },
+            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze" },
+            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming" },
+            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn" },
+            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster" },
+            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse" },
+            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai" },
+            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm" },
+            
+            // CODING - Programming system
+            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
+            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "tech_dev_station" },
+            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" }
         };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        window.firebaseApp = app;
-        window.firebaseAuth = auth;
-        window.firebaseDb = db;
-        window.firebaseSignInAnonymously = signInAnonymously;
-        window.firebaseCreateUser = createUserWithEmailAndPassword;
-        window.firebaseSignIn = signInWithEmailAndPassword;
-        window.firebaseSignOut = signOut;
-        window.firebaseUpdateProfile = updateProfile;
-        window.firebaseOnAuthStateChanged = onAuthStateChanged;
-        window.firebaseDoc = doc;
-        window.firebaseSetDoc = setDoc;
-        window.firebaseGetDoc = getDoc;
-        window.firebaseOnSnapshot = onSnapshot;
-    </script>
 
-    <!-- Game Scripts -->
-    <script type="module" src="public/js/game-config.js"></script>
-    <script type="module" src="public/js/game.js"></script>
-    <script type="module" src="public/js/account.js"></script>
+        const RESOURCES = {
+            files: { size: 20, price: 8, rp: 2 },
+            images: { size: 80, price: 35, rp: 8 },
+            videos: { size: 350, price: 150, rp: 40 },
+            audio: { size: 120, price: 55, rp: 15 }
+        };
+
+        // DRIVER CONFIGURATION
+        const DRIVERS = {
+            network: { name: "Network Driver", icon: "fa-solid fa-network-wired", desc: "+10% connection speed", cost: 1, effect: 0.1 },
+            compression: { name: "Compression Driver", icon: "fa-solid fa-compress", desc: "+5% file compression", cost: 1, effect: 0.05 },
+            security: { name: "Security Driver", icon: "fa-solid fa-shield-halved", desc: "-10% virus chance", cost: 1, effect: 0.1 },
+            mining: { name: "Mining Driver", icon: "fa-solid fa-coins", desc: "+15% crypto mining", cost: 1, effect: 0.15 },
+            research: { name: "Research Driver", icon: "fa-solid fa-flask", desc: "+10% RP generation", cost: 1, effect: 0.1 },
+            upload: { name: "Upload Driver", icon: "fa-solid fa-cloud-arrow-up", desc: "+10% upload speed", cost: 1, effect: 0.1 },
+            download: { name: "Download Driver", icon: "fa-solid fa-download", desc: "+10% download speed", cost: 1, effect: 0.1 }
+        };
+
+        const TECH_TREE = [
+            // Tier 1: Basics (Early game)
+            { id: "tech_img", name: "Image Compression", cost: 400, desc: "Unlock Image Downloaders", tier: 1, icon: "fa-solid fa-image", requires: [] },
+            { id: "tech_sec", name: "Cyber Security", cost: 800, desc: "Unlock Firewall protection", tier: 1, icon: "fa-solid fa-shield-halved", requires: [] },
+            { id: "tech_coding", name: "Basic Programming", cost: 1200, desc: "Unlock Coder Nodes", tier: 1, icon: "fa-solid fa-terminal", requires: [] },
+            
+            // Tier 2: Expansion (Mid-early game)
+            { id: "tech_proxy", name: "Proxy Networking", cost: 2500, desc: "Unlock Proxy Nodes for range extension", tier: 2, icon: "fa-solid fa-network-wired", requires: ["tech_sec"] },
+            { id: "tech_oc", name: "Overclocking", cost: 3500, desc: "Unlock Overclock Units (risk/reward)", tier: 2, icon: "fa-solid fa-bolt", requires: [] },
+            { id: "tech_balance", name: "Load Balancing", cost: 4500, desc: "Unlock Load Balancers", tier: 2, icon: "fa-solid fa-scale-balanced", requires: ["tech_sec"] },
+            
+            // Tier 3: Specialization (Mid game)
+            { id: "tech_vid", name: "Video Streaming", cost: 6000, desc: "Unlock Video Downloaders", tier: 3, icon: "fa-solid fa-film", requires: ["tech_img"] },
+            { id: "tech_compress", name: "Data Compression", cost: 7500, desc: "Unlock Compressor nodes", tier: 3, icon: "fa-solid fa-compress", requires: ["tech_img"] },
+            { id: "tech_audio", name: "Audio Processing", cost: 9000, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
+            { id: "tech_analyze", name: "Data Analysis", cost: 10000, desc: "Unlock Data Analyzers (+RP generation)", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
+            { id: "tech_backup", name: "Backup Systems", cost: 12000, desc: "Unlock Backup Servers", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
+            
+            // Tier 4: Advanced Infrastructure (Late-mid game)
+            { id: "tech_fiber", name: "Fiber Optics", cost: 15000, desc: "Global network speed +25%", tier: 4, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
+            { id: "dev_station", name: "Dev Environment", cost: 18000, desc: "Unlock Dev Stations", tier: 4, icon: "fa-solid fa-laptop-code", requires: ["tech_coding"] },
+            { id: "tech_rack", name: "Server Racks", cost: 25000, desc: "Unlock high-density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
+            { id: "tech_sat", name: "Satellite Uplink", cost: 30000, desc: "Global upload speed +50%", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
+            { id: "tech_streaming", name: "Media Streaming", cost: 35000, desc: "Unlock Streaming Servers", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
+            
+            // Tier 5: Enterprise (Late game)
+            { id: "tech_cdn", name: "CDN Network", cost: 50000, desc: "Unlock CDN Nodes (global uploader boost)", tier: 5, icon: "fa-solid fa-earth-americas", requires: ["tech_rack", "tech_streaming"] },
+            { id: "tech_cluster", name: "Cluster Computing", cost: 65000, desc: "Unlock Cluster Nodes (synergy bonuses)", tier: 5, icon: "fa-solid fa-network-wired", requires: ["tech_rack", "tech_backup"] },
+            { id: "tech_compiler", name: "Auto-Compilation", cost: 80000, desc: "Unlock Code Compilers", tier: 5, icon: "fa-solid fa-gears", requires: ["dev_station"] },
+            { id: "tech_warehouse", name: "Data Warehousing", cost: 100000, desc: "Unlock massive Data Warehouses", tier: 5, icon: "fa-solid fa-warehouse", requires: ["tech_backup", "tech_cdn"] },
+            { id: "tech_ai", name: "AI Processing", cost: 150000, desc: "Unlock AI Processors", tier: 5, icon: "fa-solid fa-brain", requires: ["tech_analyze", "tech_cluster"] },
+            
+            // Tier 6: Endgame (Very late game)
+            { id: "tech_quantum", name: "Quantum Computing", cost: 500000, desc: "Unlock Quantum Core (2.5x global speed)", tier: 6, icon: "fa-solid fa-atom", requires: ["tech_ai", "tech_cluster"] },
+            { id: "tech_crypto_farm", name: "Mining Farm", cost: 750000, desc: "Unlock Crypto Farms (massive passive income)", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster", "tech_warehouse"] },
+            { id: "tech_neural", name: "Neural Network", cost: 1000000, desc: "All nodes +50% efficiency. The ultimate upgrade.", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
+        ];
+
+        // ACHIEVEMENTS CONFIGURATION
+        const ACHIEVEMENTS = [
+            // Money Achievements
+            { id: 'money_1', name: 'First Profits', desc: 'Earn $1,000 total', icon: 'fa-solid fa-coins', condition: (s) => s.totalMoney >= 1000, reward: 100 },
+            { id: 'money_2', name: ' entrepreneur', desc: 'Earn $10,000 total', icon: 'fa-solid fa-sack-dollar', condition: (s) => s.totalMoney >= 10000, reward: 500 },
+            { id: 'money_3', name: 'Millionaire', desc: 'Earn $1,000,000 total', icon: 'fa-solid fa-vault', condition: (s) => s.totalMoney >= 1000000, reward: 5000 },
+            { id: 'peak_1', name: 'Saving Up', desc: 'Have $5,000 at once', icon: 'fa-solid fa-piggy-bank', condition: (s) => s.peakMoney >= 5000, reward: 200 },
+            { id: 'peak_2', name: 'Wealthy', desc: 'Have $100,000 at once', icon: 'fa-solid fa-crown', condition: (s) => s.peakMoney >= 100000, reward: 1000 },
+            
+            // Node Achievements
+            { id: 'nodes_1', name: 'Network Starter', desc: 'Create 10 nodes', icon: 'fa-solid fa-network-wired', condition: (s) => s.nodesCreated >= 10, reward: 50 },
+            { id: 'nodes_2', name: 'Network Engineer', desc: 'Create 50 nodes', icon: 'fa-solid fa-server', condition: (s) => s.nodesCreated >= 50, reward: 300 },
+            { id: 'nodes_3', name: 'Data Center', desc: 'Create 100 nodes', icon: 'fa-solid fa-building', condition: (s) => s.nodesCreated >= 100, reward: 1000 },
+            { id: 'nodes_4', name: 'Tech Giant', desc: 'Create 250 nodes', icon: 'fa-solid fa-city', condition: (s) => s.nodesCreated >= 250, reward: 5000 },
+            
+            // Research Achievements
+            { id: 'research_1', name: 'Scientist', desc: 'Earn 1,000 RP total', icon: 'fa-solid fa-flask', condition: (s) => s.totalRP >= 1000, reward: 200 },
+            { id: 'research_2', name: 'Research Lab', desc: 'Earn 10,000 RP total', icon: 'fa-solid fa-microscope', condition: (s) => s.totalRP >= 10000, reward: 1000 },
+            { id: 'tech_1', name: 'Innovator', desc: 'Unlock 10 technologies', icon: 'fa-solid fa-lightbulb', condition: (s) => s.techsUnlocked >= 10, reward: 300 },
+            { id: 'tech_2', name: 'Tech Master', desc: 'Unlock all technologies', icon: 'fa-solid fa-graduation-cap', condition: (s) => s.techsUnlocked >= TECH_TREE.length, reward: 2000 },
+            
+            // Coding Achievements
+            { id: 'code_1', name: 'Hello World', desc: 'Generate 1,000 code bits', icon: 'fa-solid fa-terminal', condition: (s) => s.totalCodeBits >= 1000, reward: 150 },
+            { id: 'code_2', name: 'Code Monkey', desc: 'Generate 100,000 code bits', icon: 'fa-solid fa-laptop-code', condition: (s) => s.totalCodeBits >= 100000, reward: 800 },
+            { id: 'driver_1', name: 'Driver Update', desc: 'Install 5 drivers', icon: 'fa-solid fa-microchip', condition: (s) => s.totalDrivers >= 5, reward: 250 },
+            { id: 'driver_2', name: 'Supercomputer', desc: 'Install 25 drivers', icon: 'fa-solid fa-computer', condition: (s) => s.totalDrivers >= 25, reward: 1500 },
+            
+            // Action Achievements
+            { id: 'contracts_1', name: 'Contractor', desc: 'Complete 5 contracts', icon: 'fa-solid fa-file-contract', condition: (s) => s.contractsCompleted >= 5, reward: 200 },
+            { id: 'contracts_2', name: 'Business Partner', desc: 'Complete 25 contracts', icon: 'fa-solid fa-handshake', condition: (s) => s.contractsCompleted >= 25, reward: 1000 },
+            { id: 'upgrades_1', name: 'Upgrader', desc: 'Upgrade nodes 20 times', icon: 'fa-solid fa-arrow-up', condition: (s) => s.upgrades >= 20, reward: 150 },
+            { id: 'cables_1', name: 'Cable Manager', desc: 'Place 50 cables', icon: 'fa-solid fa-plug', condition: (s) => s.cablesPlaced >= 50, reward: 100 },
+            
+            // Special Achievements
+            { id: 'prestige_1', name: 'Fresh Start', desc: 'Migrate your data center once', icon: 'fa-solid fa-rotate', condition: (s) => s.prestigeCount >= 1, reward: 500 },
+            { id: 'prestige_2', name: 'Serial Entrepreneur', desc: 'Migrate 5 times', icon: 'fa-solid fa-rotate-right', condition: (s) => s.prestigeCount >= 5, reward: 3000 },
+            { id: 'security_1', name: 'Virus Hunter', desc: 'Clean 10 viruses', icon: 'fa-solid fa-shield-virus', condition: (s) => s.virusesCleaned >= 10, reward: 200 },
+            { id: 'time_1', name: 'Dedicated', desc: 'Play for 1 hour', icon: 'fa-solid fa-clock', condition: (s) => s.playTime >= 3600, reward: 500 },
+            { id: 'time_2', name: 'Addicted', desc: 'Play for 10 hours', icon: 'fa-solid fa-hourglass-half', condition: (s) => s.playTime >= 36000, reward: 3000 },
+        ];
+
+        // RANDOM EVENTS CONFIGURATION
+        const RANDOM_EVENTS = [
+            // Good Events
+            { id: 'market_boom', name: 'Market Boom', desc: 'Data prices are surging!', type: 'good', duration: 60, effect: () => { eventMultipliers.money = 2; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'research_grant', name: 'Research Grant', desc: 'Government funding boost!', type: 'good', duration: 45, effect: () => { eventMultipliers.rp = 2; }, cleanup: () => { eventMultipliers.rp = 1; } },
+            { id: 'code_rush', name: 'Code Rush', desc: 'Developers are inspired!', type: 'good', duration: 30, effect: () => { eventMultipliers.code = 3; }, cleanup: () => { eventMultipliers.code = 1; } },
+            { id: 'fiber_upgrade', name: 'Fiber Upgrade', desc: 'ISP upgraded your connection!', type: 'good', duration: 120, effect: () => { eventMultipliers.speed = 1.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'investment', name: 'Angel Investment', desc: 'An investor believes in you!', type: 'good', instant: true, effect: (g) => { g.money += 5000; showFloat('+ $5,000 (Investment)', window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
+            { id: 'bonus_rp', name: 'Research Breakthrough', desc: 'Sudden insight!', type: 'good', instant: true, effect: (g) => { g.rp += 500; showFloat('+ 500 RP (Breakthrough!)', window.innerWidth/2, window.innerHeight/2, '#8b5cf6'); } },
+            
+            // Bad Events
+            { id: 'market_crash', name: 'Market Crash', desc: 'Data prices are plummeting!', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.5; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'power_outage', name: 'Power Outage', desc: 'Reduced efficiency!', type: 'bad', duration: 30, effect: () => { eventMultipliers.speed = 0.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'ddos_attack', name: 'DDoS Attack', desc: 'Network under attack!', type: 'bad', duration: 45, effect: () => { eventMultipliers.speed = 0.3; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'maintenance', name: 'Emergency Maintenance', desc: 'Servers need repairs!', type: 'bad', instant: true, effect: (g) => { g.money = Math.max(0, g.money - 2000); showFloat('- $2,000 (Maintenance)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'data_breach', name: 'Data Breach', desc: 'Security incident!', type: 'bad', instant: true, effect: (g) => { g.rp = Math.max(0, g.rp - 200); showFloat('- 200 RP (Breach)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+        ];
+
+        // --- STATE ---
+        let game = {
+            money: 2000,
+            rp: 0,
+            prestige: 0, 
+            res: { files: 0, images: 0, videos: 0, audio: 0 },
+            nodes: [],
+            conns: [],
+            routerLevel: 1,
+            routerHeat: 0,
+            overheatMode: false,
+            unlocked: [],
+            nextId: 1,
+            activeContract: null,
+            
+            // CODE SYSTEM
+            codeBits: 0,
+            optimizationCode: 0,
+            drivers: {
+                network: 0,
+                compression: 0,
+                security: 0,
+                mining: 0,
+                research: 0,
+                upload: 0,
+                download: 0
+            },
+            
+            // STATISTICS
+            stats: {
+                totalMoney: 0,
+                peakMoney: 2000,
+                moneySpent: 0,
+                totalRP: 0,
+                nodesCreated: 0,
+                nodesDeleted: 0,
+                cablesPlaced: 0,
+                upgrades: 0,
+                contractsCompleted: 0,
+                filesDownloaded: 0,
+                virusesCleaned: 0,
+                totalCodeBits: 0,
+                totalDrivers: 0,
+                playTime: 0,
+                techsUnlocked: 0,
+                prestigeCount: 0,
+                startTime: Date.now()
+            },
+            
+            // ACHIEVEMENTS
+            achievements: [],
+            achievementRewardsClaimed: 0,
+            
+            // EVENTS
+            activeEvent: null,
+            eventTimeLeft: 0,
+            
+            // DAILY REWARDS
+            lastLoginDate: null,
+            loginStreak: 0,
+            dailyRewardClaimed: false,
+            
+            // MILESTONES
+            milestonesCompleted: [],
+            
+            // SETTINGS
+            autoSaveEnabled: true,
+            notificationsEnabled: true,
+            offlineEarningsEnabled: true,
+            lastSaveTime: Date.now()
+        };
+
+        // Offline earnings tracking
+        let offlineEarnings = { money: 0, rp: 0, timeAway: 0 };
+
+        // Event multipliers
+        let eventMultipliers = { money: 1, rp: 1, code: 1, speed: 1 };
+
+        let view = { x: window.innerWidth/2 - 2500, y: window.innerHeight/2 - 2500, scale: 1 };
+        let activeNodes = new Set();
+        let history = { money: 0, rp: 0 };
+        let rateHistory = { money: [], rp: [] };
+        const RATE_WINDOW = 60; // 1 second at 60fps
+        let activeContract = null; 
+        
+        // --- ZOOM FUNCTIONS ---
+        function updateZoomDisplay() {
+            document.getElementById('zoomLevel').innerText = Math.round(view.scale * 100) + '%';
+        }
+        
+        function zoomIn() {
+            view.scale = Math.min(2, view.scale * 1.2);
+            updateWorldTransform();
+            updateZoomDisplay();
+        }
+        
+        function zoomOut() {
+            view.scale = Math.max(0.3, view.scale / 1.2);
+            updateWorldTransform();
+            updateZoomDisplay();
+        }
+        
+        function resetZoom() {
+            view.scale = 1;
+            updateWorldTransform();
+            updateZoomDisplay();
+        }
+        
+        function updateWorldTransform() {
+            const world = document.getElementById('world');
+            world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+        }
+
+        window.Game = { zoomIn, zoomOut, resetZoom };
+        
+        // --- CORE FUNCTIONS ---
+
+        function init() {
+            if (game.nodes.length === 0) spawnNode('router', 2500, 2500);
+            renderWorld();
+            updateUI();
+            logEvent("System initialized.");
+            updateRouterCostDisplay();
+            
+            requestAnimationFrame(gameLoop);
+            setInterval(secLoop, 1000);
+            setInterval(virusLoop, 120000);
+            setInterval(eventLoop, 600000); // Check for events every 10 minutes
+            
+            setupInputs();
+            updateZoomDisplay();
+            renderDriverGrid();
+            renderAchievements();
+            
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.closest('.game-container') || e.target.closest('.modal') || e.target.closest('.welcome-container')) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        function logEvent(msg, type = 'info') {
+            const log = document.getElementById('eventLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            log.prepend(entry);
+            if (log.children.length > 5) log.lastChild.remove();
+        }
+
+        // ==================== ACHIEVEMENTS SYSTEM ====================
+        function checkAchievements() {
+            ACHIEVEMENTS.forEach(ach => {
+                if (game.achievements.includes(ach.id)) return;
+                if (ach.condition(game.stats)) {
+                    unlockAchievement(ach);
+                }
+            });
+        }
+
+        function unlockAchievement(ach) {
+            game.achievements.push(ach.id);
+            game.money += ach.reward;
+            showFloat(`+ $${ach.reward} (Achievement!)`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementText').innerText = `${ach.name}: ${ach.desc}`;
+            popup.classList.add('show');
+            
+            setTimeout(() => popup.classList.remove('show'), 4000);
+            logEvent(`Achievement: ${ach.name}!`, 'good');
+            renderAchievements();
+        }
+
+        function renderAchievements() {
+            const list = document.getElementById('achievementsList');
+            const unlocked = game.achievements.length;
+            document.getElementById('achievementCount').innerText = unlocked;
+            document.getElementById('achievementTotal').innerText = ACHIEVEMENTS.length;
+            
+            list.innerHTML = ACHIEVEMENTS.map(ach => {
+                const isUnlocked = game.achievements.includes(ach.id);
+                return `
+                    <div class="help-item" style="opacity: ${isUnlocked ? 1 : 0.5}; margin-bottom: 8px;">
+                        <div class="help-item-title" style="color: ${isUnlocked ? '#fbbf24' : 'var(--text-muted)'};">
+                            <i class="${ach.icon}"></i> ${ach.name} ${isUnlocked ? '<i class="fa-solid fa-check" style="color:#10b981;"></i>' : '<i class="fa-solid fa-lock"></i>'}
+                        </div>
+                        <div class="help-item-desc">${ach.desc} | Reward: $${ach.reward}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== RANDOM EVENTS SYSTEM ====================
+        function triggerRandomEvent() {
+            if (game.activeEvent) return;
+            if (Math.random() > 0.30) return; // 30% chance when checked (every 10 minutes)
+            
+            const event = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+            
+            if (event.instant) {
+                event.effect(game);
+                showEventNotification(event);
+                logEvent(`Event: ${event.name}`, event.type === 'good' ? 'good' : 'bad');
+            } else {
+                game.activeEvent = event;
+                game.eventTimeLeft = event.duration;
+                event.effect();
+                showEventNotification(event);
+                logEvent(`Event started: ${event.name} (${event.duration}s)`, event.type === 'good' ? 'good' : 'bad');
+            }
+        }
+
+        function showEventNotification(event) {
+            const notif = document.getElementById('eventNotification');
+            document.getElementById('eventTitle').innerText = event.name;
+            document.getElementById('eventDesc').innerText = event.desc;
+            document.getElementById('eventEffect').innerText = event.instant ? 'Instant effect applied!' : `Duration: ${event.duration} seconds`;
+            
+            notif.style.display = 'block';
+            notif.className = `event-notification ${event.type} show`;
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.style.display = 'none', 500);
+            }, event.instant ? 4000 : 6000);
+        }
+
+        function updateEvents(dt) {
+            if (game.activeEvent) {
+                game.eventTimeLeft -= dt;
+                if (game.eventTimeLeft <= 0) {
+                    game.activeEvent.cleanup();
+                    logEvent(`Event ended: ${game.activeEvent.name}`);
+                    game.activeEvent = null;
+                }
+            }
+        }
+
+        // ==================== STATISTICS SYSTEM ====================
+        function updateStatistics() {
+            // Peak money tracking
+            if (game.money > game.stats.peakMoney) {
+                game.stats.peakMoney = game.money;
+            }
+            
+            // Play time
+            game.stats.playTime = Math.floor((Date.now() - game.stats.startTime) / 1000);
+            
+            // Tech count
+            game.stats.techsUnlocked = game.unlocked.length;
+            
+            // Total drivers
+            game.stats.totalDrivers = Object.values(game.drivers).reduce((a, b) => a + b, 0);
+            
+            // Check achievements
+            checkAchievements();
+        }
+
+        function renderStatistics() {
+            document.getElementById('statTotalMoney').innerText = '$' + fmt(game.stats.totalMoney);
+            document.getElementById('statPeakMoney').innerText = '$' + fmt(game.stats.peakMoney);
+            document.getElementById('statMoneySpent').innerText = '$' + fmt(game.stats.moneySpent);
+            document.getElementById('statContracts').innerText = game.stats.contractsCompleted;
+            document.getElementById('statNodesCreated').innerText = game.stats.nodesCreated;
+            document.getElementById('statNodesDeleted').innerText = game.stats.nodesDeleted;
+            document.getElementById('statCablesPlaced').innerText = game.stats.cablesPlaced;
+            document.getElementById('statUpgrades').innerText = game.stats.upgrades;
+            document.getElementById('statFilesDownloaded').innerText = fmt(Math.floor(game.stats.filesDownloaded));
+            document.getElementById('statTotalRP').innerText = fmt(Math.floor(game.stats.totalRP)) + ' RP';
+            document.getElementById('statViruses').innerText = game.stats.virusesCleaned;
+            
+            const hours = Math.floor(game.stats.playTime / 3600);
+            const mins = Math.floor((game.stats.playTime % 3600) / 60);
+            document.getElementById('statPlayTime').innerText = `${hours}h ${mins}m`;
+        }
+
+        // ==================== PRESTIGE SYSTEM ====================
+        function updatePrestigeUI() {
+            const currentBonus = game.prestige * 50;
+            const nextBonus = (game.prestige + 1) * 50;
+            document.getElementById('currentPrestigeBonus').innerText = `+${currentBonus}%`;
+            document.getElementById('nextPrestigeBonus').innerText = `+${nextBonus}%`;
+            
+            const nodeCount = game.nodes.length;
+            const moneyReq = 50000;
+            const canPrestige = nodeCount >= 20 && game.money >= moneyReq;
+            
+            const reqText = document.getElementById('prestigeRequirements');
+            reqText.innerHTML = `
+                <span style="color: ${nodeCount >= 20 ? '#10b981' : '#ef4444'}">${nodeCount}/20 nodes</span> | 
+                <span style="color: ${game.money >= moneyReq ? '#10b981' : '#ef4444'}">$${fmt(game.money)}/$50,000</span>
+            `;
+            
+            const btn = document.getElementById('prestigeBtn');
+            btn.disabled = !canPrestige;
+            btn.style.opacity = canPrestige ? 1 : 0.5;
+        }
+
+        function performPrestige() {
+            if (game.nodes.length < 20 || game.money < 50000) return;
+            
+            game.prestige++;
+            game.stats.prestigeCount++;
+            
+            // Reset game state
+            game.money = 5000; // Starting bonus
+            game.rp = 0;
+            game.res = { files: 0, images: 0, videos: 0, audio: 0 };
+            game.nodes = [];
+            game.conns = [];
+            game.routerLevel = 1;
+            game.routerHeat = 0;
+            game.overheatMode = false;
+            game.activeContract = null;
+            game.codeBits = 0;
+            game.optimizationCode = 0;
+            
+            // Reset stats that should be reset
+            game.stats.nodesCreated = 0;
+            game.stats.nodesDeleted = 0;
+            game.stats.cablesPlaced = 0;
+            game.stats.upgrades = 0;
+            game.stats.filesDownloaded = 0;
+            game.stats.virusesCleaned = 0;
+            game.stats.contractsCompleted = 0;
+            
+            activeNodes.clear();
+            selectedNode = null;
+            
+            // Spawn new router
+            spawnNode('router', 2500, 2500);
+            renderWorld();
+            
+            document.getElementById('prestigeModal').style.display = 'none';
+            logEvent(`Data Center Migrated! +50% speed bonus (Total: +${game.prestige * 50}%)`, 'good');
+            showFloat(`MIGRATED! +50% Speed`, window.innerWidth/2, window.innerHeight/2, '#a855f7');
+            
+            checkAchievements();
+        }
+
+        // ==================== COMBO SYSTEM ====================
+        let combo = { count: 0, timer: 0, lastAction: 0 };
+        
+        function addCombo() {
+            const now = Date.now();
+            if (now - combo.lastAction < 3000) {
+                combo.count++;
+                combo.timer = 3;
+                if (combo.count >= 3) {
+                    showComboIndicator();
+                    const bonus = Math.min(combo.count * 0.1, 1); // Max 100% bonus
+                    // Apply combo bonus temporarily
+                }
+            } else {
+                combo.count = 1;
+                combo.timer = 3;
+            }
+            combo.lastAction = now;
+        }
+
+        function showComboIndicator() {
+            const indicator = document.getElementById('comboIndicator');
+            indicator.innerText = `COMBO x${combo.count}!`;
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        function updateCombo(dt) {
+            if (combo.timer > 0) {
+                combo.timer -= dt;
+                if (combo.timer <= 0) {
+                    combo.count = 0;
+                }
+            }
+        }
+
+        // ==================== PARTICLE EFFECTS ====================
+        function spawnParticles(x, y, color, count = 5) {
+            const world = document.getElementById('world');
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.cssText = `
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${4 + Math.random() * 6}px;
+                    height: ${4 + Math.random() * 6}px;
+                    background: ${color};
+                    --tx: ${(Math.random() - 0.5) * 100}px;
+                    --ty: ${(Math.random() - 0.5) * 100}px;
+                `;
+                world.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        }
+
+        function gameLoop(time) {
+            const dt = 1/60; 
+            
+            // Safety check - ensure game loop continues even with large numbers
+            if (!game || typeof game.money !== 'number') {
+                console.error('Game state corrupted, resetting...');
+                location.reload();
+                return;
+            }
+            
+            updateConnectivity();
+            
+            // Heat
+            const router = game.nodes.find(n => n.type === 'router');
+            let isOverclocked = false;
+            
+            if (router && activeNodes.has(router.id)) {
+                game.conns.forEach(c => {
+                    if (c.to === router.id) {
+                        const source = game.nodes.find(n => n.id === c.from);
+                        if (source && source.type === 'overclock' && activeNodes.has(source.id) && !source.infected) {
+                            isOverclocked = true;
+                        }
+                    }
+                });
+
+                if (isOverclocked) {
+                    game.routerHeat = Math.min(100, game.routerHeat + (15 * dt));
+                } else {
+                    game.routerHeat = Math.max(0, game.routerHeat - (5 * dt));
+                }
+                
+                if (game.routerHeat >= 100) game.overheatMode = true;
+                if (game.routerHeat <= 50) game.overheatMode = false;
+            }
+
+            // Calculate multipliers
+            let efficiency = 1.0;
+            if (isOverclocked) efficiency *= 2.0;
+            if (game.overheatMode) efficiency *= 0.7;
+            
+            // Driver effects
+            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
+            const driverUploadMult = 1 + (game.drivers.upload * DRIVERS.upload.effect);
+            const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect);
+            const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect);
+
+            const prestigeMult = 1 + (game.prestige * 0.5); 
+            const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
+            const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
+            const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
+            const cdnBoost = 1 + (game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.25);
+            const aiBoost = 1 + (game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 1.0);
+            const clusterCount = game.nodes.filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).length;
+            const clusterBoost = 1 + (clusterCount * 0.2);
+            let quantumMult = 1;
+            game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
+            
+            // Event multipliers
+            const eventSpeedMult = eventMultipliers.speed;
+            const eventMoneyMult = eventMultipliers.money;
+            const eventRPMult = eventMultipliers.rp;
+            const eventCodeMult = eventMultipliers.code;
+            
+            const baseSpeed = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult;
+            
+            // CODE GENERATION
+            const coders = game.nodes.filter(n => n.type === 'coder' && activeNodes.has(n.id) && !n.infected);
+            const devStations = game.nodes.filter(n => n.type === 'dev_station' && activeNodes.has(n.id) && !n.infected);
+            const compilers = game.nodes.filter(n => n.type === 'compiler' && activeNodes.has(n.id) && !n.infected);
+            
+            let codeGenRate = 0;
+            coders.forEach(coder => {
+                const lvlMult = Math.pow(1.2, coder.level - 1);
+                codeGenRate += 5 * lvlMult * eventCodeMult; // 5 bits per second base
+            });
+            devStations.forEach(station => {
+                const lvlMult = Math.pow(1.2, station.level - 1);
+                codeGenRate += 10 * lvlMult * eventCodeMult; // 10 bits per second
+            });
+            
+            const bitsGenerated = codeGenRate * dt;
+            game.codeBits += bitsGenerated;
+            game.stats.totalCodeBits += bitsGenerated;
+            
+            // Auto-compiler - benefits from level (more conversion capacity per level)
+            if (compilers.length > 0 && game.codeBits >= 100) {
+                const totalCompilerPower = compilers.reduce((sum, c) => sum + Math.pow(1.2, c.level - 1), 0);
+                const toConvert = Math.min(Math.floor(game.codeBits / 100), Math.floor(totalCompilerPower * 10));
+                if (toConvert > 0) {
+                    game.codeBits -= toConvert * 100;
+                    game.optimizationCode += toConvert;
+                }
+            }
+
+            // Process resources
+            let fileConsumers = [];
+            let totalFileDemand = 0;
+            let analyzerCount = game.nodes.filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).length;
+            let rpBoost = 1 + (analyzerCount * 0.5);
+            const warehouseCount = game.nodes.filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).length;
+
+            game.nodes.forEach(node => {
+                if (!activeNodes.has(node.id)) return;
+                if (node.infected) { 
+                    // Security driver reduces money loss from viruses
+                    const securityMult = Math.max(0, 1 - (game.drivers.security * DRIVERS.security.effect));
+                    game.money -= 10 * dt * securityMult; 
+                    return; 
+                }
+
+                const def = NODE_DEFS[node.type];
+                const lvlMult = Math.pow(1.2, node.level - 1);
+                
+                let boost = 1 * aiBoost * clusterBoost;
+                let hasCompressor = false;
+                
+                game.conns.forEach(c => {
+                    const nid = c.from === node.id ? c.to : c.from;
+                    const n = game.nodes.find(x => x.id === nid);
+                    if (n && activeNodes.has(nid) && !n.infected) {
+                        if (n.type === 'cache') boost *= 1.5;
+                        if (n.type === 'rack') boost *= 1.2;
+                        if (n.type === 'compressor') hasCompressor = true;
+                    }
+                });
+                
+                if (node.type === 'balancer') {
+                    const neighbors = [];
+                    game.conns.forEach(c => {
+                        if (c.from === node.id) neighbors.push(c.to);
+                        else if (c.to === node.id) neighbors.push(c.from);
+                    });
+                    boost *= (1 + neighbors.length * 0.1);
+                }
+                
+                let isStreamingServer = node.type === 'streaming';
+                if (node.type === 'crypto_farm') boost *= 3;
+                
+                const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
+
+                if (def.type === 'download' || node.type === 'dl_audio') {
+                    const resourceKey = def.out || node.type.replace('dl_', '');
+                    let amt = effectiveSpeed / RESOURCES[resourceKey].size;
+                    if (warehouseCount > 0) amt *= (1 + warehouseCount * 0.3);
+                    game.res[resourceKey] += amt;
+                    workAnim(node);
+                }
+                else if (node.type === 'miner') {
+                    const gain = effectiveSpeed * 0.05 * driverMiningMult * eventMoneyMult;
+                    game.money += gain;
+                    history.money += gain;
+                    game.stats.totalMoney += gain;
+                    workAnim(node);
+                }
+                else if (node.type === 'crypto_farm') {
+                    const gain = effectiveSpeed * 0.15 * driverMiningMult * eventMoneyMult;
+                    game.money += gain;
+                    history.money += gain;
+                    game.stats.totalMoney += gain;
+                    workAnim(node);
+                }
+
+                if (def.type === 'upload' || node.type === 'rack') {
+                    const upSpeed = effectiveSpeed * (node.type === 'rack' ? 2 : satMult) * cdnBoost * driverUploadMult;
+                    let cap = upSpeed;
+                    
+                    if (node.type === 'rack') {
+                        game.res.files += (upSpeed * 0.15) / RESOURCES.files.size;
+                        if(game.unlocked.includes('tech_img')) game.res.images += (upSpeed * 0.15) / RESOURCES.images.size;
+                        if(game.unlocked.includes('tech_vid')) game.res.videos += (upSpeed * 0.15) / RESOURCES.videos.size;
+                        if(game.unlocked.includes('tech_audio')) game.res.audio += (upSpeed * 0.15) / RESOURCES.audio.size;
+                    }
+
+                    // Priority: audio, videos, images
+                    ['audio', 'videos', 'images'].forEach(k => {
+                        if (cap <= 0 || game.res[k] <= 0) return;
+                        let size = RESOURCES[k].size;
+                        if (hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
+                        if (isStreamingServer && (k === 'audio' || k === 'videos')) size *= 0.5;
+                        
+                        const count = Math.min(game.res[k], cap / size);
+                        game.res[k] -= count;
+                        cap -= count * size;
+                        
+                        const gain = count * RESOURCES[k].price * eventMoneyMult;
+                        game.money += gain;
+                        history.money += gain;
+                        game.stats.totalMoney += gain;
+                        workAnim(node);
+                        if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
+                    });
+
+                    if (cap > 0) {
+                        fileConsumers.push({ node, capacity: cap, type: 'upload', hasCompressor });
+                        totalFileDemand += cap;
+                    }
+                }
+                else if (def.type === 'lab') {
+                    let labCap = effectiveSpeed * RESOURCES.files.size;
+                    const neighbors = [];
+                    game.conns.forEach(c => {
+                        if (c.from === node.id) neighbors.push(c.to);
+                        else if (c.to === node.id) neighbors.push(c.from);
+                    });
+                    if (neighbors.some(nid => {
+                        const n = game.nodes.find(x => x.id === nid);
+                        return n && n.type === 'balancer';
+                    })) {
+                        labCap *= 1.3;
+                    }
+                    if (aiBoost > 1) labCap *= aiBoost;
+                    fileConsumers.push({ node, capacity: labCap, type: 'lab', hasCompressor });
+                    totalFileDemand += labCap;
+                }
+            });
+
+            if (totalFileDemand > 0) {
+                const totalFilesBytes = game.res.files * RESOURCES.files.size;
+                const ratio = totalFilesBytes >= totalFileDemand ? 1 : (totalFilesBytes / totalFileDemand);
+                
+                fileConsumers.forEach(c => {
+                    const allocatedBytes = c.capacity * ratio;
+                    if (allocatedBytes <= 0) return;
+                    
+                    let size = RESOURCES.files.size;
+                    if (c.hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
+                    
+                    const count = allocatedBytes / size;
+                    
+                    if (game.res.files >= count) {
+                        game.res.files -= count;
+                        
+                        if (c.type === 'upload') {
+                            const gain = count * RESOURCES.files.price * eventMoneyMult;
+                            game.money += gain;
+                            history.money += gain;
+                            game.stats.totalMoney += gain;
+                            if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
+                        } else {
+                            const gain = count * RESOURCES.files.rp * rpBoost * driverResearchMult * eventRPMult;
+                            game.rp += gain;
+                            history.rp += gain;
+                            game.stats.totalRP += gain;
+                        }
+                        workAnim(c.node);
+                    }
+                });
+            }
+
+            game.nodes.forEach(n => {
+                if ((n.type === 'backup' || n.type === 'warehouse') && activeNodes.has(n.id) && !n.infected) {
+                    const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
+                    if (stored > 1000) {
+                        const bonus = stored * 0.002 * dt * (n.type === 'warehouse' ? 2 : 1);
+                        game.money += bonus;
+                        history.money += bonus;
+                    }
+                }
+            });
+
+            if (activeContract) {
+                activeContract.time -= dt;
+                if (activeContract.time <= 0) {
+                    showFloat("Contract Failed", window.innerWidth/2, window.innerHeight/2, 'red');
+                    logEvent("Contract Failed.");
+                    activeContract = null;
+                } else if (activeContract.current >= activeContract.target) {
+                    game.money += activeContract.rewardMoney;
+                    game.rp += activeContract.rewardRp;
+                    game.stats.totalMoney += activeContract.rewardMoney;
+                    game.stats.totalRP += activeContract.rewardRp;
+                    game.stats.contractsCompleted++;
+                    showFloat(`+$${fmt(activeContract.rewardMoney)}`, window.innerWidth/2, window.innerHeight/2, 'gold');
+                    logEvent("Contract Complete!");
+                    activeContract = null;
+                    checkAchievements();
+                }
+            }
+            
+            // Update systems
+            updateEvents(dt);
+            updateCombo(dt);
+            updateStatistics();
+            updatePrestigeUI();
+            
+            // Calculate rolling average rates
+            rateHistory.money.push(history.money);
+            rateHistory.rp.push(history.rp);
+            if (rateHistory.money.length > RATE_WINDOW) rateHistory.money.shift();
+            if (rateHistory.rp.length > RATE_WINDOW) rateHistory.rp.shift();
+            
+            // Update rate displays every frame for smoothness
+            const avgMoneyRate = rateHistory.money.reduce((a, b) => a + b, 0) / rateHistory.money.length * 60;
+            const avgRpRate = rateHistory.rp.reduce((a, b) => a + b, 0) / rateHistory.rp.length * 60;
+            document.getElementById('moneyRate').innerText = `+$${fmt(avgMoneyRate)}/s`;
+            document.getElementById('rpRate').innerText = `+${fmt(avgRpRate)}/s`;
+
+            updateUI(efficiency);
+            requestAnimationFrame(gameLoop);
+        }
+
+        function virusLoop() {
+            // Security driver reduces virus chance
+            const securityMult = Math.max(0.1, 1 - (game.drivers.security * DRIVERS.security.effect));
+            if (Math.random() > (0.05 * securityMult)) return; 
+            
+            const targets = game.nodes.filter(n => activeNodes.has(n.id) && n.type !== 'router' && n.type !== 'firewall' && !n.infected);
+            if (targets.length === 0) return;
+            
+            const target = targets[Math.floor(Math.random() * targets.length)];
+            
+            let protected = false;
+            game.conns.forEach(c => {
+                const nid = c.from === target.id ? c.to : c.from;
+                const n = game.nodes.find(x => x.id === nid);
+                if (n && n.type === 'firewall' && activeNodes.has(nid) && !n.infected) protected = true;
+            });
+            
+            if (!protected) {
+                target.infected = true;
+                showFloat("⚠️ VIRUS", target.x + 90, target.y, '#8b5cf6');
+                logEvent("Virus detected!");
+                renderWorld(); 
+            }
+        }
+
+        function secLoop() {
+            // Reset history accumulator (rates are now calculated from rolling window in gameLoop)
+            history = { money: 0, rp: 0 };
+        }
+        
+        function eventLoop() {
+            // Random events checked every 10 minutes with 1% chance
+            triggerRandomEvent();
+        }
+
+        function updateConnectivity() {
+            const newActive = new Set();
+            const q = [];
+            
+            game.nodes.filter(n => n.type === 'router').forEach(n => {
+                newActive.add(n.id);
+                q.push(n.id);
+            });
+
+            while (q.length) {
+                const curr = q.shift();
+                game.conns.forEach(c => {
+                    const other = c.from === curr ? c.to : (c.to === curr ? c.from : null);
+                    if (other && !newActive.has(other)) {
+                        newActive.add(other);
+                        q.push(other);
+                    }
+                });
+            }
+
+            if (activeNodes.size !== newActive.size || [...newActive].some(x => !activeNodes.has(x))) {
+                game.nodes.forEach(n => {
+                    const el = document.getElementById(`node-${n.id}`);
+                    if (!el) return;
+                    if (newActive.has(n.id)) el.classList.remove('disconnected');
+                    else el.classList.add('disconnected');
+                });
+                
+                document.querySelectorAll('.cable-group').forEach(c => {
+                    if (!c.dataset.ends) return;
+                    const [id1, id2] = c.dataset.ends.split(',').map(Number);
+                    if (newActive.has(id1) && newActive.has(id2)) {
+                        c.classList.remove('disconnected');
+                        c.classList.add('active');
+                    } else {
+                        c.classList.add('disconnected');
+                        c.classList.remove('active');
+                    }
+                });
+            }
+            activeNodes = newActive;
+        }
+
+        // --- CODE SYSTEM FUNCTIONS ---
+        
+        function convertCodeBits() {
+            if (game.codeBits >= 100) {
+                game.codeBits -= 100;
+                game.optimizationCode += 1;
+                logEvent("Converted 100 code bits to 1 optimization code", 'code');
+                updateCodeUI();
+            }
+        }
+        
+        function installDriver(driverId) {
+            const driver = DRIVERS[driverId];
+            if (game.optimizationCode >= driver.cost) {
+                game.optimizationCode -= driver.cost;
+                game.drivers[driverId]++;
+                logEvent(`Installed ${driver.name} Level ${game.drivers[driverId]}!`, 'code');
+                renderDriverGrid();
+                updateCodeUI();
+            }
+        }
+        
+        function updateCodeUI() {
+            document.getElementById('codeBitsDisplay').innerText = Math.floor(game.codeBits);
+            document.getElementById('optCodeDisplay').innerText = game.optimizationCode;
+            document.getElementById('codeDisplay').innerText = Math.floor(game.codeBits);
+            document.getElementById('sidebarCodeBits').innerText = Math.floor(game.codeBits);
+            document.getElementById('sidebarOptCode').innerText = game.optimizationCode;
+            
+            const convertBtn = document.getElementById('convertBitsBtn');
+            const sidebarConvertBtn = document.getElementById('sidebarConvertBtn');
+            if (convertBtn) convertBtn.disabled = game.codeBits < 100;
+            if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
+            
+            updateInstalledDriversList();
+        }
+        
+        function updateInstalledDriversList() {
+            const lists = ['installedDriversList', 'sidebarDrivers'];
+            lists.forEach(listId => {
+                const list = document.getElementById(listId);
+                if (!list) return;
+                
+                const installed = Object.entries(game.drivers).filter(([_, level]) => level > 0);
+                if (installed.length === 0) {
+                    list.innerHTML = '<span style="font-size: 9px; color: #64748b;">No drivers installed</span>';
+                } else {
+                    list.innerHTML = installed.map(([id, level]) => {
+                        const driver = DRIVERS[id];
+                        return `<div class="driver-badge"><i class="${driver.icon}"></i> ${driver.name.split(' ')[0]} Lv.${level}</div>`;
+                    }).join('');
+                }
+            });
+        }
+        
+        function renderDriverGrid() {
+            const grid = document.getElementById('driverGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = Object.entries(DRIVERS).map(([id, driver]) => {
+                const level = game.drivers[id];
+                const canAfford = game.optimizationCode >= driver.cost;
+                const installed = level > 0;
+                
+                return `
+                    <div class="driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}" onclick="${canAfford ? `installDriver('${id}')` : ''}">
+                        <div class="driver-icon"><i class="${driver.icon}"></i></div>
+                        <div class="driver-name">${driver.name}</div>
+                        <div class="driver-desc">${driver.desc}</div>
+                        <div class="driver-cost">Cost: ${driver.cost} Opt Code</div>
+                        ${installed ? `<div class="driver-level">Level ${level} (+${Math.round(level * driver.effect * 100)}%)</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- ACTIONS ---
+
+        function spawnNode(type, x, y) {
+            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false });
+            game.stats.nodesCreated++;
+            checkAchievements();
+            addCombo();
+            spawnParticles(x + 90, y + 40, NODE_DEFS[type]?.color || '#3b82f6', 8);
+            renderWorld();
+        }
+
+        function buyNode(type) {
+            const def = NODE_DEFS[type];
+            if (game.money >= def.cost) {
+                game.money -= def.cost;
+                game.stats.moneySpent += def.cost;
+                const cx = (-view.x + window.innerWidth/2) / view.scale;
+                const cy = (-view.y + window.innerHeight/2) / view.scale;
+                spawnNode(type, cx - 90, cy - 40);
+                showFloat(`-$${fmt(def.cost)}`, window.innerWidth/2, window.innerHeight/2, 'red');
+            }
+        }
+        
+        function cleanNode(node, event) {
+            if (event) event.stopPropagation();
+            const cost = 500;
+            if (game.money >= cost) {
+                game.money -= cost;
+                game.stats.moneySpent += cost;
+                node.infected = false;
+                game.stats.virusesCleaned++;
+                spawnParticles(node.x + 90, node.y + 40, '#10b981', 10);
+                showFloat("CLEANED", node.x + 90, node.y, '#10b981');
+                renderWorld();
+                checkAchievements();
+                addCombo();
+            } else {
+                showFloat("Need $500", node.x + 90, node.y, 'red');
+            }
+        }
+
+        function upgradeSelectedNode() {
+            if (!selNodeId) return;
+            const n = game.nodes.find(x => x.id === selNodeId);
+            const def = NODE_DEFS[n.type];
+            const base = n.type === 'router' ? 500 : def.cost;
+            const cost = Math.floor(base * Math.pow(1.5, n.level));
+            
+            if (game.money >= cost) {
+                game.money -= cost;
+                game.stats.moneySpent += cost;
+                game.stats.upgrades++;
+                n.level++;
+                spawnParticles(n.x + 90, n.y + 40, '#fbbf24', 10);
+                if (n.type === 'router') {
+                    game.routerLevel = n.level;
+                    updateRouterCostDisplay();
+                }
+                renderWorld(); 
+                document.getElementById('contextMenu').style.display = 'none';
+                checkAchievements();
+                addCombo();
+            }
+        }
+        
+        function deleteSelectedNode() {
+             if (!selNodeId) return;
+             const n = game.nodes.find(x => x.id === selNodeId);
+             if (n.type === 'router') return; 
+             
+             game.nodes = game.nodes.filter(x => x.id !== selNodeId);
+             game.conns = game.conns.filter(c => c.from !== selNodeId && c.to !== selNodeId);
+             game.stats.nodesDeleted++;
+             spawnParticles(n.x + 90, n.y + 40, '#ef4444', 8);
+             document.getElementById('contextMenu').style.display = 'none';
+             renderWorld();
+             checkAchievements();
+        }
+
+        // ==================== CABLE DELETION SYSTEM ====================
+        let cableDeleteMode = false;
+        
+        function toggleCableDeleteMode() {
+            cableDeleteMode = !cableDeleteMode;
+            const btn = document.getElementById('cableDeleteBtn');
+            const btnText = document.getElementById('cableDeleteText');
+            const world = document.getElementById('world');
+            
+            // Update pointer-events on all cable groups
+            document.querySelectorAll('.cable-group').forEach(g => {
+                g.style.pointerEvents = cableDeleteMode ? 'all' : 'none';
+            });
+            document.querySelectorAll('.cable').forEach(c => {
+                c.style.pointerEvents = cableDeleteMode ? 'stroke' : 'none';
+            });
+            
+            if (cableDeleteMode) {
+                btn.classList.add('active');
+                btnText.innerText = 'Click Cable to Delete';
+                world.classList.add('cable-delete-mode');
+                logEvent('Cable delete mode: ON - Click any cable to delete it', 'info');
+                showFloat('🖱️ Click any cable to delete it', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+            } else {
+                btn.classList.remove('active');
+                btnText.innerText = 'Delete Cables';
+                world.classList.remove('cable-delete-mode');
+            }
+        }
+        
+        function handleCableClick(fromId, toId, event) {
+            if (!cableDeleteMode) return;
+            
+            event.stopPropagation();
+            event.preventDefault();
+            
+            deleteCable(fromId, toId, event);
+        }
+        
+        function deleteCable(fromId, toId, event) {
+            // Find and remove the cable
+            const cableIndex = game.conns.findIndex(c => 
+                (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
+            );
+            
+            if (cableIndex === -1) return;
+            
+            // Get cable position for particle effect
+            const n1 = game.nodes.find(n => n.id === fromId);
+            const n2 = game.nodes.find(n => n.id === toId);
+            
+            game.conns.splice(cableIndex, 1);
+            
+            // Spawn particles at cable midpoint
+            if (n1 && n2) {
+                const midX = (n1.x + 90 + n2.x) / 2;
+                const midY = (n1.y + 40 + n2.y + 40) / 2;
+                spawnParticles(midX, midY, '#ef4444', 5);
+            }
+            
+            // Refund $5 for the cable
+            game.money += 5;
+            showFloat('+ $5 (Cable Refund)', window.innerWidth/2, window.innerHeight/2, '#10b981');
+            
+            renderCables();
+            updateConnectivity();
+            logEvent('Cable deleted (+$5 refund)', 'info');
+            
+            // Auto-exit delete mode if shift isn't held
+            if (!event.shiftKey) {
+                toggleCableDeleteMode();
+            }
+        }
+        
+        function deleteAllCables() {
+            if (game.conns.length === 0) {
+                showFloat('No cables to delete', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                return;
+            }
+            
+            const cableCount = game.conns.length;
+            const refund = cableCount * 5;
+            
+            if (!confirm(`Delete all ${cableCount} cables? You'll get $${refund} refunded.`)) {
+                return;
+            }
+            
+            game.conns = [];
+            game.money += refund;
+            
+            showFloat(`+ $${refund} (${cableCount} cables deleted)`, window.innerWidth/2, window.innerHeight/2, '#10b981');
+            logEvent(`Deleted all ${cableCount} cables (+$${refund})`, 'good');
+            
+            renderCables();
+            updateConnectivity();
+            
+            // Exit delete mode if active
+            if (cableDeleteMode) toggleCableDeleteMode();
+        }
+
+        function unlockTech(id) {
+            const tech = TECH_TREE.find(t => t.id === id);
+            if (!game.unlocked.includes(id) && game.rp >= tech.cost && canUnlockTech(id)) {
+                game.rp -= tech.cost;
+                game.unlocked.push(id);
+                renderResearchTree();
+                setTab(currTab);
+                logEvent(`Researched: ${tech.name}`);
+            }
+        }
+        
+        function canUnlockTech(id) {
+            const tech = TECH_TREE.find(t => t.id === id);
+            if (!tech.requires || tech.requires.length === 0) return true;
+            return tech.requires.every(req => game.unlocked.includes(req));
+        }
+        
+        function prestige() {
+            if (game.money < 10000000) return;
+            if (!confirm("Sell company? Resets money, nodes, tech. Drivers and code persist!")) return;
+            
+            game.prestige++;
+            game.money = 2000;
+            game.rp = 0;
+            game.res = { files: 0, images: 0, videos: 0, audio: 0 };
+            game.nodes = [];
+            game.conns = [];
+            game.routerLevel = 1;
+            game.routerHeat = 0;
+            game.unlocked = [];
+            game.nextId = 1;
+            activeContract = null;
+            
+            init(); 
+            renderWorld();
+            renderResearchTree();
+            setTab('infra');
+            logEvent(`Prestige Level ${game.prestige} Achieved!`);
+        }
+
+        function openContracts() {
+            const list = document.getElementById('contractList');
+            list.innerHTML = '';
+            
+            const types = [
+                { title: "Data Dump", desc: "Upload 50 MB Data", target: 50 * 1024 * 1024, time: 60, rewardM: 5000, rewardR: 500 },
+                { title: "Streaming Deal", desc: "Upload 500 MB Data", target: 500 * 1024 * 1024, time: 120, rewardM: 25000, rewardR: 2000 },
+                { title: "Corporate Backups", desc: "Upload 1 GB Data", target: 1024 * 1024 * 1024, time: 180, rewardM: 100000, rewardR: 5000 }
+            ];
+            
+            types.forEach(c => {
+                const el = document.createElement('div');
+                el.className = 'contract-item';
+                el.innerHTML = `
+                    <div>
+                        <h4>${c.title}</h4>
+                        <p>${c.desc} | Time: ${c.time}s</p>
+                    </div>
+                    <div class="contract-reward">
+                        +$${fmt(c.rewardM)}<br>+${fmt(c.rewardR)} RP
+                        <button class="btn btn-contract" style="margin-top:5px; padding:4px 8px; width:auto;" onclick="startContract(${JSON.stringify(c).replace(/"/g, '&quot;')})">Accept</button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+            
+            document.getElementById('contractModal').style.display='flex';
+        }
+        
+        function startContract(c) {
+            activeContract = { 
+                type: 'upload', 
+                target: c.target, 
+                current: 0, 
+                time: c.time, 
+                rewardMoney: c.rewardM, 
+                rewardRp: c.rewardR,
+                desc: c.desc 
+            };
+            logEvent("Contract Started: " + c.title);
+            document.getElementById('contractModal').style.display='none';
+        }
+
+        function fmt(n) {
+            if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+            if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+            if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+            return Math.floor(n);
+        }
+        
+        function updateRouterCostDisplay() {
+            const base = 500;
+            const cost = Math.floor(base * Math.pow(1.5, game.routerLevel));
+            const costEl = document.getElementById('routerCostValue');
+            costEl.innerText = '$' + fmt(cost);
+            
+            if (game.money >= cost) {
+                costEl.className = 'cost-value affordable';
+            } else {
+                costEl.className = 'cost-value expensive';
+            }
+        }
+
+        function renderWorld() {
+            const nodesDiv = document.getElementById('nodes');
+            nodesDiv.innerHTML = '';
+            
+            game.nodes.forEach(n => {
+                const def = NODE_DEFS[n.type];
+                const el = document.createElement('div');
+                let classes = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
+                if (n.type === 'router' && game.overheatMode) classes += ' overheating';
+                if (def.type === 'coding') classes += ' coding';
+                
+                el.className = classes;
+                el.id = `node-${n.id}`;
+                el.style.left = n.x + 'px';
+                el.style.top = n.y + 'px';
+                
+                const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                               <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                
+                const cleanBtn = n.infected ? `<div class="clean-btn" onmousedown="cleanNode(game.nodes.find(x=>x.id===${n.id}), event)">CLEAN [-$500]</div>` : '';
+
+                el.innerHTML = `
+                    ${ports}
+                    ${cleanBtn}
+                    <div class="node-header">
+                        <div class="node-icon-box" style="color:${def.color}"><i class="${def.icon}"></i></div>
+                        <div class="node-info">
+                            <div class="node-title">${def.name}</div>
+                            <div class="node-lvl">Level ${n.level}</div>
+                        </div>
+                    </div>
+                `;
+                
+                el.onmousedown = (e) => {
+                    if (e.target.classList.contains('port')) return;
+                    if (e.target.classList.contains('clean-btn')) return;
+                    if (e.button === 2) {
+                        e.preventDefault();
+                        showContext(n, e);
+                        return;
+                    }
+                    if (n.infected) return; 
+                    dragStart(n, e);
+                };
+                
+                nodesDiv.appendChild(el);
+            });
+
+            renderCables();
+        }
+
+        function renderCables() {
+            const svg = document.getElementById('cables');
+            svg.innerHTML = '';
+            game.conns.forEach(c => {
+                const n1 = game.nodes.find(n => n.id === c.from);
+                const n2 = game.nodes.find(n => n.id === c.to);
+                if (!n1 || !n2) return;
+                
+                const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                group.classList.add("cable-group");
+                group.dataset.ends = `${c.from},${c.to}`;
+                group.style.pointerEvents = cableDeleteMode ? 'all' : 'none';
+                group.onclick = (e) => handleCableClick(c.from, c.to, e);
+                
+                const destDef = NODE_DEFS[n2.type];
+                if (destDef.type === 'upload' || n2.type === 'rack') group.classList.add('money');
+                else if (destDef.type === 'lab') group.classList.add('power');
+                else if (destDef.type === 'coding') group.classList.add('code');
+                if (activeNodes.has(n1.id) && activeNodes.has(n2.id)) group.classList.add('active');
+                
+                const x1 = n1.x + 180;
+                const y1 = n1.y + 40;
+                const x2 = n2.x;
+                const y2 = n2.y + 40;
+                
+                const pathStr = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+                
+                const bgLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                bgLine.classList.add("cable");
+                bgLine.setAttribute("d", pathStr);
+                bgLine.dataset.from = c.from;
+                bgLine.dataset.to = c.to;
+                bgLine.style.pointerEvents = cableDeleteMode ? 'stroke' : 'none';
+                
+                const dashLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                dashLine.classList.add("cable-inner");
+                dashLine.setAttribute("d", pathStr);
+                
+                group.appendChild(bgLine);
+                group.appendChild(dashLine);
+                svg.appendChild(group);
+            });
+        }
+
+        function updateUI(eff = 1.0) {
+            document.getElementById('moneyDisplay').innerText = '$' + fmt(game.money);
+            document.getElementById('rpDisplay').innerText = fmt(game.rp) + ' RP';
+            
+            ['Files', 'Images', 'Videos'].forEach(k => {
+                const key = k.toLowerCase();
+                const val = game.res[key];
+                document.getElementById(`txt${k}`).innerText = fmt(val);
+                const pct = Math.min(100, Math.log10(val + 1) * 20); 
+                document.getElementById(`bar${k}`).style.width = pct + '%';
+            });
+            
+            document.getElementById('modalRpDisplay').innerText = fmt(game.rp);
+            
+            const world = document.getElementById('world');
+            world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+            
+            const prestigeMult = 1 + (game.prestige * 0.5);
+            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
+            const base = 25 * Math.pow(1.5, game.routerLevel - 1) * prestigeMult * driverDownloadMult;
+            document.getElementById('globalDown').innerText = fmt(base * eff) + ' B/s';
+            document.getElementById('globalUp').innerText = fmt(base * eff) + ' B/s';
+            document.getElementById('routerLvl').innerText = 'LVL ' + game.routerLevel;
+            
+            const heatBar = document.getElementById('heatBar');
+            const heatText = document.getElementById('heatText');
+            const heatStatus = document.getElementById('heatStatus');
+            heatBar.style.width = game.routerHeat + '%';
+            heatText.innerText = Math.floor(game.routerHeat) + '°C';
+            
+            if (game.overheatMode) {
+                heatBar.style.background = '#ef4444';
+                heatStatus.innerText = 'Status: OVERHEATING (Speed -30%)';
+                heatStatus.style.color = '#ef4444';
+            } else if (game.routerHeat > 50) {
+                heatBar.style.background = '#f59e0b';
+                heatStatus.innerText = 'Status: Warm';
+                heatStatus.style.color = '#f59e0b';
+            } else {
+                heatBar.style.background = '#10b981';
+                heatStatus.innerText = 'Status: Normal';
+                heatStatus.style.color = '#a0aec0';
+            }
+            
+            if (game.money >= 10000000 || game.prestige > 0) document.getElementById('prestigeSection').style.display = 'block';
+            document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 50)}%`;
+            
+            const cw = document.getElementById('activeContractWidget');
+            if (activeContract) {
+                cw.style.display = 'block';
+                document.getElementById('contractDesc').innerText = activeContract.desc;
+                document.getElementById('contractTimer').innerText = Math.floor(activeContract.time) + 's';
+                const pct = Math.min(100, (activeContract.current / activeContract.target) * 100);
+                document.getElementById('contractBar').style.width = pct + '%';
+            } else {
+                cw.style.display = 'none';
+            }
+            
+            // Update active event widget
+            const ew = document.getElementById('activeEventWidget');
+            if (game.activeEvent) {
+                ew.style.display = 'block';
+                document.getElementById('eventName').innerText = game.activeEvent.name;
+                document.getElementById('eventDesc').innerText = game.activeEvent.desc;
+                document.getElementById('eventTimer').innerText = Math.floor(game.eventTimeLeft) + 's';
+                ew.style.borderColor = game.activeEvent.type === 'good' ? '#10b981' : '#ef4444';
+                document.getElementById('eventName').style.color = game.activeEvent.type === 'good' ? '#10b981' : '#ef4444';
+            } else {
+                ew.style.display = 'none';
+            }
+            
+            updateRouterCostDisplay();
+            updateCodeUI();
+            renderStatistics();
+        }
+
+        function renderResearchTree() {
+            const grid = document.getElementById('researchTreeGrid');
+            const svg = document.getElementById('researchTreeSvg');
+            grid.innerHTML = '';
+            svg.innerHTML = '';
+            
+            const tiers = {};
+            TECH_TREE.forEach(t => {
+                if (!tiers[t.tier]) tiers[t.tier] = [];
+                tiers[t.tier].push(t);
+            });
+            
+            const maxTier = Math.max(...Object.keys(tiers).map(Number));
+            
+            for (let tier = 1; tier <= maxTier; tier++) {
+                const tierCol = document.createElement('div');
+                tierCol.className = 'research-tier';
+                
+                const tierLabel = document.createElement('div');
+                tierLabel.className = `tier-label tier-${tier}`;
+                tierLabel.innerText = 'Tier ' + tier;
+                tierCol.appendChild(tierLabel);
+                
+                if (tiers[tier]) {
+                    tiers[tier].forEach(tech => {
+                        const owned = game.unlocked.includes(tech.id);
+                        const canAfford = game.rp >= tech.cost;
+                        const prerequisitesMet = canUnlockTech(tech.id);
+                        const isAvailable = !owned && canAfford && prerequisitesMet;
+                        
+                        const card = document.createElement('div');
+                        card.className = `tech-card ${owned ? 'owned' : ''} ${!prerequisitesMet ? 'locked' : ''} ${isAvailable ? 'available' : ''}`;
+                        card.id = `tech-${tech.id}`;
+                        card.onclick = () => { if (!owned && prerequisitesMet) unlockTech(tech.id); };
+                        
+                        const costClass = canAfford ? 'affordable' : '';
+                        
+                        card.innerHTML = `
+                            <div class="tech-icon"><i class="${tech.icon}"></i></div>
+                            <div class="tech-name">${tech.name}</div>
+                            <div class="tech-desc">${tech.desc}</div>
+                            ${!owned ? `<div class="tech-cost ${costClass}"><i class="fa-solid fa-flask"></i> ${fmt(tech.cost)} RP</div>` : '<div class="tech-cost"><i class="fa-solid fa-check"></i> Owned</div>'}
+                            ${!prerequisitesMet && tech.requires.length > 0 ? `<div class="tech-req">Requires: ${tech.requires.map(r => TECH_TREE.find(t => t.id === r)?.name).join(', ')}</div>` : ''}
+                        `;
+                        
+                        tierCol.appendChild(card);
+                    });
+                }
+                
+                grid.appendChild(tierCol);
+            }
+            
+            setTimeout(() => drawResearchLines(), 100);
+        }
+        
+        function drawResearchLines() {
+            const svg = document.getElementById('researchTreeSvg');
+            svg.innerHTML = '';
+            
+            const containerRect = document.getElementById('researchTreeContainer').getBoundingClientRect();
+            
+            TECH_TREE.forEach(tech => {
+                if (tech.requires && tech.requires.length > 0) {
+                    const targetEl = document.getElementById(`tech-${tech.id}`);
+                    if (!targetEl) return;
+                    
+                    const targetRect = targetEl.getBoundingClientRect();
+                    const targetX = targetRect.left - containerRect.left + targetRect.width / 2;
+                    const targetY = targetRect.top - containerRect.top;
+                    
+                    tech.requires.forEach(reqId => {
+                        const sourceEl = document.getElementById(`tech-${reqId}`);
+                        if (!sourceEl) return;
+                        
+                        const sourceRect = sourceEl.getBoundingClientRect();
+                        const sourceX = sourceRect.left - containerRect.left + sourceRect.width / 2;
+                        const sourceY = sourceRect.top - containerRect.top + sourceRect.height;
+                        
+                        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        const isUnlocked = game.unlocked.includes(tech.id) && game.unlocked.includes(reqId);
+                        line.className = `research-tree-line ${isUnlocked ? 'unlocked' : ''}`;
+                        
+                        const d = `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`;
+                        line.setAttribute('d', d);
+                        
+                        svg.appendChild(line);
+                    });
+                }
+            });
+        }
+
+        let currTab = 'infra';
+
+        function setTab(t, el) {
+            currTab = t;
+            document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+            if (el) el.classList.add('active');
+            else document.querySelector(`.tab[data-tab="${t}"]`)?.classList.add('active');
+            
+            const tray = document.getElementById('tray');
+            tray.innerHTML = '';
+            
+            Object.keys(NODE_DEFS).forEach(k => {
+                const def = NODE_DEFS[k];
+                if (currTab === 'infra' && def.type !== 'infra' && def.type !== 'core') return;
+                if (currTab === 'download' && def.type !== 'download') return;
+                if (currTab === 'upload' && def.type !== 'upload' && def.type !== 'lab' && def.type !== 'special') return;
+                if (currTab === 'advanced' && def.type !== 'advanced') return;
+                if (currTab === 'coding' && def.type !== 'coding') return;
+                if (def.type === 'core') return;
+
+                const el = document.createElement('div');
+                el.className = 'shop-item';
+                
+                const locked = def.req && !game.unlocked.includes(def.req);
+                if (locked) el.classList.add('disabled');
+                
+                el.onclick = () => { if (!locked) buyNode(k); };
+                el.innerHTML = `
+                    <div class="item-cost">$${fmt(def.cost)}</div>
+                    <div class="item-icon"><i class="${def.icon}" style="color:${def.color}"></i></div>
+                    <div class="item-name">${def.name}</div>
+                    <div class="item-desc">${locked ? "LOCKED (Research)" : def.desc}</div>
+                `;
+                tray.appendChild(el);
+            });
+        }
+
+        let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
+        let port = { active: false, src: null };
+        let selNodeId = null;
+
+        function setupInputs() {
+            const vp = document.getElementById('viewport');
+            
+            vp.onmousedown = (e) => {
+                if (e.target.closest('.node')) return;
+                drag.active = true;
+                drag.startX = e.clientX; drag.startY = e.clientY;
+                drag.offX = view.x; drag.offY = view.y;
+                document.getElementById('contextMenu').style.display = 'none';
+            };
+            
+            window.onmousemove = (e) => {
+                if (drag.active) {
+                    view.x = drag.offX + (e.clientX - drag.startX);
+                    view.y = drag.offY + (e.clientY - drag.startY);
+                }
+                if (drag.node) {
+                    const z = view.scale;
+                    drag.node.x = drag.node.ix + (e.clientX - drag.sx)/z;
+                    drag.node.y = drag.node.iy + (e.clientY - drag.sy)/z;
+                    
+                    const el = document.getElementById(`node-${drag.node.id}`);
+                    if (el) { el.style.left = drag.node.x+'px'; el.style.top = drag.node.y+'px'; }
+                    renderCables(); 
+                }
+            };
+            
+            window.onmouseup = () => { drag.active = false; drag.node = null; };
+            
+            vp.onwheel = (e) => {
+                e.preventDefault();
+                
+                const rect = vp.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const worldX = (mouseX - view.x) / view.scale;
+                const worldY = (mouseY - view.y) / view.scale;
+                
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.max(0.3, Math.min(2, view.scale * zoomFactor));
+                
+                view.x = mouseX - worldX * newScale;
+                view.y = mouseY - worldY * newScale;
+                view.scale = newScale;
+                
+                updateZoomDisplay();
+            };
+            
+            window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT') return;
+                if (e.key === '+' || e.key === '=') zoomIn();
+                else if (e.key === '-' || e.key === '_') zoomOut();
+                else if (e.key === '0') resetZoom();
+                else if (e.key === '?' || e.key === '/') document.getElementById('helpModal').style.display='flex';
+                else if (e.key === 'r' || e.key === 'R') document.getElementById('researchModal').style.display='flex';
+                else if (e.key === 'c' || e.key === 'C') document.getElementById('codeModal').style.display='flex';
+                else if (e.key === 'a' || e.key === 'A') document.getElementById('achievementsModal').style.display='flex';
+                else if (e.key === 'x' || e.key === 'X') toggleCableDeleteMode();
+                else if (e.key === 's' || e.key === 'S') document.getElementById('statsModal').style.display='flex';
+                else if (e.key === 'p' || e.key === 'P') document.getElementById('prestigeModal').style.display='flex';
+                else if (e.key === 'l' || e.key === 'L') document.getElementById('accountModal').style.display='flex';
+                else if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                }
+            });
+            
+            window.addEventListener('resize', () => drawResearchLines());
+        }
+        
+        function dragStart(node, e) {
+            drag.node = node;
+            drag.sx = e.clientX; drag.sy = e.clientY;
+            drag.node.ix = node.x; drag.node.iy = node.y;
+            
+            selNodeId = node.id;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+            document.getElementById(`node-${node.id}`).classList.add('selected');
+        }
+        
+        function portDown(id, e) {
+            e.stopPropagation();
+            port.active = true; port.src = id;
+        }
+        
+        function portUp(id) {
+            if (port.active && port.src !== id) {
+                const cableCost = 10;
+                if (game.money < cableCost) {
+                    showFloat("Need $10", window.innerWidth/2, window.innerHeight/2, 'red');
+                    port.active = false; return;
+                }
+                if (!game.conns.some(c => (c.from===port.src && c.to===id) || (c.from===id && c.to===port.src))) {
+                    game.money -= cableCost;
+                    game.stats.moneySpent += cableCost;
+                    game.conns.push({ from: port.src, to: id });
+                    game.stats.cablesPlaced++;
+                    renderCables();
+                    updateConnectivity();
+                    checkAchievements();
+                    addCombo();
+                }
+            }
+            port.active = false;
+        }
+
+        function showContext(node, e) {
+            const m = document.getElementById('contextMenu');
+            selNodeId = node.id;
+            m.style.left = e.clientX + 'px'; m.style.top = e.clientY + 'px';
+            m.style.display = 'block';
+            const base = node.type === 'router' ? 500 : NODE_DEFS[node.type].cost;
+            const cost = Math.floor(base * Math.pow(1.5, node.level));
+            document.getElementById('ctxCost').innerText = '$' + fmt(cost);
+        }
+
+        function workAnim(node) {
+            const el = document.getElementById(`node-${node.id}`);
+            if (el) { el.classList.remove('working'); void el.offsetWidth; el.classList.add('working'); }
+        }
+        
+        function showFloat(txt, x, y, col) {
+            const el = document.createElement('div');
+            el.className = 'floating-text'; el.innerText = txt;
+            el.style.left = x+'px'; el.style.top = y+'px'; el.style.color = col;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+        
+        function addMoney(e) {
+            game.money += 5;
+            showFloat('+$5', e.clientX, e.clientY, '#10b981');
+        }
+        
+        function upgradeRouter() {
+             const r = game.nodes.find(n => n.type === 'router');
+             if(r) { selNodeId = r.id; upgradeSelectedNode(); }
+        }
+
+        function exportSave() {
+            // Create a clean copy of game state for export
+            const saveData = {
+                version: GAME_VERSION,
+                timestamp: Date.now(),
+                game: JSON.parse(JSON.stringify(game))
+            };
+            const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData));
+            const node = document.createElement('a');
+            node.setAttribute("href", data); node.setAttribute("download", "upload_labs_save_v" + GAME_VERSION + ".json");
+            document.body.appendChild(node); node.click(); node.remove();
+            logEvent('Game saved to file', 'good');
+        }
+        
+        function importSave(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const saveData = JSON.parse(e.target.result);
+                    
+                    // Handle both old format (direct game object) and new format (wrapped with metadata)
+                    const importedGame = saveData.game || saveData;
+                    
+                    // Validate required fields
+                    if (!importedGame || typeof importedGame.money !== 'number') {
+                        throw new Error('Invalid save data structure');
+                    }
+                    
+                    // Create a fresh game state and merge
+                    game.money = Number(importedGame.money) || 2000;
+                    game.rp = Number(importedGame.rp) || 0;
+                    game.prestige = Number(importedGame.prestige) || 0;
+                    game.routerLevel = Number(importedGame.routerLevel) || 1;
+                    game.routerHeat = Number(importedGame.routerHeat) || 0;
+                    game.overheatMode = Boolean(importedGame.overheatMode);
+                    game.nextId = Number(importedGame.nextId) || 1;
+                    
+                    // Resources - ensure all are numbers
+                    game.res = {
+                        files: Number(importedGame.res?.files) || 0,
+                        images: Number(importedGame.res?.images) || 0,
+                        videos: Number(importedGame.res?.videos) || 0,
+                        audio: Number(importedGame.res?.audio) || 0
+                    };
+                    
+                    // Arrays
+                    game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
+                    game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
+                    game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
+                    game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                    
+                    // Code system
+                    game.codeBits = Number(importedGame.codeBits) || 0;
+                    game.optimizationCode = Number(importedGame.optimizationCode) || 0;
+                    game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                    
+                    // Stats - preserve or create new
+                    if (importedGame.stats) {
+                        game.stats = {
+                            totalMoney: Number(importedGame.stats.totalMoney) || game.money,
+                            peakMoney: Number(importedGame.stats.peakMoney) || game.money,
+                            moneySpent: Number(importedGame.stats.moneySpent) || 0,
+                            totalRP: Number(importedGame.stats.totalRP) || game.rp,
+                            nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
+                            nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
+                            cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
+                            upgrades: Number(importedGame.stats.upgrades) || 0,
+                            contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
+                            filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
+                            virusesCleaned: Number(importedGame.stats.virusesCleaned) || 0,
+                            totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
+                            totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
+                            playTime: Number(importedGame.stats.playTime) || 0,
+                            techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
+                            prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
+                            startTime: Date.now()
+                        };
+                    }
+                    
+                    // Ensure nodes have infected property
+                    game.nodes.forEach(n => { 
+                        if (typeof n.infected === 'undefined') n.infected = false;
+                        if (typeof n.level === 'undefined') n.level = 1;
+                    });
+                    
+                    // Reset active nodes and reinitialize
+                    activeNodes.clear();
+                    selectedNode = null;
+                    
+                    renderWorld(); renderResearchTree(); renderDriverGrid(); renderAchievements(); updateUI();
+                    updateRouterCostDisplay();
+                    
+                    const version = saveData.version ? ` (v${saveData.version})` : '';
+                    logEvent(`Game loaded successfully${version}`, 'good');
+                    showFloat('✅ Game Loaded!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                    
+                } catch(err) { 
+                    console.error('Save import error:', err);
+                    alert("Invalid Save File: " + err.message); 
+                }
+            };
+            reader.onerror = () => alert("Error reading file");
+            reader.readAsText(file);
+        }
+
+        // ==================== FIREBASE ACCOUNT SYSTEM ====================
+        let currentUser = null;
+        let cloudSaveEnabled = false;
+        let autoSyncInterval = null;
+
+        // Initialize Firebase Auth
+        async function initFirebase() {
+            try {
+                // Wait for Firebase to be ready
+                if (!window.firebaseAuth) {
+                    console.log('Firebase not loaded yet, retrying...');
+                    setTimeout(initFirebase, 1000);
+                    return;
+                }
+                
+                const auth = window.firebaseAuth;
+                const onAuthStateChanged = window.firebaseOnAuthStateChanged;
+                
+                // Listen for auth state changes
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        cloudSaveEnabled = true;
+                        updateCloudSaveStatus('online', 'Cloud Save Active');
+                        updateAccountUI(user);
+                        logEvent('Cloud save connected');
+                        
+                        // Try to load saved game
+                        loadFromCloud();
+                        
+                        // Set up auto-sync every 5 minutes
+                        if (autoSyncInterval) clearInterval(autoSyncInterval);
+                        autoSyncInterval = setInterval(() => {
+                            if (cloudSaveEnabled && currentUser) syncToCloud();
+                        }, 300000); // 5 minutes
+                    } else {
+                        currentUser = null;
+                        cloudSaveEnabled = false;
+                        updateCloudSaveStatus('offline', 'Offline');
+                        updateAccountUI(null);
+                    }
+                });
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                updateCloudSaveStatus('error', 'Cloud Save Error');
+            }
+        }
+
+        // Update account UI based on login state
+        function updateAccountUI(user) {
+            const loggedOutView = document.getElementById('accountLoggedOut');
+            const loggedInView = document.getElementById('accountLoggedIn');
+            const panelText = document.getElementById('accountPanelText');
+            const btnText = document.getElementById('accountBtnText');
+            const icon = document.getElementById('accountIcon');
+            const status = document.getElementById('accountStatus');
+            
+            if (user) {
+                // User is logged in
+                if (loggedOutView) loggedOutView.style.display = 'none';
+                if (loggedInView) loggedInView.style.display = 'block';
+                
+                if (panelText) panelText.innerText = 'Your progress is saved to the cloud!';
+                if (btnText) btnText.innerText = 'Account';
+                if (icon) icon.className = 'fa-solid fa-user-check';
+                if (status) status.innerText = 'Logged in as ' + (user.displayName || user.email);
+                
+                // Update account modal info
+                const displayNameEl = document.getElementById('accountDisplayName');
+                const emailEl = document.getElementById('accountEmail');
+                if (displayNameEl) displayNameEl.innerText = user.displayName || 'Player';
+                if (emailEl) emailEl.innerText = user.email;
+            } else {
+                // User is logged out
+                if (loggedOutView) loggedOutView.style.display = 'block';
+                if (loggedInView) loggedInView.style.display = 'none';
+                
+                if (panelText) panelText.innerText = 'Login to save your progress to the cloud!';
+                if (btnText) btnText.innerText = 'Login / Register';
+                if (icon) icon.className = 'fa-solid fa-user';
+                if (status) status.innerText = 'Not logged in';
+            }
+        }
+
+        // Register new user
+        async function registerUser() {
+            const displayName = document.getElementById('registerDisplayName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('accountError');
+            
+            if (!displayName || !email || !password) {
+                showAccountError('Please fill in all fields');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAccountError('Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                const auth = window.firebaseAuth;
+                const createUser = window.firebaseCreateUser;
+                const updateProfile = window.firebaseUpdateProfile;
+                
+                const userCredential = await createUser(auth, email, password);
+                const user = userCredential.user;
+                
+                // Set display name
+                await updateProfile(user, { displayName: displayName });
+                
+                // Save initial game data
+                await syncToCloud();
+                
+                showAccountError('');
+                logEvent('Account created successfully!', 'good');
+                showFloat('✅ Account Created!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                let message = 'Registration failed';
+                if (error.code === 'auth/email-already-in-use') message = 'Email already in use';
+                if (error.code === 'auth/invalid-email') message = 'Invalid email address';
+                if (error.code === 'auth/weak-password') message = 'Password is too weak';
+                showAccountError(message);
+            }
+        }
+
+        // Login existing user
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('accountError');
+            
+            if (!email || !password) {
+                showAccountError('Please enter email and password');
+                return;
+            }
+            
+            try {
+                const auth = window.firebaseAuth;
+                const signIn = window.firebaseSignIn;
+                
+                await signIn(auth, email, password);
+                
+                showAccountError('');
+                logEvent('Logged in successfully!', 'good');
+                showFloat('✅ Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                
+                // Load cloud save
+                await loadFromCloud();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                let message = 'Login failed';
+                if (error.code === 'auth/user-not-found') message = 'User not found';
+                if (error.code === 'auth/wrong-password') message = 'Incorrect password';
+                if (error.code === 'auth/invalid-email') message = 'Invalid email address';
+                if (error.code === 'auth/invalid-credential') message = 'Invalid email or password';
+                showAccountError(message);
+            }
+        }
+
+        // Logout user
+        async function logoutUser() {
+            try {
+                const auth = window.firebaseAuth;
+                const signOut = window.firebaseSignOut;
+                
+                await signOut(auth);
+                
+                // Clear auto-sync
+                if (autoSyncInterval) {
+                    clearInterval(autoSyncInterval);
+                    autoSyncInterval = null;
+                }
+                
+                logEvent('Logged out', 'info');
+                showFloat('👋 Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                showAccountError('Logout failed');
+            }
+        }
+
+        // Show account error
+        function showAccountError(message) {
+            const errorDiv = document.getElementById('accountError');
+            if (errorDiv) {
+                if (message) {
+                    errorDiv.innerText = message;
+                    errorDiv.style.display = 'block';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
+            }
+        }
+
+        // Sync game to cloud
+        async function syncToCloud() {
+            if (!cloudSaveEnabled || !currentUser) {
+                logEvent('Cloud save not available - please login first', 'bad');
+                showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                document.getElementById('accountModal').style.display='flex';
+                return;
+            }
+            
+            updateCloudSaveStatus('syncing', 'Syncing...');
+            
+            try {
+                const db = window.firebaseDb;
+                const doc = window.firebaseDoc;
+                const setDoc = window.firebaseSetDoc;
+                
+                // Create a clean copy of game data
+                const saveData = {
+                    game: JSON.parse(JSON.stringify(game)),
+                    version: GAME_VERSION,
+                    timestamp: Date.now(),
+                    device: navigator.userAgent
+                };
+                
+                await setDoc(doc(db, 'saves', currentUser.uid), saveData);
+                
+                updateCloudSaveStatus('online', 'Saved to Cloud');
+                
+                // Update last sync time display if it exists
+                const lastSyncEl = document.getElementById('lastSyncTime');
+                if (lastSyncEl) lastSyncEl.innerText = 'Last sync: ' + new Date().toLocaleTimeString();
+                
+                logEvent('Game saved to cloud', 'good');
+                showFloat('☁️ Saved to Cloud', window.innerWidth/2, window.innerHeight/2, '#3b82f6');
+            } catch (error) {
+                console.error('Cloud save error:', error);
+                updateCloudSaveStatus('error', 'Sync Failed');
+                logEvent('Cloud save failed: ' + error.message, 'bad');
+                showFloat('❌ Save Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+            }
+        }
+
+        // Load game from cloud
+        async function loadFromCloud() {
+            if (!cloudSaveEnabled || !currentUser) {
+                logEvent('Cloud save not available - please login first', 'bad');
+                showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+                document.getElementById('accountModal').style.display='flex';
+                return;
+            }
+            
+            updateCloudSaveStatus('syncing', 'Loading...');
+            
+            try {
+                const db = window.firebaseDb;
+                const doc = window.firebaseDoc;
+                const getDoc = window.firebaseGetDoc;
+                
+                const docSnap = await getDoc(doc(db, 'saves', currentUser.uid));
+                
+                if (docSnap.exists()) {
+                    const saveData = docSnap.data();
+                    
+                    // Version check (warning only)
+                    if (saveData.version && saveData.version !== GAME_VERSION) {
+                        logEvent(`Save version: ${saveData.version}`, 'info');
+                    }
+                    
+                    // Restore game state using improved loading
+                    if (saveData.game) {
+                        const importedGame = saveData.game;
+                        
+                        // Validate and load
+                        game.money = Number(importedGame.money) || 2000;
+                        game.rp = Number(importedGame.rp) || 0;
+                        game.prestige = Number(importedGame.prestige) || 0;
+                        game.routerLevel = Number(importedGame.routerLevel) || 1;
+                        game.routerHeat = Number(importedGame.routerHeat) || 0;
+                        game.overheatMode = Boolean(importedGame.overheatMode);
+                        game.nextId = Number(importedGame.nextId) || 1;
+                        
+                        game.res = {
+                            files: Number(importedGame.res?.files) || 0,
+                            images: Number(importedGame.res?.images) || 0,
+                            videos: Number(importedGame.res?.videos) || 0,
+                            audio: Number(importedGame.res?.audio) || 0
+                        };
+                        
+                        game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
+                        game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
+                        game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
+                        game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                        
+                        game.codeBits = Number(importedGame.codeBits) || 0;
+                        game.optimizationCode = Number(importedGame.optimizationCode) || 0;
+                        game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                        
+                        if (importedGame.stats) {
+                            game.stats = {
+                                totalMoney: Number(importedGame.stats.totalMoney) || game.money,
+                                peakMoney: Number(importedGame.stats.peakMoney) || game.money,
+                                moneySpent: Number(importedGame.stats.moneySpent) || 0,
+                                totalRP: Number(importedGame.stats.totalRP) || game.rp,
+                                nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
+                                nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
+                                cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
+                                upgrades: Number(importedGame.stats.upgrades) || 0,
+                                contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
+                                filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
+                                virusesCleaned: Number(importedGame.stats.virusesCleaned) || 0,
+                                totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
+                                totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
+                                playTime: Number(importedGame.stats.playTime) || 0,
+                                techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
+                                prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
+                                startTime: Date.now()
+                            };
+                        }
+                        
+                        game.nodes.forEach(n => { 
+                            if (typeof n.infected === 'undefined') n.infected = false;
+                            if (typeof n.level === 'undefined') n.level = 1;
+                        });
+                        
+                        activeNodes.clear();
+                        selectedNode = null;
+                        
+                        renderWorld();
+                        renderResearchTree();
+                        renderDriverGrid();
+                        renderAchievements();
+                        updateUI();
+                        updateRouterCostDisplay();
+                        
+                        const saveDate = new Date(saveData.timestamp).toLocaleString();
+                        const lastSyncEl = document.getElementById('lastSyncTime');
+                        if (lastSyncEl) lastSyncEl.innerText = 'Loaded: ' + saveDate;
+                        updateCloudSaveStatus('online', 'Loaded from Cloud');
+                        logEvent('Game loaded from cloud', 'good');
+                        showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                    }
+                } else {
+                    logEvent('No cloud save found');
+                    updateCloudSaveStatus('online', 'No Cloud Save');
+                }
+            } catch (error) {
+                console.error('Cloud load error:', error);
+                updateCloudSaveStatus('error', 'Load Failed');
+                logEvent('Cloud load failed: ' + error.message, 'bad');
+                showFloat('❌ Load Failed', window.innerWidth/2, window.innerHeight/2, '#ef4444');
+            }
+        }
+
+        // Update cloud save status UI
+        let cloudStatusTimeout = null;
+        function updateCloudSaveStatus(status, text) {
+            const statusEl = document.getElementById('cloudSaveStatus');
+            const textEl = document.getElementById('cloudSaveText');
+            
+            if (statusEl && textEl) {
+                statusEl.className = 'cloud-save-status ' + status;
+                textEl.innerText = text;
+                statusEl.style.opacity = '1';
+                
+                // Auto-hide success messages after 3 seconds
+                if (status === 'online' || status === 'error') {
+                    if (cloudStatusTimeout) clearTimeout(cloudStatusTimeout);
+                    cloudStatusTimeout = setTimeout(() => {
+                        statusEl.style.opacity = '0';
+                    }, 3000);
+                }
+            }
+        }
+
+        // ==================== DAILY REWARDS SYSTEM ====================
+        function checkDailyReward() {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastLogin = game.lastLoginDate;
+            
+            // First time login
+            if (!lastLogin) {
+                game.lastLoginDate = today;
+                game.loginStreak = 1;
+                game.dailyRewardClaimed = false;
+                showDailyRewardModal();
+                return;
+            }
+            
+            const lastDate = new Date(lastLogin);
+            const diffTime = now - lastDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (lastLogin !== today) {
+                if (diffDays === 1) {
+                    // Consecutive day
+                    game.loginStreak = (game.loginStreak || 0) + 1;
+                    if (game.loginStreak > 7) game.loginStreak = 1; // Reset after 7 days
+                } else {
+                    // Streak broken
+                    game.loginStreak = 1;
+                }
+                game.lastLoginDate = today;
+                game.dailyRewardClaimed = false;
+                showDailyRewardModal();
+            }
+            
+            updateSidebarStreak();
+        }
+        
+        function showDailyRewardModal() {
+            updateDailyRewardsUI();
+            document.getElementById('dailyRewardModal').style.display = 'flex';
+        }
+        
+        function updateDailyRewardsUI() {
+            const grid = document.getElementById('dailyRewardsGrid');
+            const currentStreak = game.loginStreak || 1;
+            const claimed = game.dailyRewardClaimed;
+            
+            document.getElementById('streakDisplay').innerText = currentStreak;
+            
+            const claimBtn = document.getElementById('claimDailyBtn');
+            const statusText = document.getElementById('dailyRewardStatus');
+            
+            if (claimed) {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<i class="fa-solid fa-check"></i> Already Claimed';
+                claimBtn.style.opacity = '0.5';
+                statusText.innerText = 'Come back tomorrow for your next reward!';
+            } else {
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = '<i class="fa-solid fa-gift"></i> Claim Today\'s Reward';
+                claimBtn.style.opacity = '1';
+                statusText.innerText = `Day ${currentStreak} reward ready!`;
+            }
+            
+            grid.innerHTML = DAILY_REWARDS.map((reward, index) => {
+                const day = index + 1;
+                const isCurrent = day === currentStreak;
+                const isPast = day < currentStreak;
+                const isClaimed = isCurrent && claimed;
+                
+                let style = 'background: rgba(30, 40, 55, 0.5); border: 1px solid var(--border-color);';
+                let icon = '📦';
+                
+                if (isPast || isClaimed) {
+                    style = 'background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; opacity: 0.6;';
+                    icon = '✅';
+                } else if (isCurrent) {
+                    style = 'background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);';
+                    icon = '🎁';
+                }
+                
+                return `
+                    <div style="${style} border-radius: 8px; padding: 10px; text-align: center;">
+                        <div style="font-size: 20px; margin-bottom: 5px;">${icon}</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Day ${day}</div>
+                        <div style="font-size: 11px; color: #fbbf24; font-weight: bold;">$${fmt(reward.money)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function claimDailyReward() {
+            if (game.dailyRewardClaimed) return;
+            
+            const streak = game.loginStreak || 1;
+            const reward = DAILY_REWARDS[Math.min(streak - 1, DAILY_REWARDS.length - 1)];
+            
+            game.money += reward.money;
+            game.rp += reward.rp;
+            if (reward.codeBits) game.codeBits += reward.codeBits;
+            
+            game.dailyRewardClaimed = true;
+            game.stats.totalMoney += reward.money;
+            
+            updateDailyRewardsUI();
+            updateSidebarStreak();
+            updateUI();
+            
+            showFloat(`🎁 +$${fmt(reward.money)} Daily Reward!`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            logEvent(`Claimed Day ${streak} daily reward!`, 'good');
+            
+            // Auto save after claiming
+            if (game.autoSaveEnabled) autoSaveLocal();
+        }
+        
+        function updateSidebarStreak() {
+            const streakEl = document.getElementById('sidebarStreak');
+            if (streakEl) streakEl.innerText = game.loginStreak || 0;
+            
+            const statusEl = document.getElementById('dailyRewardStatus');
+            if (statusEl) {
+                if (game.dailyRewardClaimed) {
+                    statusEl.innerText = '✅ Claimed today';
+                    statusEl.style.color = '#10b981';
+                } else {
+                    statusEl.innerText = '🎁 Reward available!';
+                    statusEl.style.color = '#fbbf24';
+                }
+            }
+        }
+
+        // ==================== OFFLINE EARNINGS SYSTEM ====================
+        function checkOfflineEarnings() {
+            if (!game.offlineEarningsEnabled) return;
+            
+            const now = Date.now();
+            const lastSave = game.lastSaveTime || now;
+            const timeAway = now - lastSave;
+            
+            // Only show if away for more than 5 minutes
+            if (timeAway < 5 * 60 * 1000) return;
+            
+            // Calculate max 12 hours of offline earnings
+            const maxOfflineTime = 12 * 60 * 60 * 1000; // 12 hours
+            const effectiveTime = Math.min(timeAway, maxOfflineTime);
+            const hoursAway = effectiveTime / (1000 * 60 * 60);
+            
+            // Calculate earnings based on current income rates
+            const moneyPerSecond = history.money || 10;
+            const rpPerSecond = history.rp || 0.5;
+            
+            // Offline earnings are 50% of normal rate
+            const offlineMoney = moneyPerSecond * hoursAway * 3600 * 0.5;
+            const offlineRP = rpPerSecond * hoursAway * 3600 * 0.5;
+            
+            if (offlineMoney > 100) {
+                game.money += offlineMoney;
+                game.rp += offlineRP;
+                game.stats.totalMoney += offlineMoney;
+                
+                // Format time display
+                let timeText;
+                if (hoursAway < 1) {
+                    timeText = Math.floor(hoursAway * 60) + ' minutes';
+                } else if (hoursAway < 24) {
+                    timeText = Math.floor(hoursAway * 10) / 10 + ' hours';
+                } else {
+                    timeText = Math.floor(hoursAway / 24 * 10) / 10 + ' days';
+                }
+                
+                document.getElementById('offlineTime').innerText = timeText;
+                document.getElementById('offlineMoney').innerText = '$' + fmt(offlineMoney);
+                document.getElementById('offlineRP').innerText = fmt(offlineRP);
+                document.getElementById('offlineEarningsModal').style.display = 'flex';
+                
+                logEvent(`Offline earnings: $${fmt(offlineMoney)}`, 'good');
+            }
+        }
+
+        // ==================== AUTO-SAVE SYSTEM ====================
+        let autoSaveInterval = null;
+        
+        function startAutoSave() {
+            if (autoSaveInterval) clearInterval(autoSaveInterval);
+            
+            autoSaveInterval = setInterval(() => {
+                if (game.autoSaveEnabled) {
+                    autoSaveLocal();
+                }
+            }, 60000); // Auto-save every minute
+        }
+        
+        function autoSaveLocal() {
+            try {
+                game.lastSaveTime = Date.now();
+                const saveData = {
+                    game: JSON.parse(JSON.stringify(game)),
+                    version: GAME_VERSION,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
+                console.log('Auto-saved to localStorage');
+            } catch (e) {
+                console.error('Auto-save failed:', e);
+            }
+        }
+        
+        function loadLocalSave() {
+            try {
+                const saveData = localStorage.getItem('uploadLabsSave');
+                if (saveData) {
+                    const parsed = JSON.parse(saveData);
+                    if (parsed.game) {
+                        // Merge saved game into current game state
+                        Object.assign(game, parsed.game);
+                        // Ensure new fields exist
+                        if (!game.milestonesCompleted) game.milestonesCompleted = [];
+                        if (!game.lastLoginDate) game.lastLoginDate = null;
+                        if (!game.loginStreak) game.loginStreak = 0;
+                        if (!game.dailyRewardClaimed) game.dailyRewardClaimed = false;
+                        if (!game.settings) {
+                            game.autoSaveEnabled = true;
+                            game.notificationsEnabled = true;
+                            game.offlineEarningsEnabled = true;
+                        }
+                        logEvent('Local save loaded', 'good');
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.error('Local load failed:', e);
+            }
+            return false;
+        }
+        
+        function toggleSetting(setting, value) {
+            game[setting] = value;
+            logEvent(`${setting.replace('Enabled', '')} ${value ? 'enabled' : 'disabled'}`, 'info');
+            autoSaveLocal();
+        }
+
+        // ==================== MILESTONES SYSTEM ====================
+        function checkMilestones() {
+            MILESTONES.forEach(milestone => {
+                if (!game.milestonesCompleted.includes(milestone.id)) {
+                    if (milestone.check()) {
+                        completeMilestone(milestone);
+                    }
+                }
+            });
+        }
+        
+        function completeMilestone(milestone) {
+            game.milestonesCompleted.push(milestone.id);
+            
+            // Give rewards
+            if (milestone.reward.money) {
+                game.money += milestone.reward.money;
+                game.stats.totalMoney += milestone.reward.money;
+            }
+            if (milestone.reward.rp) {
+                game.rp += milestone.reward.rp;
+            }
+            
+            // Show notification
+            showFloat(`🏆 Milestone: ${milestone.name}!`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            logEvent(`Milestone completed: ${milestone.name}!`, 'good');
+            
+            updateUI();
+        }
+
+        // ==================== ENHANCED NOTIFICATIONS ====================
+        function showNotification(title, message, type = 'info', duration = 4000) {
+            if (!game.notificationsEnabled) return;
+            
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: ${80 + document.querySelectorAll('.game-notification').length * 70}px;
+                right: 20px;
+                background: ${type === 'good' ? 'rgba(16, 185, 129, 0.95)' : type === 'bad' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                z-index: 5000;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid rgba(255,255,255,0.5);
+            `;
+            notif.className = 'game-notification';
+            notif.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 4px;">${title}</div>
+                <div style="font-size: 12px; opacity: 0.9;">${message}</div>
+            `;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, duration);
+        }
+
+        // Initialize all systems
+        function initGameSystems() {
+            // Load local save first
+            loadLocalSave();
+            
+            // Check daily rewards
+            checkDailyReward();
+            
+            // Check offline earnings (after a short delay to let game initialize)
+            setTimeout(checkOfflineEarnings, 2000);
+            
+            // Start auto-save
+            startAutoSave();
+            
+            // Update settings UI
+            document.getElementById('autoSaveToggle').checked = game.autoSaveEnabled !== false;
+            document.getElementById('offlineEarningsToggle').checked = game.offlineEarningsEnabled !== false;
+            document.getElementById('notificationsToggle').checked = game.notificationsEnabled !== false;
+            
+            // Check milestones periodically
+            setInterval(checkMilestones, 5000);
+        }
+
+        // Initialize Firebase when page loads
+        document.addEventListener('DOMContentLoaded', initFirebase);
+
+        // Initialize game systems
+        initGameSystems();
+
+        init();
+        renderResearchTree();
+        renderDriverGrid();
+        setTab('infra');
+        
+
+    </script>
 </body>
 </html>

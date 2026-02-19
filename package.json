@@ -1,29 +1,23 @@
 {
   "name": "upload-labs",
-  "version": "10.3.0",
+  "version": "10.0.0",
   "description": "Upload Labs: Network Empire - A cyberpunk network management idle game",
-  "main": "public/index.html",
+  "main": "index.html",
   "scripts": {
-    "dev": "npx serve public",
+    "dev": "npx serve .",
     "build": "echo 'Static site - no build needed'",
-    "start": "npx serve public",
-    "lint": "echo 'No linting configured'",
-    "test": "echo 'No tests configured'"
+    "start": "npx serve ."
   },
   "keywords": [
     "game",
     "idle",
     "network",
     "cyberpunk",
-    "incremental",
-    "management"
+    "incremental"
   ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "serve": "^14.2.0"
-  },
-  "engines": {
-    "node": ">=16.0.0"
   }
 }
