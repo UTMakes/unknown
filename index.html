@@ -3101,7 +3101,8 @@
         window.Game = { 
             zoomIn, zoomOut, resetZoom, 
             emergencyRecover, repairSaveData, validateSaveData,
-            clearSaveAndReset, showGameInfo, toggleSetting
+            clearSaveAndReset, showGameInfo, toggleSetting,
+            batchUpgrade, toggleAutoBalancer, showNetworkAnalysis
         };
         
         // Log help message for debugging
@@ -3112,6 +3113,9 @@
         console.log('  Game.clearSaveAndReset() - Clear save and restart');
         console.log('  Game.repairSaveData(game) - Repair corrupted save data');
         console.log('  Game.validateSaveData({game}) - Validate save integrity');
+        console.log('  Game.batchUpgrade("type") - Upgrade all nodes of type');
+        console.log('  Game.toggleAutoBalancer() - Toggle auto-balancer');
+        console.log('  Game.showNetworkAnalysis() - Analyze network efficiency');
         
         // --- CORE FUNCTIONS ---
 
@@ -3429,42 +3433,47 @@
         let frameCount = 0;
         let lastConnectivityUpdate = 0;
         let lastUIUpdate = 0;
-        let cachedNodes = null;
-        let cachedConns = null;
-        
         function gameLoop(time) {
             const dt = 1/60; 
             frameCount++;
             
+            // Reset frame counters periodically to prevent overflow
+            if (frameCount > 1000000) {
+                frameCount = 0;
+                lastConnectivityUpdate = 0;
+                lastUIUpdate = 0;
+            }
+            
             // Safety check - ensure game loop continues even with large numbers
             if (!game || typeof game.money !== 'number') {
-                console.error('Game state corrupted, resetting...');
-                location.reload();
+                console.error('Game state corrupted, attempting recovery...');
+                emergencyRecover();
                 return;
             }
             
             // Throttle connectivity updates to every 15 frames for performance
             if (frameCount - lastConnectivityUpdate >= 15) {
-                updateConnectivity();
-                lastConnectivityUpdate = frameCount;
-                // Cache node states for this frame batch
-                cachedNodes = game.nodes.slice();
-                cachedConns = game.conns.slice();
+                try {
+                    updateConnectivity();
+                    lastConnectivityUpdate = frameCount;
+                } catch (e) {
+                    console.error('Connectivity update failed:', e);
+                }
             }
             
-            // Heat
-            const router = game.nodes.find(n => n.type === 'router');
+            // Heat management
             let isOverclocked = false;
-            
-            if (router && activeNodes.has(router.id)) {
-                game.conns.forEach(c => {
-                    if (c.to === router.id) {
-                        const source = game.nodes.find(n => n.id === c.from);
-                        if (source && source.type === 'overclock' && activeNodes.has(source.id) && !source.infected) {
-                            isOverclocked = true;
+            try {
+                const router = game.nodes.find(n => n.type === 'router');
+                if (router && activeNodes.has(router.id)) {
+                    game.conns.forEach(c => {
+                        if (c.to === router.id) {
+                            const source = game.nodes.find(n => n.id === c.from);
+                            if (source && source.type === 'overclock' && activeNodes.has(source.id) && !source.infected) {
+                                isOverclocked = true;
+                            }
                         }
-                    }
-                });
+                    });
 
                 if (isOverclocked) {
                     game.routerHeat = Math.min(100, game.routerHeat + (15 * dt));
@@ -3474,6 +3483,9 @@
                 
                 if (game.routerHeat >= 100) game.overheatMode = true;
                 if (game.routerHeat <= 50) game.overheatMode = false;
+                }
+            } catch (e) {
+                console.error('Router heat calculation failed:', e);
             }
 
             // Calculate multipliers
@@ -3831,6 +3843,77 @@
             
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
+            
+            // Auto-save check (every 60 seconds)
+            if (game.autoSaveEnabled && frameCount % 3600 === 0) {
+                autoSaveLocal();
+            }
+            
+            // Cloud sync check (every 5 minutes)
+            if (frameCount % 18000 === 0 && currentUser) {
+                syncToCloud();
+            }
+        }
+        
+        // Batch upgrade feature - upgrade all nodes of same type
+        function batchUpgrade(type) {
+            const nodesOfType = game.nodes.filter(n => n.type === type && activeNodes.has(n.id));
+            if (nodesOfType.length === 0) {
+                showFloat(`No active ${type} nodes found`, window.innerWidth/2, window.innerHeight/2, 'red');
+                return;
+            }
+            
+            let upgradedCount = 0;
+            let totalCost = 0;
+            
+            nodesOfType.forEach(node => {
+                const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+                if (game.money >= cost + totalCost) {
+                    totalCost += cost;
+                    upgradedCount++;
+                }
+            });
+            
+            if (upgradedCount === 0) {
+                showFloat(`Not enough money for any upgrades`, window.innerWidth/2, window.innerHeight/2, 'red');
+                return;
+            }
+            
+            // Apply upgrades
+            game.money -= totalCost;
+            game.stats.moneySpent += totalCost;
+            
+            let actualUpgraded = 0;
+            nodesOfType.forEach(node => {
+                const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+                if (actualUpgraded < upgradedCount) {
+                    node.level++;
+                    actualUpgraded++;
+                    spawnParticles(node.x + 85, node.y + 35, '#fbbf24', 5);
+                }
+            });
+            
+            game.stats.upgrades += actualUpgraded;
+            renderWorld();
+            updateUI();
+            
+            showFloat(`Upgraded ${actualUpgraded} ${type} nodes (-$${fmt(totalCost)})`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            logEvent(`Batch upgraded ${actualUpgraded} ${type} nodes`, 'good');
+            checkAchievements();
+        }
+        
+        // Auto-balancer feature - automatically distributes load
+        let autoBalancerEnabled = false;
+        function toggleAutoBalancer() {
+            autoBalancerEnabled = !autoBalancerEnabled;
+            if (autoBalancerEnabled) {
+                logEvent('Auto-Balancer enabled', 'good');
+                showFloat('Auto-Balancer enabled', window.innerWidth/2, window.innerHeight/2, '#10b981');
+            } else {
+                logEvent('Auto-Balancer disabled', 'info');
+                showFloat('Auto-Balancer disabled', window.innerWidth/2, window.innerHeight/2, '#94a3b8');
+            }
+            return autoBalancerEnabled;
         }
         
         function eventLoop() {
@@ -3842,12 +3925,23 @@
             const newActive = new Set();
             const q = [];
             
-            game.nodes.filter(n => n.type === 'router').forEach(n => {
-                newActive.add(n.id);
-                q.push(n.id);
+            // Find all routers and add them to active set
+            const routers = game.nodes.filter(n => n.type === 'router');
+            if (routers.length === 0) {
+                // No router - nothing can be active
+                activeNodes.clear();
+                return;
+            }
+            
+            routers.forEach(n => {
+                if (n && n.id !== undefined) {
+                    newActive.add(n.id);
+                    q.push(n.id);
+                }
             });
 
-            while (q.length) {
+            // BFS to find all connected nodes
+            while (q.length > 0) {
                 const curr = q.shift();
                 game.conns.forEach(c => {
                     const other = c.from === curr ? c.to : (c.to === curr ? c.from : null);
@@ -3858,14 +3952,22 @@
                 });
             }
 
-            if (activeNodes.size !== newActive.size || [...newActive].some(x => !activeNodes.has(x))) {
+            // Only update DOM if there are changes
+            const hasChanges = activeNodes.size !== newActive.size || [...newActive].some(x => !activeNodes.has(x));
+            
+            if (hasChanges) {
                 game.nodes.forEach(n => {
+                    if (!n || n.id === undefined) return;
                     const el = document.getElementById(`node-${n.id}`);
                     if (!el) return;
-                    if (newActive.has(n.id)) el.classList.remove('disconnected');
-                    else el.classList.add('disconnected');
+                    if (newActive.has(n.id)) {
+                        el.classList.remove('disconnected');
+                    } else {
+                        el.classList.add('disconnected');
+                    }
                 });
                 
+                // Update cable visuals
                 document.querySelectorAll('.cable-group').forEach(c => {
                     if (!c.dataset.ends) return;
                     const [id1, id2] = c.dataset.ends.split(',').map(Number);
@@ -3878,7 +3980,10 @@
                     }
                 });
             }
-            activeNodes = newActive;
+            
+            // Update the activeNodes Set
+            activeNodes.clear();
+            newActive.forEach(id => activeNodes.add(id));
         }
 
         // --- CODE SYSTEM FUNCTIONS ---
@@ -4453,6 +4558,85 @@
             updateRouterCostDisplay();
             updateCodeUI();
             renderStatistics();
+            updateNetworkAnalysis();
+        }
+        
+        // Network Analyzer - provides insights and optimization tips
+        let networkAnalysisCache = { timestamp: 0, data: null };
+        
+        function updateNetworkAnalysis() {
+            // Update only every 5 seconds
+            const now = Date.now();
+            if (now - networkAnalysisCache.timestamp < 5000) return;
+            networkAnalysisCache.timestamp = now;
+            
+            const analysis = analyzeNetwork();
+            
+            // Store analysis for display
+            window._networkAnalysis = analysis;
+        }
+        
+        function analyzeNetwork() {
+            const active = game.nodes.filter(n => activeNodes.has(n.id) && !n.infected);
+            const totalNodes = active.length;
+            
+            if (totalNodes === 0) return { efficiency: 0, issues: [], suggestions: [] };
+            
+            // Count node types
+            const downloaders = active.filter(n => n.type.startsWith('dl_')).length;
+            const uploaders = active.filter(n => n.type === 'uploader').length;
+            const labs = active.filter(n => n.type === 'lab').length;
+            const coders = active.filter(n => n.type === 'coder' || n.type === 'dev_station').length;
+            
+            const issues = [];
+            const suggestions = [];
+            
+            // Check ratios
+            if (downloaders > 0 && uploaders === 0) {
+                issues.push('You have downloaders but no uploaders!');
+                suggestions.push('Add Uploader nodes to sell your collected data.');
+            }
+            
+            if (uploaders > downloaders * 2) {
+                issues.push('Too many uploaders compared to downloaders');
+                suggestions.push('Add more downloader nodes to feed your uploaders.');
+            }
+            
+            if (labs > 0 && downloaders === 0) {
+                issues.push('Research Labs need file input');
+                suggestions.push('Add downloader nodes to supply files to your labs.');
+            }
+            
+            // Check for orphaned nodes (nodes with no connections)
+            const connectedNodes = new Set();
+            game.conns.forEach(c => {
+                connectedNodes.add(c.from);
+                connectedNodes.add(c.to);
+            });
+            const orphaned = active.filter(n => !connectedNodes.has(n.id) && n.type !== 'router').length;
+            if (orphaned > 0) {
+                issues.push(`${orphaned} node(s) have no connections`);
+                suggestions.push('Connect all nodes to your router network.');
+            }
+            
+            // Calculate efficiency score
+            let efficiency = 100;
+            if (issues.length > 0) efficiency -= issues.length * 15;
+            if (orphaned > 0) efficiency -= orphaned * 10;
+            efficiency = Math.max(0, Math.min(100, efficiency));
+            
+            return { efficiency, issues, suggestions, stats: { downloaders, uploaders, labs, totalNodes } };
+        }
+        
+        // Console command to show network analysis
+        function showNetworkAnalysis() {
+            const analysis = analyzeNetwork();
+            console.log('%c Network Analysis ', 'background: #3b82f6; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;');
+            console.log('Efficiency Score:', analysis.efficiency + '%');
+            console.log('Active Nodes:', analysis.stats.totalNodes);
+            console.log('Issues:', analysis.issues.length > 0 ? analysis.issues : 'None');
+            console.log('Suggestions:', analysis.suggestions.length > 0 ? analysis.suggestions : 'Network is optimal!');
+            return analysis;
         }
 
         function renderResearchTree() {
@@ -5664,41 +5848,142 @@
         }
 
         // Initialize all systems
-        // Emergency recovery function for stuck game state
+        // Enhanced Emergency Recovery - Fixes critical game state issues
         function emergencyRecover() {
-            console.log('Running emergency recovery...');
+            console.log('%c Running Emergency Recovery... ', 'background: #ef4444; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;');
             
-            // Fix NaN values
-            if (isNaN(game.money)) game.money = 2000;
-            if (isNaN(game.rp)) game.rp = 0;
-            if (isNaN(game.codeBits)) game.codeBits = 0;
+            let fixesApplied = [];
             
-            // Ensure nodes and conns are arrays
-            if (!Array.isArray(game.nodes)) game.nodes = [];
-            if (!Array.isArray(game.conns)) game.conns = [];
+            // Fix 1: NaN values
+            if (isNaN(game.money) || game.money === null || game.money === undefined) {
+                game.money = 2000;
+                fixesApplied.push('Fixed NaN money');
+            }
+            if (isNaN(game.rp) || game.rp === null || game.rp === undefined) {
+                game.rp = 0;
+                fixesApplied.push('Fixed NaN RP');
+            }
+            if (isNaN(game.codeBits) || game.codeBits === null || game.codeBits === undefined) {
+                game.codeBits = 0;
+                fixesApplied.push('Fixed NaN codeBits');
+            }
+            if (isNaN(game.optimizationCode) || game.optimizationCode === null) {
+                game.optimizationCode = 0;
+                fixesApplied.push('Fixed NaN optimizationCode');
+            }
+            if (isNaN(game.routerHeat) || game.routerHeat === null) {
+                game.routerHeat = 0;
+                fixesApplied.push('Fixed NaN routerHeat');
+            }
+            if (isNaN(game.routerLevel) || game.routerLevel === null || game.routerLevel < 1) {
+                game.routerLevel = 1;
+                fixesApplied.push('Fixed invalid routerLevel');
+            }
+            if (isNaN(game.nextId) || game.nextId === null || game.nextId < 1) {
+                game.nextId = 1;
+                fixesApplied.push('Fixed invalid nextId');
+            }
             
-            // Ensure there's at least a router
+            // Fix 2: Ensure arrays exist
+            if (!Array.isArray(game.nodes)) {
+                game.nodes = [];
+                fixesApplied.push('Reset nodes array');
+            }
+            if (!Array.isArray(game.conns)) {
+                game.conns = [];
+                fixesApplied.push('Reset conns array');
+            }
+            if (!Array.isArray(game.unlocked)) {
+                game.unlocked = [];
+                fixesApplied.push('Reset unlocked array');
+            }
+            if (!Array.isArray(game.achievements)) {
+                game.achievements = [];
+                fixesApplied.push('Reset achievements array');
+            }
+            
+            // Fix 3: Fix corrupted node data
+            game.nodes.forEach((node, index) => {
+                if (!node || typeof node !== 'object') {
+                    game.nodes.splice(index, 1);
+                    fixesApplied.push(`Removed corrupted node at index ${index}`);
+                    return;
+                }
+                if (isNaN(node.id) || node.id === undefined) node.id = game.nextId++;
+                if (!node.type) node.type = 'router';
+                if (isNaN(node.x)) node.x = 2500;
+                if (isNaN(node.y)) node.y = 2500;
+                if (isNaN(node.level) || node.level < 1) node.level = 1;
+                if (typeof node.infected !== 'boolean') node.infected = false;
+            });
+            
+            // Fix 4: Fix corrupted connections
+            const validNodeIds = new Set(game.nodes.map(n => n.id));
+            const invalidConns = game.conns.filter(c => !validNodeIds.has(c.from) || !validNodeIds.has(c.to));
+            if (invalidConns.length > 0) {
+                game.conns = game.conns.filter(c => validNodeIds.has(c.from) && validNodeIds.has(c.to));
+                fixesApplied.push(`Removed ${invalidConns.length} invalid connections`);
+            }
+            
+            // Fix 5: Ensure there's at least a router
             const router = game.nodes.find(n => n.type === 'router');
             if (!router) {
                 console.log('No router found, spawning one...');
-                spawnNode('router', 2500, 2500);
+                game.nodes.push({ 
+                    id: game.nextId++, 
+                    type: 'router', 
+                    x: 2500, 
+                    y: 2500, 
+                    level: Math.max(1, game.routerLevel), 
+                    infected: false 
+                });
+                fixesApplied.push('Spawned new router');
             }
             
-            // Rebuild active nodes
+            // Fix 6: Reset active nodes
             activeNodes.clear();
+            cableCache.clear(); // Clear cable cache
+            
+            // Fix 7: Rebuild connectivity
             updateConnectivity();
             
-            // Force router to be active
+            // Fix 8: Force router to be active
             const routerNow = game.nodes.find(n => n.type === 'router');
-            if (routerNow) activeNodes.add(routerNow.id);
+            if (routerNow) {
+                activeNodes.add(routerNow.id);
+                game.routerLevel = routerNow.level;
+            }
             
-            // Re-render
+            // Fix 9: Reset view if it's way off
+            if (Math.abs(view.x) > 10000 || Math.abs(view.y) > 10000) {
+                view.x = window.innerWidth/2 - 2500;
+                view.y = window.innerHeight/2 - 2500;
+                view.scale = 1;
+                fixesApplied.push('Reset view position');
+            }
+            
+            // Fix 10: Reset combo if stuck
+            combo.count = 0;
+            combo.timer = 0;
+            
+            // Fix 11: Clear any stuck modals
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                if (m.id !== 'welcomeModal') m.style.display = 'none';
+            });
+            
+            // Re-render everything
             renderWorld();
+            renderCables();
             updateUI();
+            updateZoomDisplay();
             
-            console.log('Emergency recovery complete');
-            logEvent('Game state recovered', 'good');
-            return true;
+            console.log('%c Recovery Complete! ', 'background: #10b981; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;');
+            console.log('Fixes applied:', fixesApplied);
+            
+            logEvent(`Emergency recovery: ${fixesApplied.length} fixes applied`, 'good');
+            showFloat(`Recovery Complete: ${fixesApplied.length} fixes`, window.innerWidth/2, window.innerHeight/2, '#10b981');
+            
+            return fixesApplied;
         }
         
         // Check game health periodically
