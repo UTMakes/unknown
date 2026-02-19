@@ -1928,7 +1928,13 @@
             autoSaveEnabled: true,
             notificationsEnabled: true,
             offlineEarningsEnabled: true,
-            lastSaveTime: Date.now()
+            lastSaveTime: Date.now(),
+            
+            // PLAYER INFO
+            playerName: '',
+            playerId: '',
+            saveCreated: Date.now(),
+            saveVersion: GAME_VERSION
         };
 
         // Offline earnings tracking
@@ -1972,7 +1978,39 @@
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
         }
 
-        window.Game = { zoomIn, zoomOut, resetZoom };
+        // Clear save and reset game
+        function clearSaveAndReset() {
+            if (!confirm('WARNING: This will DELETE your save and reset the game. Are you sure?')) return;
+            localStorage.removeItem('uploadLabsSave');
+            location.reload();
+        }
+        
+        // Show game state info
+        function showGameInfo() {
+            console.log('=== Game State Info ===');
+            console.log('Money:', game.money, 'RP:', game.rp, 'Code Bits:', game.codeBits);
+            console.log('Nodes:', game.nodes.length, 'Active:', activeNodes.size);
+            console.log('Connections:', game.conns.length);
+            console.log('Router Level:', game.routerLevel);
+            console.log('Active Event:', game.activeEvent);
+            console.log('=======================');
+            return { game, activeNodes: [...activeNodes] };
+        }
+        
+        window.Game = { 
+            zoomIn, zoomOut, resetZoom, 
+            emergencyRecover, repairSaveData, validateSaveData,
+            clearSaveAndReset, showGameInfo
+        };
+        
+        // Log help message for debugging
+        console.log('%c Upload Labs: Network Empire ', 'background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; border-radius: 8px;');
+        console.log('%c Debug Commands: ', 'color: #3b82f6; font-weight: bold; font-size: 14px;');
+        console.log('  Game.emergencyRecover() - Fix stuck game state');
+        console.log('  Game.showGameInfo() - Show current game state');
+        console.log('  Game.clearSaveAndReset() - Clear save and restart');
+        console.log('  Game.repairSaveData(game) - Repair corrupted save data');
+        console.log('  Game.validateSaveData({game}) - Validate save integrity');
         
         // --- CORE FUNCTIONS ---
 
@@ -3436,17 +3474,120 @@
         }
 
         function exportSave() {
+            // Update save metadata before export
+            game.lastSaveTime = Date.now();
+            game.saveVersion = GAME_VERSION;
+            
             // Create a clean copy of game state for export
             const saveData = {
                 version: GAME_VERSION,
                 timestamp: Date.now(),
-                game: JSON.parse(JSON.stringify(game))
+                exportDate: new Date().toISOString(),
+                game: JSON.parse(JSON.stringify(game)),
+                checksum: generateSaveChecksum(game)
             };
             const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveData));
             const node = document.createElement('a');
-            node.setAttribute("href", data); node.setAttribute("download", "upload_labs_save_v" + GAME_VERSION + ".json");
+            const playerName = game.playerName ? `_${game.playerName.replace(/[^a-z0-9]/gi, '_')}` : '';
+            node.setAttribute("href", data); 
+            node.setAttribute("download", `upload_labs${playerName}_save_v${GAME_VERSION}_${Date.now()}.json`);
             document.body.appendChild(node); node.click(); node.remove();
             logEvent('Game saved to file', 'good');
+        }
+        
+        // Generate a simple checksum for save validation
+        function generateSaveChecksum(gameData) {
+            const str = JSON.stringify(gameData);
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString(16);
+        }
+        
+        // Validate save data integrity
+        function validateSaveData(saveData) {
+            const errors = [];
+            
+            if (!saveData.game) {
+                errors.push('Missing game data');
+                return { valid: false, errors };
+            }
+            
+            const g = saveData.game;
+            
+            // Check required fields
+            if (typeof g.money !== 'number') errors.push('Invalid money value');
+            if (typeof g.rp !== 'number') errors.push('Invalid RP value');
+            if (!Array.isArray(g.nodes)) errors.push('Invalid nodes array');
+            if (!Array.isArray(g.conns)) errors.push('Invalid connections array');
+            
+            // Check for NaN values (common corruption)
+            if (isNaN(g.money)) errors.push('Money is NaN');
+            if (isNaN(g.rp)) errors.push('RP is NaN');
+            
+            // Check nodes for corruption
+            if (g.nodes) {
+                g.nodes.forEach((node, i) => {
+                    if (!node.id) errors.push(`Node ${i} missing ID`);
+                    if (!node.type) errors.push(`Node ${i} missing type`);
+                    if (isNaN(node.x) || isNaN(node.y)) errors.push(`Node ${i} has invalid position`);
+                });
+            }
+            
+            // Check connections for corruption
+            if (g.conns) {
+                g.conns.forEach((conn, i) => {
+                    if (typeof conn.from !== 'number') errors.push(`Connection ${i} invalid from`);
+                    if (typeof conn.to !== 'number') errors.push(`Connection ${i} invalid to`);
+                });
+            }
+            
+            return { valid: errors.length === 0, errors };
+        }
+        
+        // Repair corrupted save data
+        function repairSaveData(gameData) {
+            const repaired = { ...gameData };
+            
+            // Fix NaN values
+            if (isNaN(repaired.money) || repaired.money < 0) repaired.money = 2000;
+            if (isNaN(repaired.rp) || repaired.rp < 0) repaired.rp = 0;
+            if (isNaN(repaired.codeBits) || repaired.codeBits < 0) repaired.codeBits = 0;
+            if (isNaN(repaired.optimizationCode) || repaired.optimizationCode < 0) repaired.optimizationCode = 0;
+            
+            // Fix arrays
+            if (!Array.isArray(repaired.nodes)) repaired.nodes = [];
+            if (!Array.isArray(repaired.conns)) repaired.conns = [];
+            if (!Array.isArray(repaired.unlocked)) repaired.unlocked = [];
+            if (!Array.isArray(repaired.achievements)) repaired.achievements = [];
+            
+            // Fix nodes
+            repaired.nodes = repaired.nodes.filter(n => n && n.id && n.type);
+            repaired.nodes.forEach(n => {
+                if (typeof n.level !== 'number' || isNaN(n.level)) n.level = 1;
+                if (typeof n.infected !== 'boolean') n.infected = false;
+                if (isNaN(n.x)) n.x = 2500;
+                if (isNaN(n.y)) n.y = 2500;
+            });
+            
+            // Fix connections - remove any that reference non-existent nodes
+            const nodeIds = new Set(repaired.nodes.map(n => n.id));
+            repaired.conns = repaired.conns.filter(c => 
+                c && nodeIds.has(c.from) && nodeIds.has(c.to)
+            );
+            
+            // Fix stats
+            if (!repaired.stats) repaired.stats = {};
+            const s = repaired.stats;
+            if (isNaN(s.totalMoney)) s.totalMoney = repaired.money;
+            if (isNaN(s.peakMoney)) s.peakMoney = repaired.money;
+            if (isNaN(s.nodesCreated)) s.nodesCreated = repaired.nodes.length;
+            if (isNaN(s.cablesPlaced)) s.cablesPlaced = repaired.conns.length;
+            
+            return repaired;
         }
         
         function importSave(input) {
@@ -3460,58 +3601,67 @@
                     // Handle both old format (direct game object) and new format (wrapped with metadata)
                     const importedGame = saveData.game || saveData;
                     
-                    // Validate required fields
-                    if (!importedGame || typeof importedGame.money !== 'number') {
-                        throw new Error('Invalid save data structure');
+                    // Validate save data
+                    const validation = validateSaveData(saveData);
+                    if (!validation.valid) {
+                        console.warn('Save validation warnings:', validation.errors);
+                        if (!confirm('Save file appears to have issues:\n' + validation.errors.join('\n') + '\n\nAttempt to repair and load?')) {
+                            return;
+                        }
                     }
                     
-                    // Create a fresh game state and merge
-                    game.money = Number(importedGame.money) || 2000;
-                    game.rp = Number(importedGame.rp) || 0;
-                    game.prestige = Number(importedGame.prestige) || 0;
-                    game.routerLevel = Number(importedGame.routerLevel) || 1;
-                    game.routerHeat = Number(importedGame.routerHeat) || 0;
-                    game.overheatMode = Boolean(importedGame.overheatMode);
-                    game.nextId = Number(importedGame.nextId) || 1;
+                    // Repair corrupted data
+                    const repairedGame = repairSaveData(importedGame);
                     
-                    // Resources - ensure all are numbers
+                    // Create a fresh game state and merge
+                    game.money = Number(repairedGame.money) || 2000;
+                    game.rp = Number(repairedGame.rp) || 0;
+                    game.prestige = Number(repairedGame.prestige) || 0;
+                    game.routerLevel = Number(repairedGame.routerLevel) || 1;
+                    game.routerHeat = Number(repairedGame.routerHeat) || 0;
+                    game.overheatMode = Boolean(repairedGame.overheatMode);
+                    game.nextId = Number(repairedGame.nextId) || 1;
+                    game.playerName = repairedGame.playerName || '';
+                    game.saveCreated = repairedGame.saveCreated || Date.now();
+                    
+                    // Resources - ensure all are numbers (use repaired game data)
                     game.res = {
-                        files: Number(importedGame.res?.files) || 0,
-                        images: Number(importedGame.res?.images) || 0,
-                        videos: Number(importedGame.res?.videos) || 0,
-                        audio: Number(importedGame.res?.audio) || 0
+                        files: Number(repairedGame.res?.files) || 0,
+                        images: Number(repairedGame.res?.images) || 0,
+                        videos: Number(repairedGame.res?.videos) || 0,
+                        audio: Number(repairedGame.res?.audio) || 0
                     };
                     
-                    // Arrays
-                    game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
-                    game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
-                    game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
-                    game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                    // Arrays (use repaired game data)
+                    game.nodes = repairedGame.nodes || [];
+                    game.conns = repairedGame.conns || [];
+                    game.unlocked = Array.isArray(repairedGame.unlocked) ? repairedGame.unlocked : [];
+                    game.achievements = Array.isArray(repairedGame.achievements) ? repairedGame.achievements : [];
                     
                     // Code system
-                    game.codeBits = Number(importedGame.codeBits) || 0;
-                    game.optimizationCode = Number(importedGame.optimizationCode) || 0;
-                    game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                    game.codeBits = Number(repairedGame.codeBits) || 0;
+                    game.optimizationCode = Number(repairedGame.optimizationCode) || 0;
+                    game.drivers = repairedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
                     
-                    // Stats - preserve or create new
-                    if (importedGame.stats) {
+                    // Stats - preserve or create new (use repaired game data)
+                    if (repairedGame.stats) {
                         game.stats = {
-                            totalMoney: Number(importedGame.stats.totalMoney) || game.money,
-                            peakMoney: Number(importedGame.stats.peakMoney) || game.money,
-                            moneySpent: Number(importedGame.stats.moneySpent) || 0,
-                            totalRP: Number(importedGame.stats.totalRP) || game.rp,
-                            nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
-                            nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
-                            cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
-                            upgrades: Number(importedGame.stats.upgrades) || 0,
-                            contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
-                            filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
-                            virusesCleaned: Number(importedGame.stats.virusesCleaned) || 0,
-                            totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
-                            totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
-                            playTime: Number(importedGame.stats.playTime) || 0,
-                            techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
-                            prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
+                            totalMoney: Number(repairedGame.stats.totalMoney) || game.money,
+                            peakMoney: Number(repairedGame.stats.peakMoney) || game.money,
+                            moneySpent: Number(repairedGame.stats.moneySpent) || 0,
+                            totalRP: Number(repairedGame.stats.totalRP) || game.rp,
+                            nodesCreated: Number(repairedGame.stats.nodesCreated) || game.nodes.length,
+                            nodesDeleted: Number(repairedGame.stats.nodesDeleted) || 0,
+                            cablesPlaced: Number(repairedGame.stats.cablesPlaced) || game.conns.length,
+                            upgrades: Number(repairedGame.stats.upgrades) || 0,
+                            contractsCompleted: Number(repairedGame.stats.contractsCompleted) || 0,
+                            filesDownloaded: Number(repairedGame.stats.filesDownloaded) || 0,
+                            virusesCleaned: Number(repairedGame.stats.virusesCleaned) || 0,
+                            totalCodeBits: Number(repairedGame.stats.totalCodeBits) || 0,
+                            totalDrivers: Number(repairedGame.stats.totalDrivers) || 0,
+                            playTime: Number(repairedGame.stats.playTime) || 0,
+                            techsUnlocked: Number(repairedGame.stats.techsUnlocked) || game.unlocked.length,
+                            prestigeCount: Number(repairedGame.stats.prestigeCount) || game.prestige,
                             startTime: Date.now()
                         };
                     }
@@ -4110,10 +4260,16 @@
         function autoSaveLocal() {
             try {
                 game.lastSaveTime = Date.now();
+                game.saveVersion = GAME_VERSION;
+                
+                // Create a copy of game state for saving
+                const gameCopy = JSON.parse(JSON.stringify(game));
+                
                 const saveData = {
-                    game: JSON.parse(JSON.stringify(game)),
+                    game: gameCopy,
                     version: GAME_VERSION,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    checksum: generateSaveChecksum(gameCopy)
                 };
                 localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
                 console.log('Auto-saved to localStorage');
@@ -4128,24 +4284,48 @@
                 if (saveData) {
                     const parsed = JSON.parse(saveData);
                     if (parsed.game) {
+                        // Validate and repair the save data
+                        const validation = validateSaveData(parsed);
+                        if (!validation.valid) {
+                            console.warn('Local save has issues, repairing:', validation.errors);
+                        }
+                        
+                        // Repair corrupted data
+                        const repairedGame = repairSaveData(parsed.game);
+                        
                         // Merge saved game into current game state
-                        Object.assign(game, parsed.game);
+                        Object.assign(game, repairedGame);
+                        
                         // Ensure new fields exist
                         if (!game.milestonesCompleted) game.milestonesCompleted = [];
                         if (!game.lastLoginDate) game.lastLoginDate = null;
                         if (!game.loginStreak) game.loginStreak = 0;
                         if (!game.dailyRewardClaimed) game.dailyRewardClaimed = false;
-                        if (!game.settings) {
-                            game.autoSaveEnabled = true;
-                            game.notificationsEnabled = true;
-                            game.offlineEarningsEnabled = true;
+                        if (!game.playerName) game.playerName = '';
+                        if (!game.saveCreated) game.saveCreated = Date.now();
+                        if (!game.saveVersion) game.saveVersion = GAME_VERSION;
+                        
+                        // Rebuild active nodes from the loaded nodes
+                        // This is critical - activeNodes must be populated for game loop to work
+                        activeNodes.clear();
+                        updateConnectivity();
+                        
+                        // Double-check that at least the router is active
+                        const router = game.nodes.find(n => n.type === 'router');
+                        if (router && !activeNodes.has(router.id)) {
+                            console.warn('Router not active after load, forcing activation');
+                            activeNodes.add(router.id);
                         }
+                        
                         logEvent('Local save loaded', 'good');
                         return true;
                     }
                 }
             } catch (e) {
-                console.error('Local load failed:', e);
+                console.error('Local save load failed:', e);
+                // If local save is corrupted, clear it
+                localStorage.removeItem('uploadLabsSave');
+                logEvent('Save corrupted, starting fresh', 'warning');
             }
             return false;
         }
@@ -4220,6 +4400,58 @@
         }
 
         // Initialize all systems
+        // Emergency recovery function for stuck game state
+        function emergencyRecover() {
+            console.log('Running emergency recovery...');
+            
+            // Fix NaN values
+            if (isNaN(game.money)) game.money = 2000;
+            if (isNaN(game.rp)) game.rp = 0;
+            if (isNaN(game.codeBits)) game.codeBits = 0;
+            
+            // Ensure nodes and conns are arrays
+            if (!Array.isArray(game.nodes)) game.nodes = [];
+            if (!Array.isArray(game.conns)) game.conns = [];
+            
+            // Ensure there's at least a router
+            const router = game.nodes.find(n => n.type === 'router');
+            if (!router) {
+                console.log('No router found, spawning one...');
+                spawnNode('router', 2500, 2500);
+            }
+            
+            // Rebuild active nodes
+            activeNodes.clear();
+            updateConnectivity();
+            
+            // Force router to be active
+            const routerNow = game.nodes.find(n => n.type === 'router');
+            if (routerNow) activeNodes.add(routerNow.id);
+            
+            // Re-render
+            renderWorld();
+            updateUI();
+            
+            console.log('Emergency recovery complete');
+            logEvent('Game state recovered', 'good');
+            return true;
+        }
+        
+        // Check game health periodically
+        function checkGameHealth() {
+            // Check for stuck game (no generation)
+            if (game.nodes.length > 0 && activeNodes.size === 0) {
+                console.warn('Game health check: No active nodes but nodes exist');
+                emergencyRecover();
+            }
+            
+            // Check for NaN values
+            if (isNaN(game.money) || isNaN(game.rp)) {
+                console.warn('Game health check: NaN values detected');
+                emergencyRecover();
+            }
+        }
+        
         function initGameSystems() {
             // Load local save first
             loadLocalSave();
@@ -4240,6 +4472,9 @@
             
             // Check milestones periodically
             setInterval(checkMilestones, 5000);
+            
+            // Health check every 10 seconds
+            setInterval(checkGameHealth, 10000);
         }
 
         // Initialize Firebase when page loads
