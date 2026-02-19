@@ -285,6 +285,16 @@
         .btn-prestige:hover { filter: brightness(1.2); }
         .btn-help { background: rgba(6, 182, 212, 0.2); border-color: var(--info); color: var(--info); }
         .btn-help:hover { background: rgba(6, 182, 212, 0.4); }
+        
+        /* Toggle Switch */
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.1); transition: .3s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
+        input:checked + .toggle-slider { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+        .btn-settings { background: rgba(107, 114, 128, 0.2); border-color: #6b7280; color: #9ca3af; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0; }
+        .btn-settings:hover { background: rgba(107, 114, 128, 0.4); border-color: #9ca3af; color: #d1d5db; transform: rotate(30deg); }
         .btn-small { padding: 6px; font-size: 10px; }
 
         .storage-bar-container { margin-top: 6px; }
@@ -1236,6 +1246,74 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal" style="width: 450px; max-width: 95%;">
+            <div class="modal-header">
+                <h2 style="color:#9ca3af"><i class="fa-solid fa-gear"></i> Settings</h2>
+                <button class="btn" onclick="document.getElementById('settingsModal').style.display='none'">Close</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section" style="margin-bottom: 20px;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Game Options</h3>
+                    
+                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-weight: 600;"><i class="fa-solid fa-floppy-disk" style="color: #3b82f6; margin-right: 8px;"></i> Auto-Save</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Automatically save every minute</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #8b5cf6; margin-right: 8px;"></i> Offline Earnings</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Earn 50% while away (up to 12h)</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                        <div>
+                            <div style="font-weight: 600;"><i class="fa-solid fa-bell" style="color: #f59e0b; margin-right: 8px;"></i> Notifications</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Show achievement popups</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section" style="margin-bottom: 20px;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Save Management</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" onclick="exportSave(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                            <i class="fa-solid fa-download"></i> Export Save
+                        </button>
+                        <button class="btn" onclick="document.getElementById('importFile').click(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
+                            <i class="fa-solid fa-upload"></i> Import Save
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Danger Zone</h3>
+                    <button class="btn" onclick="Game.clearSaveAndReset();" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        <i class="fa-solid fa-trash"></i> Clear Save & Reset
+                    </button>
+                    <p style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">This will permanently delete your progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Offline Earnings Modal -->
     <div id="offlineEarningsModal" class="modal-overlay">
         <div class="modal" style="width: 450px; max-width: 95%;">
@@ -1453,6 +1531,9 @@
                     <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">0</div>
                     <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
                 </div>
+                <button class="btn btn-settings" onclick="document.getElementById('settingsModal').style.display='flex'" title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
 
@@ -1538,25 +1619,6 @@
                     </div>
                 </div>
                 
-                <!-- Settings Panel -->
-            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(75, 85, 99, 0.05)); border-color: rgba(107, 114, 128, 0.3);">
-                <div class="panel-title" style="color: #9ca3af;"><i class="fa-solid fa-gear"></i> Settings</div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                        <span><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
-                        <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)" style="accent-color: #3b82f6;">
-                    </label>
-                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                        <span><i class="fa-solid fa-clock"></i> Offline Earnings</span>
-                        <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)" style="accent-color: #3b82f6;">
-                    </label>
-                    <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-muted); cursor: pointer;">
-                        <span><i class="fa-solid fa-bell"></i> Notifications</span>
-                        <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)" style="accent-color: #3b82f6;">
-                    </label>
-                </div>
-            </div>
-
             <div class="contract-widget" id="activeContractWidget">
                     <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
                         Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
@@ -1987,6 +2049,20 @@
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
         }
 
+        // Toggle setting
+        function toggleSetting(setting, value) {
+            if (game.hasOwnProperty(setting)) {
+                game[setting] = value;
+                const settingNames = {
+                    'autoSaveEnabled': 'Auto-Save',
+                    'offlineEarningsEnabled': 'Offline Earnings',
+                    'notificationsEnabled': 'Notifications'
+                };
+                logEvent(`${settingNames[setting] || setting} ${value ? 'enabled' : 'disabled'}`, 'info');
+                autoSaveLocal();
+            }
+        }
+        
         // Clear save and reset game
         function clearSaveAndReset() {
             if (!confirm('WARNING: This will DELETE your save and reset the game. Are you sure?')) return;
@@ -2009,7 +2085,7 @@
         window.Game = { 
             zoomIn, zoomOut, resetZoom, 
             emergencyRecover, repairSaveData, validateSaveData,
-            clearSaveAndReset, showGameInfo
+            clearSaveAndReset, showGameInfo, toggleSetting
         };
         
         // Log help message for debugging
