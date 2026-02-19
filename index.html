@@ -519,28 +519,29 @@
         input:checked + .toggle-slider { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         input:checked + .toggle-slider:before { transform: translateX(20px); }
         .btn-settings { 
-            background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.1)); 
-            border: 1px solid rgba(156, 163, 175, 0.3); 
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.15), rgba(75, 85, 99, 0.08)); 
+            border: 1px solid rgba(156, 163, 175, 0.25); 
             color: #9ca3af; 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 12px;
+            width: 100%;
+            height: 32px;
+            border-radius: 10px;
             display: flex; 
             align-items: center; 
             justify-content: center; 
             padding: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 13px;
         }
         .btn-settings:hover { 
-            background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.2));
-            border-color: rgba(156, 163, 175, 0.5); 
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.25), rgba(75, 85, 99, 0.15));
+            border-color: rgba(156, 163, 175, 0.4); 
             color: #e5e7eb; 
-            transform: rotate(45deg) scale(1.05);
-            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+            transform: rotate(90deg);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.25);
         }
         .btn-settings:active {
-            transform: rotate(45deg) scale(0.95);
+            transform: rotate(90deg) scale(0.95);
         }
         .btn-small { padding: 6px; font-size: 10px; }
 
@@ -1846,7 +1847,7 @@
         <div class="welcome-container">
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.0</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.1</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -2541,7 +2542,7 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.0</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.1</span>
             </div>
             <div class="header-stats">
                 <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">
@@ -2554,14 +2555,16 @@
                     <div class="stat-value text-purple-400 font-mono" id="rpDisplay">0 RP</div>
                     <div class="stat-rate text-purple-500/70 font-mono text-xs" id="rpRate">+0/s</div>
                 </div>
-                <div class="stat-box code group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('codeModal').style.display='flex'">
-                    <i class="fa-solid fa-terminal stat-icon text-cyan-400"></i>
-                    <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">0</div>
-                    <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div class="stat-box code group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('codeModal').style.display='flex'">
+                        <i class="fa-solid fa-terminal stat-icon text-cyan-400"></i>
+                        <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">0</div>
+                        <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
+                    </div>
+                    <button class="btn btn-settings" onclick="document.getElementById('settingsModal').style.display='flex'" title="Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
                 </div>
-                <button class="btn btn-settings" onclick="document.getElementById('settingsModal').style.display='flex'" title="Settings">
-                    <i class="fa-solid fa-gear"></i>
-                </button>
             </div>
         </div>
 
@@ -2603,12 +2606,6 @@
                     </button>
                 </div>
                 <div class="action-row">
-                    <button class="btn" onclick="exportSave()">
-                        <i class="fa-solid fa-download" style="color: #10b981;"></i> Save
-                    </button>
-                    <button class="btn" onclick="document.getElementById('importFile').click()">
-                        <i class="fa-solid fa-upload" style="color: #3b82f6;"></i> Load
-                    </button>
                     <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
                         <i class="fa-solid fa-rotate"></i> Migrate
                     </button>
@@ -2768,7 +2765,7 @@
 
     <script>
         // GAME VERSION - Update by 0.1 for minor, +1 for major
-        const GAME_VERSION = "10.2";
+        const GAME_VERSION = "11.1";
 
         // --- CONFIGURATION ---
         
