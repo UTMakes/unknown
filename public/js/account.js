@@ -1,5 +1,8 @@
 // ==================== FIREBASE ACCOUNT SYSTEM ====================
 
+// Import configuration
+import { GAME_VERSION } from './game-config.js';
+
 let currentUser = null;
 let cloudSaveEnabled = false;
 let autoSyncInterval = null;
@@ -217,7 +220,7 @@ async function syncToCloud() {
         
         // Create a clean copy of game data
         const saveData = {
-            game: JSON.parse(JSON.stringify(game)),
+            game: JSON.parse(JSON.stringify(window.game)),
             version: GAME_VERSION,
             timestamp: Date.now(),
             device: navigator.userAgent
@@ -244,8 +247,8 @@ async function syncToCloud() {
 // Load game from cloud
 async function loadFromCloud() {
     if (!cloudSaveEnabled || !currentUser) {
-        logEvent('Cloud save not available - please login first', 'bad');
-        showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+        window.logEvent('Cloud save not available - please login first', 'bad');
+        window.showFloat('⚠️ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
         document.getElementById('accountModal').style.display='flex';
         return;
     }
@@ -264,7 +267,7 @@ async function loadFromCloud() {
             
             // Version check (warning only)
             if (saveData.version && saveData.version !== GAME_VERSION) {
-                logEvent(`Save version: ${saveData.version}`, 'info');
+                window.logEvent(`Save version: ${saveData.version}`, 'info');
             }
             
             // Restore game state using improved loading
@@ -272,39 +275,39 @@ async function loadFromCloud() {
                 const importedGame = saveData.game;
                 
                 // Validate and load
-                game.money = Number(importedGame.money) || 2000;
-                game.rp = Number(importedGame.rp) || 0;
-                game.prestige = Number(importedGame.prestige) || 0;
-                game.routerLevel = Number(importedGame.routerLevel) || 1;
-                game.routerHeat = Number(importedGame.routerHeat) || 0;
-                game.overheatMode = Boolean(importedGame.overheatMode);
-                game.nextId = Number(importedGame.nextId) || 1;
+                window.game.money = Number(importedGame.money) || 2000;
+                window.game.rp = Number(importedGame.rp) || 0;
+                window.game.prestige = Number(importedGame.prestige) || 0;
+                window.game.routerLevel = Number(importedGame.routerLevel) || 1;
+                window.game.routerHeat = Number(importedGame.routerHeat) || 0;
+                window.game.overheatMode = Boolean(importedGame.overheatMode);
+                window.game.nextId = Number(importedGame.nextId) || 1;
                 
-                game.res = {
+                window.game.res = {
                     files: Number(importedGame.res?.files) || 0,
                     images: Number(importedGame.res?.images) || 0,
                     videos: Number(importedGame.res?.videos) || 0,
                     audio: Number(importedGame.res?.audio) || 0
                 };
                 
-                game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
-                game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
-                game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
-                game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
+                window.game.nodes = Array.isArray(importedGame.nodes) ? importedGame.nodes : [];
+                window.game.conns = Array.isArray(importedGame.conns) ? importedGame.conns : [];
+                window.game.unlocked = Array.isArray(importedGame.unlocked) ? importedGame.unlocked : [];
+                window.game.achievements = Array.isArray(importedGame.achievements) ? importedGame.achievements : [];
                 
-                game.codeBits = Number(importedGame.codeBits) || 0;
-                game.optimizationCode = Number(importedGame.optimizationCode) || 0;
-                game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+                window.game.codeBits = Number(importedGame.codeBits) || 0;
+                window.game.optimizationCode = Number(importedGame.optimizationCode) || 0;
+                window.game.drivers = importedGame.drivers || { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
                 
                 if (importedGame.stats) {
-                    game.stats = {
-                        totalMoney: Number(importedGame.stats.totalMoney) || game.money,
-                        peakMoney: Number(importedGame.stats.peakMoney) || game.money,
+                    window.game.stats = {
+                        totalMoney: Number(importedGame.stats.totalMoney) || window.game.money,
+                        peakMoney: Number(importedGame.stats.peakMoney) || window.game.money,
                         moneySpent: Number(importedGame.stats.moneySpent) || 0,
-                        totalRP: Number(importedGame.stats.totalRP) || game.rp,
-                        nodesCreated: Number(importedGame.stats.nodesCreated) || game.nodes.length,
+                        totalRP: Number(importedGame.stats.totalRP) || window.game.rp,
+                        nodesCreated: Number(importedGame.stats.nodesCreated) || window.game.nodes.length,
                         nodesDeleted: Number(importedGame.stats.nodesDeleted) || 0,
-                        cablesPlaced: Number(importedGame.stats.cablesPlaced) || game.conns.length,
+                        cablesPlaced: Number(importedGame.stats.cablesPlaced) || window.game.conns.length,
                         upgrades: Number(importedGame.stats.upgrades) || 0,
                         contractsCompleted: Number(importedGame.stats.contractsCompleted) || 0,
                         filesDownloaded: Number(importedGame.stats.filesDownloaded) || 0,
@@ -312,33 +315,33 @@ async function loadFromCloud() {
                         totalCodeBits: Number(importedGame.stats.totalCodeBits) || 0,
                         totalDrivers: Number(importedGame.stats.totalDrivers) || 0,
                         playTime: Number(importedGame.stats.playTime) || 0,
-                        techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
-                        prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
+                        techsUnlocked: Number(importedGame.stats.techsUnlocked) || window.game.unlocked.length,
+                        prestigeCount: Number(importedGame.stats.prestigeCount) || window.game.prestige,
                         startTime: Date.now()
                     };
                 }
                 
-                game.nodes.forEach(n => { 
+                window.game.nodes.forEach(n => { 
                     if (typeof n.infected === 'undefined') n.infected = false;
                     if (typeof n.level === 'undefined') n.level = 1;
                 });
                 
-                activeNodes.clear();
-                selectedNode = null;
+                window.activeNodes.clear();
+                window.selectedNode = null;
                 
-                renderWorld();
-                renderResearchTree();
-                renderDriverGrid();
-                renderAchievements();
-                updateUI();
-                updateRouterCostDisplay();
+                window.renderWorld();
+                window.renderResearchTree();
+                window.renderDriverGrid();
+                window.renderAchievements();
+                window.updateUI();
+                window.updateRouterCostDisplay();
                 
                 const saveDate = new Date(saveData.timestamp).toLocaleString();
                 const lastSyncEl = document.getElementById('lastSyncTime');
                 if (lastSyncEl) lastSyncEl.innerText = 'Loaded: ' + saveDate;
                 updateCloudSaveStatus('online', 'Loaded from Cloud');
-                logEvent('Game loaded from cloud', 'good');
-                showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                window.logEvent('Game loaded from cloud', 'good');
+                window.showFloat('☁️ Loaded from Cloud', window.innerWidth/2, window.innerHeight/2, '#10b981');
             }
         } else {
             window.logEvent('No cloud save found');

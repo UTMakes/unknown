@@ -328,7 +328,7 @@ function performPrestige() {
     game.stats.contractsCompleted = 0;
     
     activeNodes.clear();
-    selectedNode = null;
+    selNodeId = null;
     
     // Spawn new router
     spawnNode('router', 2500, 2500);
@@ -2109,6 +2109,11 @@ function initGameSystems() {
 }
 
 // Make init function globally available
+// Make game and view globally accessible
+window.game = game;
+window.view = view;
+window.activeNodes = activeNodes;
+window.selNodeId = selNodeId;
 window.initGameSystems = initGameSystems;
 
 // Initialize game systems when DOM is ready
