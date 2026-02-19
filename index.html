@@ -1873,6 +1873,45 @@
     <!-- Welcome Modal -->
     <div id="welcomeModal" class="modal-overlay" style="display: flex;">
         <div class="welcome-container">
+            <!-- Latest Changes Panel - LEFT SIDE -->
+            <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
+                <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.2</span></h2>
+                </div>
+                <div class="welcome-sidebar-body">
+                    <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Cable Rendering:</strong> Fixed black background on cables, smoother dragging</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Performance:</strong> Major lag reduction with optimized cable updates</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge ui">UI</span>
+                            <span><strong>Settings:</strong> Moved to zoom controls panel for better access</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge ui">UI</span>
+                            <span><strong>Event Log:</strong> Relocated to prevent overlap with controls</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Text Overflow:</strong> Fixed cut-off text on buttons and nodes</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge ui">UI</span>
+                            <span><strong>Visual Polish:</strong> Enhanced glassmorphism effects throughout</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge new">New</span>
+                            <span><strong>Welcome Panel:</strong> Restructured with dedicated changelog panel</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
             <div class="welcome-main">
                 <div class="modal-header">
                     <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.2</span></h2>
@@ -1989,45 +2028,6 @@
                     <div class="version-tag">
                         <i class="fa-solid fa-code-branch"></i> Version 11.2 - "Performance Update"
                     </div>
-                </div>
-            </div>
-            
-            <!-- Latest Changes Panel -->
-            <div class="welcome-sidebar" style="flex: 0.9;">
-                <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.2</span></h2>
-                </div>
-                <div class="welcome-sidebar-body">
-                    <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Cable Rendering:</strong> Fixed black background on cables, smoother dragging</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Performance:</strong> Major lag reduction with optimized cable updates</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Settings:</strong> Moved to zoom controls panel for better access</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Event Log:</strong> Relocated to prevent overlap with controls</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Text Overflow:</strong> Fixed cut-off text on buttons and nodes</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Visual Polish:</strong> Enhanced glassmorphism effects throughout</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Welcome Panel:</strong> Restructured with dedicated changelog panel</span>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
