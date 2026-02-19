@@ -765,30 +765,35 @@
             position: absolute;
             bottom: 180px;
             left: 380px;
-            width: 300px;
-            max-height: 160px;
-            overflow-y: hidden;
+            width: 320px;
+            max-height: 180px;
+            overflow: hidden;
             display: flex;
             flex-direction: column-reverse;
             gap: 6px;
             pointer-events: none;
             z-index: 100;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%);
         }
         .log-entry {
-            background: linear-gradient(90deg, rgba(20, 26, 35, 0.95), rgba(15, 20, 28, 0.9));
+            background: linear-gradient(90deg, rgba(20, 26, 35, 0.98), rgba(15, 20, 28, 0.95));
             color: #e2e8f0;
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-size: 11px;
+            line-height: 1.4;
             border-left: 3px solid #3b82f6;
-            animation: log-slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: log-slide-in 0.3s ease-out;
             box-shadow: 
-                0 4px 15px rgba(0,0,0,0.3),
+                0 4px 12px rgba(0,0,0,0.3),
                 0 1px 0 rgba(255,255,255,0.03) inset;
-            margin-bottom: 8px;
             font-family: 'JetBrains Mono', monospace;
             position: relative;
-            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            flex-shrink: 0;
         }
         
         .log-entry::before {
@@ -814,8 +819,8 @@
         .log-entry.warning::before { background: linear-gradient(90deg, rgba(245, 158, 11, 0.3), transparent); }
         
         @keyframes log-slide-in { 
-            from { opacity: 0; transform: translateX(20px) scale(0.95); } 
-            to { opacity: 1; transform: translateX(0) scale(1); } 
+            from { opacity: 0; transform: translateX(15px); } 
+            to { opacity: 1; transform: translateX(0); } 
         }
 
         .zoom-controls {
@@ -964,7 +969,8 @@
 
         .node {
             position: absolute;
-            width: 180px; height: 80px; 
+            width: 170px; 
+            min-height: 70px; 
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(20, 26, 35, 0.98));
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
@@ -972,7 +978,7 @@
             box-shadow: 
                 0 10px 30px rgba(0,0,0,0.5),
                 0 1px 0 rgba(255,255,255,0.05) inset;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
             z-index: 10;
         }
         
@@ -1037,25 +1043,39 @@
                 0 0 30px rgba(59, 130, 246, 0.2);
         }
         .clean-btn {
-            display: none; position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%);
-            background: #10b981; color: white; border: 2px solid #fff;
-            padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 11px;
-            cursor: pointer; z-index: 1000; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: none; position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; 
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            font-size: 11px;
+            cursor: pointer; 
+            z-index: 1000; 
+            white-space: nowrap; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            letter-spacing: 0.5px;
         }
-        .clean-btn:hover { background: #059669; transform: translateX(-50%) scale(1.1); }
+        .clean-btn:hover { 
+            background: linear-gradient(135deg, #34d399, #10b981); 
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
         .node.infected .clean-btn { display: block; }
         .node:hover { border-color: var(--text-muted); }
         .node.selected { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6); z-index: 20; }
 
         .node-header { 
-            padding: 12px; 
+            padding: 10px 12px; 
             display: flex; 
             align-items: center; 
-            gap: 12px; 
+            gap: 10px; 
             background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); 
             border-bottom: 1px solid rgba(255,255,255,0.06); 
             border-radius: 15px 15px 0 0; 
-            height: 100%;
+            height: auto;
+            min-height: 60px;
         }
         .node-icon-box { 
             width: 44px; 
@@ -1082,20 +1102,21 @@
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); } 
             100% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 
         }
-        .node-info { flex: 1; overflow: hidden; }
+        .node-info { flex: 1; overflow: visible; min-width: 0; }
         .node-title { 
-            font-size: 13px; 
-            font-weight: 700; 
+            font-size: 12px; 
+            font-weight: 600; 
             color: #f8fafc;
             white-space: nowrap; 
             overflow: hidden; 
             text-overflow: ellipsis;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+            max-width: 95px;
         }
         .node-lvl { 
-            font-size: 10px; 
+            font-size: 9px; 
             color: #64748b;
-            font-weight: 600;
+            font-weight: 500;
             margin-top: 2px;
         }
 
@@ -3446,6 +3467,9 @@
 
         let frameCount = 0;
         let lastConnectivityUpdate = 0;
+        let lastUIUpdate = 0;
+        let cachedNodes = null;
+        let cachedConns = null;
         
         function gameLoop(time) {
             const dt = 1/60; 
@@ -3458,10 +3482,13 @@
                 return;
             }
             
-            // Throttle connectivity updates to every 10 frames for performance
-            if (frameCount - lastConnectivityUpdate >= 10) {
+            // Throttle connectivity updates to every 15 frames for performance
+            if (frameCount - lastConnectivityUpdate >= 15) {
                 updateConnectivity();
                 lastConnectivityUpdate = frameCount;
+                // Cache node states for this frame batch
+                cachedNodes = game.nodes.slice();
+                cachedConns = game.conns.slice();
             }
             
             // Heat
@@ -3776,9 +3803,14 @@
             // Update systems
             updateEvents(dt);
             updateCombo(dt);
-            updateStatistics();
-            updatePrestigeUI();
-            updateUI(efficiency);
+            
+            // Throttle UI updates to every 3rd frame for performance
+            if (frameCount % 3 === 0) {
+                updateStatistics();
+                updatePrestigeUI();
+                updateUI(efficiency);
+            }
+            
             requestAnimationFrame(gameLoop);
         }
 
@@ -4297,47 +4329,82 @@
             renderCables();
         }
 
+        // Cable cache for efficient updates
+        let cableCache = new Map();
+        let cableUpdatePending = false;
+        
         function renderCables() {
             const svg = document.getElementById('cables');
-            svg.innerHTML = '';
-            game.conns.forEach(c => {
-                const n1 = game.nodes.find(n => n.id === c.from);
-                const n2 = game.nodes.find(n => n.id === c.to);
-                if (!n1 || !n2) return;
+            // Only clear if cable count changed or cables don't exist
+            if (svg.children.length !== game.conns.length) {
+                svg.innerHTML = '';
+                cableCache.clear();
                 
-                const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                group.classList.add("cable-group");
-                group.dataset.ends = `${c.from},${c.to}`;
-                group.style.pointerEvents = cableDeleteMode ? 'all' : 'none';
-                group.onclick = (e) => handleCableClick(c.from, c.to, e);
+                game.conns.forEach(c => {
+                    const n1 = game.nodes.find(n => n.id === c.from);
+                    const n2 = game.nodes.find(n => n.id === c.to);
+                    if (!n1 || !n2) return;
+                    
+                    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    group.classList.add("cable-group");
+                    group.dataset.ends = `${c.from},${c.to}`;
+                    group.style.pointerEvents = cableDeleteMode ? 'all' : 'none';
+                    group.onclick = (e) => handleCableClick(c.from, c.to, e);
+                    
+                    const destDef = NODE_DEFS[n2.type];
+                    if (destDef.type === 'upload' || n2.type === 'rack') group.classList.add('money');
+                    else if (destDef.type === 'lab') group.classList.add('power');
+                    else if (destDef.type === 'coding') group.classList.add('code');
+                    if (activeNodes.has(n1.id) && activeNodes.has(n2.id)) group.classList.add('active');
+                    
+                    const bgLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    bgLine.classList.add("cable");
+                    bgLine.dataset.from = c.from;
+                    bgLine.dataset.to = c.to;
+                    bgLine.style.pointerEvents = cableDeleteMode ? 'stroke' : 'none';
+                    
+                    const dashLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    dashLine.classList.add("cable-inner");
+                    
+                    group.appendChild(bgLine);
+                    group.appendChild(dashLine);
+                    svg.appendChild(group);
+                    
+                    // Cache the elements
+                    cableCache.set(`${c.from},${c.to}`, { group, bgLine, dashLine, n1, n2 });
+                });
+            }
+            
+            // Update all cable positions
+            updateCablePositions();
+        }
+        
+        function updateCablePositions() {
+            cableCache.forEach((cable, key) => {
+                const { bgLine, dashLine, n1, n2 } = cable;
+                // Get fresh node positions
+                const freshN1 = game.nodes.find(n => n.id === n1.id);
+                const freshN2 = game.nodes.find(n => n.id === n2.id);
+                if (!freshN1 || !freshN2) return;
                 
-                const destDef = NODE_DEFS[n2.type];
-                if (destDef.type === 'upload' || n2.type === 'rack') group.classList.add('money');
-                else if (destDef.type === 'lab') group.classList.add('power');
-                else if (destDef.type === 'coding') group.classList.add('code');
-                if (activeNodes.has(n1.id) && activeNodes.has(n2.id)) group.classList.add('active');
-                
-                const x1 = n1.x + 180;
-                const y1 = n1.y + 40;
-                const x2 = n2.x;
-                const y2 = n2.y + 40;
+                const x1 = freshN1.x + 170;
+                const y1 = freshN1.y + 35;
+                const x2 = freshN2.x;
+                const y2 = freshN2.y + 35;
                 
                 const pathStr = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
-                
-                const bgLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                bgLine.classList.add("cable");
                 bgLine.setAttribute("d", pathStr);
-                bgLine.dataset.from = c.from;
-                bgLine.dataset.to = c.to;
-                bgLine.style.pointerEvents = cableDeleteMode ? 'stroke' : 'none';
-                
-                const dashLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                dashLine.classList.add("cable-inner");
                 dashLine.setAttribute("d", pathStr);
-                
-                group.appendChild(bgLine);
-                group.appendChild(dashLine);
-                svg.appendChild(group);
+            });
+        }
+        
+        // Throttled cable update for dragging
+        function requestCableUpdate() {
+            if (cableUpdatePending) return;
+            cableUpdatePending = true;
+            requestAnimationFrame(() => {
+                updateCablePositions();
+                cableUpdatePending = false;
             });
         }
 
@@ -4574,6 +4641,7 @@
                 if (drag.active) {
                     view.x = drag.offX + (e.clientX - drag.startX);
                     view.y = drag.offY + (e.clientY - drag.startY);
+                    updateWorldTransform();
                 }
                 if (drag.node) {
                     const z = view.scale;
@@ -4581,10 +4649,20 @@
                     drag.node.y = drag.node.iy + (e.clientY - drag.sy)/z;
                     
                     const el = document.getElementById(`node-${drag.node.id}`);
-                    if (el) { el.style.left = drag.node.x+'px'; el.style.top = drag.node.y+'px'; }
-                    renderCables(); 
+                    if (el) { 
+                        el.style.left = drag.node.x+'px'; 
+                        el.style.top = drag.node.y+'px'; 
+                    }
+                    // Use efficient cable update instead of full re-render
+                    requestCableUpdate();
                 }
             };
+            
+            // Separate world transform update for panning
+            function updateWorldTransform() {
+                const world = document.getElementById('world');
+                world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+            }
             
             window.onmouseup = () => { drag.active = false; drag.node = null; };
             
