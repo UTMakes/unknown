@@ -337,6 +337,7 @@
             box-shadow: 0 4px 15px rgba(0, 212, 170, 0.1);
         }
 
+        /* Sidebar - Optimized */
         .sidebar {
             grid-area: sidebar;
             background: linear-gradient(180deg, rgba(20, 26, 35, 0.95), rgba(15, 20, 28, 0.98));
@@ -348,11 +349,24 @@
             overflow-y: auto;
             z-index: 40;
             box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+            contain: layout style;
+            will-change: transform;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 3px;
         }
 
+        /* Panel - Optimized */
         .panel {
             background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(20, 26, 35, 0.8));
             border-radius: 16px;
+            contain: layout style paint;
+            content-visibility: auto;
             padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 
@@ -1287,6 +1301,7 @@
             line-height: 1.3;
         }
 
+        /* Modal System - Optimized */
         .modal-overlay { 
             position: fixed; 
             top: 0; left: 0; 
@@ -1297,12 +1312,13 @@
             display: none; 
             align-items: center; 
             justify-content: center;
-            animation: modal-fade-in 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            will-change: opacity;
+            contain: layout style;
         }
-        
-        @keyframes modal-fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .modal-overlay[style*="flex"] {
+            opacity: 1;
         }
         
         .modal { 
@@ -1319,8 +1335,25 @@
                 0 25px 50px -12px rgba(0, 0, 0, 0.6),
                 0 0 0 1px rgba(255, 255, 255, 0.03) inset,
                 0 0 100px rgba(59, 130, 246, 0.1);
-            animation: modal-slide-in 0.3s ease;
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
             overflow: hidden;
+            will-change: transform, opacity;
+            contain: layout style;
+        }
+        .modal-overlay[style*="flex"] .modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        
+        /* Hide modals that are not displayed to improve performance */
+        .modal-overlay:not([style*="flex"]) {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .modal-overlay:not([style*="flex"]) .modal {
+            visibility: hidden;
         }
         
         @keyframes modal-slide-in {
@@ -1492,12 +1525,34 @@
         .modal-header { padding: 20px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 20px; overflow-y: auto; }
 
-        .research-tree-container { position: relative; min-height: 700px; overflow: auto; background: radial-gradient(circle at center, rgba(30, 40, 55, 0.8) 0%, rgba(15, 20, 30, 0.95) 100%); border-radius: 12px; border: 1px solid var(--border-color); }
+        /* Research Tree - Optimized */
+        .research-tree-container { 
+            position: relative; 
+            min-height: 700px; 
+            overflow: auto; 
+            background: radial-gradient(circle at center, rgba(30, 40, 55, 0.8) 0%, rgba(15, 20, 30, 0.95) 100%); 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color);
+            will-change: transform;
+            contain: layout style;
+        }
         .research-tree-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: all 0.5s ease; }
-        .research-tree-line.unlocked { stroke: var(--research); stroke-width: 4; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8)); animation: linePulse 2s infinite; }
-        @keyframes linePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .research-tree-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px; padding: 40px; position: relative; z-index: 2; min-width: 1200px; }
+        .research-tree-line { stroke: #4a5568; stroke-width: 2; fill: none; transition: stroke 0.3s ease; }
+        .research-tree-line.unlocked { 
+            stroke: var(--research); 
+            stroke-width: 4; 
+            filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.6));
+        }
+        .research-tree-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 30px; 
+            padding: 40px; 
+            position: relative; 
+            z-index: 2; 
+            min-width: 1200px;
+            contain: layout style;
+        }
         .research-tier { display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .tier-label { font-size: 11px; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; padding: 6px 16px; background: linear-gradient(135deg, #4a5568, #2d3748); border-radius: 20px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .tier-label.tier-1 { background: linear-gradient(135deg, #22c55e, #16a34a); }
@@ -1506,13 +1561,58 @@
         .tier-label.tier-4 { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .tier-label.tier-5 { background: linear-gradient(135deg, #ec4899, #db2777); }
         .tier-label.tier-6 { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-        .tech-card { background: linear-gradient(135deg, #2d3748, #1a202c); border: 2px solid #4a5568; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; width: 140px; z-index: 3; }
-        .tech-card:hover:not(.locked):not(.owned) { border-color: var(--research); transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+        /* Tech Cards - Optimized */
+        .tech-card { 
+            background: linear-gradient(135deg, #2d3748, #1a202c); 
+            border: 2px solid #4a5568; 
+            border-radius: 12px; 
+            padding: 15px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; 
+            position: relative; 
+            width: 140px; 
+            z-index: 3;
+            will-change: transform;
+            contain: layout style;
+            backface-visibility: hidden;
+        }
+        .tech-card:hover:not(.locked):not(.owned) { 
+            border-color: var(--research); 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.25); 
+        }
         .tech-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-        .tech-card.owned { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
-        .tech-card.owned::after { content: "✓"; position: absolute; top: -8px; right: -8px; background: var(--success); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .tech-card.available { border-color: var(--research); animation: pulse-available 2s infinite; }
-        @keyframes pulse-available { 0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); } }
+        .tech-card.owned { 
+            border-color: var(--success); 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.25); 
+        }
+        .tech-card.owned::after { 
+            content: "✓"; 
+            position: absolute; 
+            top: -8px; 
+            right: -8px; 
+            background: var(--success); 
+            color: white; 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
+        }
+        .tech-card.available { 
+            border-color: var(--research); 
+            animation: pulse-available 3s infinite; 
+        }
+        @keyframes pulse-available { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.3); } 
+            50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); } 
+        }
         .tech-icon { font-size: 28px; margin-bottom: 10px; color: var(--research); }
         .tech-card.owned .tech-icon { color: var(--success); }
         .tech-card.locked .tech-icon { color: #64748b; }
@@ -1522,27 +1622,78 @@
         .tech-cost.affordable { color: var(--success); }
         .tech-req { font-size: 9px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
 
-        /* Code Modal */
-        .code-modal-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .code-section { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px; border: 1px solid var(--border-color); }
+        /* Code Modal - Optimized */
+        .code-modal-body { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px;
+            will-change: transform;
+            contain: layout style;
+        }
+        .code-section { 
+            background: rgba(0,0,0,0.2); 
+            border-radius: 10px; 
+            padding: 15px; 
+            border: 1px solid var(--border-color);
+            contain: layout style paint;
+        }
         .code-section h3 { color: var(--code); font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .driver-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .driver-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px;
+            contain: layout;
+        }
         .driver-card {
             background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(0, 212, 170, 0.05));
             border: 1px solid rgba(0, 212, 170, 0.3);
             border-radius: 8px;
             padding: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+            will-change: transform;
+            contain: layout style;
+            backface-visibility: hidden;
         }
-        .driver-card:hover:not(.locked) { border-color: var(--code); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2); }
-        .driver-card.locked { opacity: 0.5; cursor: not-allowed; }
-        .driver-card.installed { border-color: var(--success); background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); }
+        .driver-card:hover:not(.locked) { 
+            border-color: var(--code); 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.2);
+        }
+        .driver-card.locked { 
+            opacity: 0.5; 
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .driver-card.installed { 
+            border-color: var(--success); 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+        }
+        .driver-card.updating {
+            animation: driver-pulse 0.3s ease;
+        }
+        @keyframes driver-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
         .driver-icon { font-size: 20px; color: var(--code); margin-bottom: 5px; }
         .driver-name { font-size: 11px; font-weight: bold; color: #fff; }
         .driver-desc { font-size: 9px; color: var(--text-muted); margin: 4px 0; }
         .driver-cost { font-size: 10px; color: var(--code); }
         .driver-level { font-size: 9px; color: var(--success); margin-top: 4px; }
+        
+        /* Optimize stat value changes */
+        .code-stat-value {
+            transition: color 0.2s ease;
+        }
+        .code-stat-value.changed {
+            animation: value-flash 0.3s ease;
+        }
+        @keyframes value-flash {
+            0% { color: #fff; text-shadow: 0 0 10px currentColor; }
+            100% { color: var(--code); text-shadow: none; }
+        }
 
         .contract-item { background: rgba(40, 50, 70, 0.4); border: 1px solid #4a5568; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .contract-item h4 { color: #fff; font-size: 14px; margin-bottom: 4px; }
@@ -3103,7 +3254,8 @@
             emergencyRecover, repairSaveData, validateSaveData,
             clearSaveAndReset, showGameInfo, toggleSetting,
             batchUpgrade, toggleAutoBalancer, showNetworkAnalysis,
-            installDriver, handleDriverClick
+            installDriver, handleDriverClick, openModal, closeModal, closeAllModals,
+            clearDriverGridCache
         };
         
         // Log help message for debugging
@@ -3998,78 +4150,226 @@
             }
         }
         
+        // Optimized driver installation
         function installDriver(driverId) {
             const driver = DRIVERS[driverId];
             if (game.optimizationCode >= driver.cost) {
                 game.optimizationCode -= driver.cost;
                 game.drivers[driverId]++;
+                game.stats.totalDrivers++;
+                
                 logEvent(`Installed ${driver.name} Level ${game.drivers[driverId]}!`, 'code');
-                renderDriverGrid();
+                
+                // Visual feedback - only animate the updated card
+                const grid = document.getElementById('driverGrid');
+                if (grid) {
+                    const card = grid.querySelector(`[data-driver-id="${driverId}"]`);
+                    if (card) {
+                        card.classList.add('updating');
+                        card.classList.add('installed');
+                        card.classList.remove('locked');
+                        // Update the level display directly
+                        const levelDiv = card.querySelector('.driver-level') || document.createElement('div');
+                        levelDiv.className = 'driver-level';
+                        levelDiv.innerText = `Level ${game.drivers[driverId]} (+${Math.round(game.drivers[driverId] * driver.effect * 100)}%)`;
+                        if (!card.querySelector('.driver-level')) {
+                            card.appendChild(levelDiv);
+                        }
+                        setTimeout(() => card.classList.remove('updating'), 300);
+                    }
+                }
+                
+                // Update UI without full re-render
                 updateCodeUI();
+                updateInstalledDriversList();
+                checkAchievements();
             }
         }
         
-        function updateCodeUI() {
-            document.getElementById('codeBitsDisplay').innerText = Math.floor(game.codeBits);
-            document.getElementById('optCodeDisplay').innerText = game.optimizationCode;
-            document.getElementById('codeDisplay').innerText = Math.floor(game.codeBits);
-            document.getElementById('sidebarCodeBits').innerText = Math.floor(game.codeBits);
-            document.getElementById('sidebarOptCode').innerText = game.optimizationCode;
-            
-            const convertBtn = document.getElementById('convertBitsBtn');
-            const sidebarConvertBtn = document.getElementById('sidebarConvertBtn');
-            if (convertBtn) convertBtn.disabled = game.codeBits < 100;
-            if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
-            
-            updateInstalledDriversList();
-            
-            // Re-render driver grid to update affordability states
-            renderDriverGrid();
-        }
+        // Optimized Code UI updates with throttling
+        let codeUIUpdatePending = false;
+        let lastCodeBits = -1;
+        let lastOptCode = -1;
         
-        function updateInstalledDriversList() {
-            const lists = ['installedDriversList', 'sidebarDrivers'];
-            lists.forEach(listId => {
-                const list = document.getElementById(listId);
-                if (!list) return;
+        function updateCodeUI() {
+            // Skip if modal not visible and no significant change
+            const codeModal = document.getElementById('codeModal');
+            const isVisible = codeModal && codeModal.style.display === 'flex';
+            const codeBitsFloor = Math.floor(game.codeBits);
+            
+            // Always update sidebar (visible in main UI)
+            const sidebarCodeBits = document.getElementById('sidebarCodeBits');
+            const sidebarOptCode = document.getElementById('sidebarOptCode');
+            if (sidebarCodeBits) sidebarCodeBits.innerText = codeBitsFloor;
+            if (sidebarOptCode) sidebarOptCode.innerText = game.optimizationCode;
+            document.getElementById('codeDisplay').innerText = codeBitsFloor;
+            
+            // Throttle modal updates
+            if (!isVisible || codeUIUpdatePending) return;
+            
+            // Skip if values haven't changed meaningfully
+            if (codeBitsFloor === lastCodeBits && game.optimizationCode === lastOptCode) return;
+            
+            codeUIUpdatePending = true;
+            requestAnimationFrame(() => {
+                lastCodeBits = codeBitsFloor;
+                lastOptCode = game.optimizationCode;
                 
-                const installed = Object.entries(game.drivers).filter(([_, level]) => level > 0);
-                if (installed.length === 0) {
-                    list.innerHTML = '<span style="font-size: 9px; color: #64748b;">No drivers installed</span>';
-                } else {
-                    list.innerHTML = installed.map(([id, level]) => {
-                        const driver = DRIVERS[id];
-                        return `<div class="driver-badge"><i class="${driver.icon}"></i> ${driver.name.split(' ')[0]} Lv.${level}</div>`;
-                    }).join('');
+                const codeBitsDisplay = document.getElementById('codeBitsDisplay');
+                const optCodeDisplay = document.getElementById('optCodeDisplay');
+                
+                if (codeBitsDisplay) {
+                    codeBitsDisplay.innerText = codeBitsFloor;
+                    codeBitsDisplay.classList.add('changed');
+                    setTimeout(() => codeBitsDisplay.classList.remove('changed'), 300);
                 }
+                if (optCodeDisplay) {
+                    optCodeDisplay.innerText = game.optimizationCode;
+                    optCodeDisplay.classList.add('changed');
+                    setTimeout(() => optCodeDisplay.classList.remove('changed'), 300);
+                }
+                
+                const convertBtn = document.getElementById('convertBitsBtn');
+                const sidebarConvertBtn = document.getElementById('sidebarConvertBtn');
+                if (convertBtn) convertBtn.disabled = game.codeBits < 100;
+                if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
+                
+                updateInstalledDriversList();
+                renderDriverGrid();
+                
+                codeUIUpdatePending = false;
             });
         }
+        
+        // Cached installed drivers list
+        let lastInstalledDriversState = '';
+        
+        function updateInstalledDriversList() {
+            const installed = Object.entries(game.drivers).filter(([_, level]) => level > 0);
+            const stateKey = installed.map(([id, level]) => `${id}:${level}`).join(',');
+            
+            if (stateKey === lastInstalledDriversState) return;
+            lastInstalledDriversState = stateKey;
+            
+            const lists = ['installedDriversList', 'sidebarDrivers'];
+            const html = installed.length === 0 
+                ? '<span style="font-size: 9px; color: #64748b;">No drivers installed</span>'
+                : installed.map(([id, level]) => {
+                    const driver = DRIVERS[id];
+                    return `<div class="driver-badge"><i class="${driver.icon}"></i> ${driver.name.split(' ')[0]} Lv.${level}</div>`;
+                }).join('');
+            
+            lists.forEach(listId => {
+                const list = document.getElementById(listId);
+                if (list) list.innerHTML = html;
+            });
+        }
+        
+        // Optimized driver grid with caching
+        let driverGridCache = null;
+        let lastDriverState = '';
         
         function renderDriverGrid() {
             const grid = document.getElementById('driverGrid');
             if (!grid) return;
             
-            grid.innerHTML = Object.entries(DRIVERS).map(([id, driver]) => {
+            // Build state key for caching
+            const currentState = Object.entries(game.drivers)
+                .map(([id, level]) => `${id}:${level}`)
+                .join(',') + `|opt:${game.optimizationCode}`;
+            
+            // Skip re-render if nothing changed
+            if (currentState === lastDriverState && driverGridCache) return;
+            lastDriverState = currentState;
+            
+            // Use DocumentFragment for better performance
+            const fragment = document.createDocumentFragment();
+            
+            Object.entries(DRIVERS).forEach(([id, driver]) => {
                 const level = game.drivers[id];
                 const canAfford = game.optimizationCode >= driver.cost;
                 const installed = level > 0;
                 
-                return `
-                    <div class="driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}" onclick="handleDriverClick('${id}')">
-                        <div class="driver-icon"><i class="${driver.icon}"></i></div>
-                        <div class="driver-name">${driver.name}</div>
-                        <div class="driver-desc">${driver.desc}</div>
-                        <div class="driver-cost">${canAfford ? `Cost: ${driver.cost} Opt Code` : `<span style="color: #ef4444;">Need ${driver.cost} Opt Code</span>`}</div>
-                        ${installed ? `<div class="driver-level">Level ${level} (+${Math.round(level * driver.effect * 100)}%)</div>` : ''}
-                    </div>
+                const card = document.createElement('div');
+                card.className = `driver-card ${installed ? 'installed' : ''} ${!canAfford ? 'locked' : ''}`;
+                card.dataset.driverId = id;
+                
+                card.innerHTML = `
+                    <div class="driver-icon"><i class="${driver.icon}"></i></div>
+                    <div class="driver-name">${driver.name}</div>
+                    <div class="driver-desc">${driver.desc}</div>
+                    <div class="driver-cost">${canAfford ? `Cost: ${driver.cost} Opt Code` : `<span style="color: #ef4444;">Need ${driver.cost} Opt Code</span>`}</div>
+                    ${installed ? `<div class="driver-level">Level ${level} (+${Math.round(level * driver.effect * 100)}%)</div>` : ''}
                 `;
-            }).join('');
+                
+                card.addEventListener('click', () => handleDriverClick(id));
+                fragment.appendChild(card);
+            });
+            
+            grid.innerHTML = '';
+            grid.appendChild(fragment);
+            driverGridCache = true;
+        }
+        
+        // Clear cache when needed
+        function clearDriverGridCache() {
+            driverGridCache = null;
+            lastDriverState = '';
+        }
+        
+        // Optimized modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            // Close other modals first
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                if (m.id !== modalId && m.id !== 'welcomeModal') {
+                    m.style.display = 'none';
+                }
+            });
+            
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            
+            // Trigger specific render functions based on modal
+            if (modalId === 'codeModal') {
+                clearDriverGridCache();
+                lastInstalledDriversState = '';
+                renderDriverGrid();
+                updateCodeUI();
+            } else if (modalId === 'researchModal') {
+                renderResearchTree();
+                drawResearchLines();
+            } else if (modalId === 'achievementsModal') {
+                renderAchievements();
+            } else if (modalId === 'statsModal') {
+                renderStatistics();
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => {
+                if (m.id !== 'welcomeModal') {
+                    m.style.display = 'none';
+                }
+            });
         }
         
         function handleDriverClick(driverId) {
             const driver = DRIVERS[driverId];
             if (game.optimizationCode >= driver.cost) {
                 installDriver(driverId);
+                // Clear caches after install to force refresh
+                clearDriverGridCache();
+                lastInstalledDriversState = '';
             } else {
                 showFloat(`Need ${driver.cost} Optimization Code`, window.innerWidth/2, window.innerHeight/2, '#ef4444');
             }
