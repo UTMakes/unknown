@@ -3,10 +3,11 @@ import {
     cleanNode, performPrestige, convertCodeBits, installDriver, 
     toggleCableDeleteMode, deleteAllCables, activeNodes, addConnection,
     upgradeNode, removeNode, updateCombo, updateEvents, checkOfflineEarnings,
-    autoSaveLocal, loadLocalSave
+    autoSaveLocal, loadLocalSave, batchUpgrade, toggleAutoBalancer
 } from './game.js';
-import { initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, showEventNotification } from './ui.js';
+import { initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, showEventNotification, showNetworkAnalysis } from './ui.js';
 import { setupInputs } from './inputs.js';
+import { initFirebase, loginUser, registerUser, logoutUser, syncToCloud, loadFromCloud } from './auth.js';
 import './style.css';
 
 // Initialize Game
@@ -15,6 +16,9 @@ function init() {
     
     // Load local save
     loadLocalSave();
+    
+    // Initialize Auth
+    initFirebase();
 
     // Setup Window.Game API for HTML event handlers
     window.Game = {
@@ -57,7 +61,10 @@ function init() {
         addMoney: (e) => {
             game.money += 5;
             // Simple visual feedback could be added here
-        }
+        },
+        batchUpgrade: (type) => batchUpgrade(type),
+        toggleAutoBalancer: () => toggleAutoBalancer(),
+        showNetworkAnalysis: () => showNetworkAnalysis()
     };
 
     // Global helper for adding money via click (referenced in HTML)
@@ -74,6 +81,13 @@ function init() {
         cleanNode(id);
         renderWorld();
     };
+    
+    // Auth Globals
+    window.loginUser = loginUser;
+    window.registerUser = registerUser;
+    window.logoutUser = logoutUser;
+    window.syncToCloud = syncToCloud;
+    window.loadFromCloud = loadFromCloud;
     
     // Context Menu Actions
     window.upgradeSelectedNode = () => {

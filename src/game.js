@@ -283,9 +283,101 @@ export function updateConnectivity() {
     return newActive;
 }
 
-// --- Research System ---
+// --- Advanced Features ---
 
-export function canUnlockTech(id) {
+export function batchUpgrade(type) {
+    const nodesOfType = Array.from(game.nodes.values()).filter(n => n.type === type && activeNodes.has(n.id));
+    if (nodesOfType.length === 0) return 0;
+    
+    let upgradedCount = 0;
+    let totalCost = 0;
+    
+    nodesOfType.forEach(node => {
+        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+        if (game.money >= cost + totalCost) {
+            totalCost += cost;
+            upgradedCount++;
+        }
+    });
+    
+    if (upgradedCount === 0) return 0;
+    
+    game.money -= totalCost;
+    game.stats.moneySpent += totalCost;
+    
+    let actualUpgraded = 0;
+    nodesOfType.forEach(node => {
+        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+        if (actualUpgraded < upgradedCount) {
+            node.level++;
+            actualUpgraded++;
+        }
+    });
+    
+    game.stats.upgrades += actualUpgraded;
+    checkAchievements();
+    return actualUpgraded;
+}
+
+let autoBalancerEnabled = false;
+export function toggleAutoBalancer() {
+    autoBalancerEnabled = !autoBalancerEnabled;
+    return autoBalancerEnabled;
+}
+
+export function analyzeNetwork() {
+    const active = Array.from(game.nodes.values()).filter(n => activeNodes.has(n.id) && !n.infected);
+    const totalNodes = active.length;
+    
+    if (totalNodes === 0) return { efficiency: 0, issues: [], suggestions: [] };
+    
+    const downloaders = active.filter(n => n.type.startsWith('dl_')).length;
+    const uploaders = active.filter(n => n.type === 'uploader').length;
+    const labs = active.filter(n => n.type === 'lab').length;
+    
+    const issues = [];
+    const suggestions = [];
+    
+    if (downloaders > 0 && uploaders === 0) {
+        issues.push('You have downloaders but no uploaders!');
+        suggestions.push('Add Uploader nodes to sell your collected data.');
+    }
+    
+    if (uploaders > downloaders * 2) {
+        issues.push('Too many uploaders compared to downloaders');
+        suggestions.push('Add more downloader nodes to feed your uploaders.');
+    }
+    
+    if (labs > 0 && downloaders === 0) {
+        issues.push('Research Labs need file input');
+        suggestions.push('Add downloader nodes to supply files to your labs.');
+    }
+    
+    let connectedCount = 0;
+    game.conns.forEach(c => {
+        if(game.nodes.has(c.from) && game.nodes.has(c.to)) connectedCount++;
+    });
+    
+    // Check for orphaned nodes
+    const connectedNodes = new Set();
+    game.conns.forEach(c => {
+        connectedNodes.add(c.from);
+        connectedNodes.add(c.to);
+    });
+    const orphaned = active.filter(n => !connectedNodes.has(n.id) && n.type !== 'router').length;
+    
+    if (orphaned > 0) {
+        issues.push(`${orphaned} node(s) have no connections`);
+        suggestions.push('Connect all nodes to your router network.');
+    }
+    
+    let efficiency = 100;
+    if (issues.length > 0) efficiency -= issues.length * 15;
+    if (orphaned > 0) efficiency -= orphaned * 10;
+    efficiency = Math.max(0, Math.min(100, efficiency));
+    
+    return { efficiency, issues, suggestions, stats: { downloaders, uploaders, labs, totalNodes } };
+}
     const tech = TECH_TREE.find(t => t.id === id);
     if (!tech) return false;
     if (!tech.requires || tech.requires.length === 0) return true;
@@ -548,10 +640,62 @@ export function gameTick(dt) {
     const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
     const driverUploadMult = 1 + (game.drivers.upload * DRIVERS.upload.effect);
     const prestigeMult = 1 + (game.prestige * 1.0);
-    const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
+    // --- Synergy Logic ---
+    let synergyBoost = 1.0;
+    const activeNodeTypes = new Set();
+    for (const [id, n] of game.nodes) {
+        if (activeNodes.has(id) && !n.infected) activeNodeTypes.add(n.type);
+    }
     
-    const baseSpeed = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * fiberMult * efficiency * driverDownloadMult * eventMultipliers.speed;
+    let synergyPercent = 0;
+    
+    // Cache + Downloader
+    if (activeNodeTypes.has('cache') && (activeNodeTypes.has('dl_file') || activeNodeTypes.has('dl_img') || activeNodeTypes.has('dl_vid') || activeNodeTypes.has('dl_audio'))) {
+        synergyBoost *= 1.15;
+        synergyPercent += 15;
+    }
+    // Lab + Analyzer
+    if (activeNodeTypes.has('lab') && activeNodeTypes.has('analyzer')) {
+        synergyBoost *= 1.20;
+        synergyPercent += 20;
+    }
+    // Firewall Bonus
+    if (activeNodeTypes.has('firewall')) {
+        synergyBoost *= 1.10;
+        synergyPercent += 10;
+    }
+    // Coding Trio
+    if (activeNodeTypes.has('coder') && activeNodeTypes.has('dev_station') && activeNodeTypes.has('compiler')) {
+        synergyBoost *= 1.25;
+        synergyPercent += 25;
+    }
+    // Miner + Crypto Farm
+    if (activeNodeTypes.has('miner') && activeNodeTypes.has('crypto_farm')) {
+        synergyBoost *= 1.30;
+        synergyPercent += 30;
+    }
+    
+    if (synergyPercent > game.stats.synergyBonus) game.stats.synergyBonus = synergyPercent;
 
+    // Advanced Global Boosts
+    const cdnBoost = 1 + (Array.from(game.nodes.values()).filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.20);
+    const aiBoost = 1 + (Array.from(game.nodes.values()).filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 0.5);
+    const clusterCount = Array.from(game.nodes.values()).filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).length;
+    const clusterBoost = 1 + (clusterCount * 0.15);
+    const warehouseCount = Array.from(game.nodes.values()).filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).length;
+    
+    let quantumMult = 1;
+    for (const [id, n] of game.nodes) {
+        if (n.type === 'quantum' && activeNodes.has(id) && !n.infected) quantumMult *= 2.5;
+    }
+    
+    const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
+    const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
+    const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
+
+    const baseSpeed = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * fiberMult * efficiency * driverDownloadMult * eventMultipliers.speed * synergyBoost * quantumMult * neuralMult;
+
+    // Code Gen
     let codeGenRate = 0;
     for (const [id, n] of game.nodes) {
         if (!activeNodes.has(id) || n.infected) continue;
@@ -559,7 +703,19 @@ export function gameTick(dt) {
         if (n.type === 'dev_station') codeGenRate += 12.5 * Math.pow(1.2, n.level - 1);
     }
     game.codeBits += codeGenRate * dt * eventMultipliers.code;
+    
+    // Auto-compiler
+    const compilers = Array.from(game.nodes.values()).filter(n => n.type === 'compiler' && activeNodes.has(n.id) && !n.infected);
+    if (compilers.length > 0 && game.codeBits >= 100) {
+        const totalCompilerPower = compilers.reduce((sum, c) => sum + Math.pow(1.2, c.level - 1), 0);
+        const toConvert = Math.min(Math.floor(game.codeBits / 100), Math.floor(totalCompilerPower * 10));
+        if (toConvert > 0) {
+            game.codeBits -= toConvert * 100;
+            game.optimizationCode += toConvert;
+        }
+    }
 
+    // Node Processing
     for (const [id, node] of game.nodes) {
         if (!activeNodes.has(id)) continue;
 
@@ -571,7 +727,9 @@ export function gameTick(dt) {
 
         const def = NODE_DEFS[node.type];
         const lvlMult = Math.pow(1.2, node.level - 1);
-        let boost = 1.0;
+        
+        let boost = 1.0 * aiBoost * clusterBoost;
+        let hasCompressor = false;
 
         const myNeighbors = neighbors.get(id) || [];
         for (const nid of myNeighbors) {
@@ -579,25 +737,104 @@ export function gameTick(dt) {
             if (n && activeNodes.has(nid) && !n.infected) {
                 if (n.type === 'cache') boost *= 1.5;
                 if (n.type === 'rack') boost *= 1.2;
+                if (n.type === 'compressor') hasCompressor = true;
             }
         }
+        
+        // Balancer Logic
+        if (node.type === 'balancer') {
+            boost *= (1 + myNeighbors.length * 0.1);
+        }
+        
+        if (node.type === 'crypto_farm') boost *= 3;
 
         const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
 
-        if (def.type === 'download') {
-            const resKey = def.out;
+        if (def.type === 'download' || node.type === 'dl_audio') {
+            const resKey = def.out || node.type.replace('dl_', '');
             if (RESOURCES[resKey]) {
-                game.res[resKey] += effectiveSpeed / RESOURCES[resKey].size;
+                let amt = effectiveSpeed / RESOURCES[resKey].size;
+                if (warehouseCount > 0) amt *= (1 + warehouseCount * 0.3);
+                game.res[resKey] += amt;
             }
-        } else if (def.type === 'upload') {
-            const upSpeed = effectiveSpeed * driverUploadMult;
-            const gain = upSpeed * 0.1;
+        } else if (def.type === 'upload' || node.type === 'rack') {
+            const upSpeed = effectiveSpeed * driverUploadMult * cdnBoost * (node.type === 'rack' ? 2 : satMult);
+            
+            // Rack multi-functionality
+            if (node.type === 'rack') {
+                game.res.files += (upSpeed * 0.15 * dt) / RESOURCES.files.size;
+                if(game.unlocked.includes('tech_img')) game.res.images += (upSpeed * 0.15 * dt) / RESOURCES.images.size;
+            }
+
+            let cap = upSpeed * dt; // Capacity for this tick
+            
+            // Priority: Audio -> Video -> Images -> Files
+            ['audio', 'videos', 'images', 'files'].forEach(k => {
+                if (cap <= 0 || game.res[k] <= 0) return;
+                let size = RESOURCES[k].size;
+                
+                if (hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
+                if (node.type === 'streaming' && (k === 'audio' || k === 'videos')) size *= 0.25; // 4x speed for media
+                
+                // Calculate amount we can upload
+                const amount = Math.min(game.res[k], cap / size);
+                
+                game.res[k] -= amount;
+                cap -= amount * size;
+                
+                const gain = amount * RESOURCES[k].price * eventMultipliers.money;
+                game.money += gain;
+                history.money += gain;
+                
+                if (game.activeContract && game.activeContract.type === 'upload') {
+                    game.activeContract.current += amount * size;
+                }
+            });
+            
+        } else if (def.type === 'lab') {
+            // Lab logic: Convert Files -> RP
+            let labCap = effectiveSpeed * RESOURCES.files.size * dt; // Capacity in bytes
+            // Analyzer boost
+            let rpBoost = 1 + (Array.from(game.nodes.values()).filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).length * 0.6);
+            
+            if (game.res.files > 0) {
+                let size = RESOURCES.files.size;
+                if (hasCompressor) size *= 0.7;
+                
+                const amount = Math.min(game.res.files, labCap / size);
+                game.res.files -= amount;
+                
+                const gain = amount * RESOURCES.files.rp * rpBoost * (1 + game.drivers.research * DRIVERS.research.effect) * eventMultipliers.rp;
+                game.rp += gain;
+                history.rp += gain;
+                game.stats.totalRP += gain;
+            }
+            
+        } else if (node.type === 'miner' || node.type === 'crypto_farm') {
+            const gain = effectiveSpeed * (node.type === 'crypto_farm' ? 0.08 : 0.025) * eventMultipliers.money * (1 + game.drivers.mining * DRIVERS.mining.effect);
             game.money += gain;
             history.money += gain;
-        } else if (node.type === 'miner') {
-            const gain = effectiveSpeed * 0.025 * eventMultipliers.money;
-            game.money += gain;
-            history.money += gain;
+        } else if (node.type === 'backup' || node.type === 'warehouse') {
+            // Passive income from stored data
+            const stored = Object.values(game.res).reduce((a, b) => a + b, 0);
+            if (stored > 1000) {
+                const bonus = stored * 0.001 * dt * (node.type === 'warehouse' ? 2 : 1);
+                game.money += bonus;
+                history.money += bonus;
+            }
+        }
+    }
+    
+    // Contract Logic
+    if (game.activeContract) {
+        game.activeContract.time -= dt;
+        if (game.activeContract.time <= 0) {
+            game.activeContract = null; // Failed
+        } else if (game.activeContract.current >= game.activeContract.target) {
+            game.money += game.activeContract.rewardMoney;
+            game.rp += game.activeContract.rewardRp;
+            game.activeContract = null; // Complete
+            game.stats.contractsCompleted++;
         }
     }
 

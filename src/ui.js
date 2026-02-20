@@ -480,6 +480,26 @@ export function updateDailyRewardsUI() {
     }).join('');
 }
 
+// Network Analysis
+export function showNetworkAnalysis() {
+    // Import dynamically to avoid circular dependency if needed, or rely on game.js export
+    import('./game.js').then(module => {
+        const analysis = module.analyzeNetwork();
+        console.log('%c Network Analysis ', 'background: #3b82f6; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;');
+        console.log('Efficiency Score:', analysis.efficiency + '%');
+        console.log('Active Nodes:', analysis.stats.totalNodes);
+        console.log('Issues:', analysis.issues.length > 0 ? analysis.issues : 'None');
+        console.log('Suggestions:', analysis.suggestions.length > 0 ? analysis.suggestions : 'Network is optimal!');
+        
+        // Could also show a float notification here
+        if (analysis.issues.length > 0) {
+            showFloat(`Network Efficiency: ${analysis.efficiency}%`, window.innerWidth/2, window.innerHeight/2, '#f59e0b');
+        } else {
+            showFloat(`Network Optimal!`, window.innerWidth/2, window.innerHeight/2, '#10b981');
+        }
+    });
+}
+
 // Particle Effects
 export function spawnParticles(x, y, color, count = 5) {
     const container = document.getElementById('particlesContainer');
