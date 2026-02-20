@@ -1,4 +1,3 @@
-
 // Core Game Logic
 import { NODE_DEFS, RESOURCES, DRIVERS, TECH_TREE, ACHIEVEMENTS, RANDOM_EVENTS, DAILY_REWARDS } from './data.js';
 
@@ -91,21 +90,13 @@ export function removeNode(id) {
     return node; // Return for UI effects
 }
 
-export function removeConnection(from, to) {
-    const idx = game.conns.findIndex(c => (c.from === from && c.to === to) || (c.from === to && c.to === from));
-    if (idx === -1) return false;
-    
-    game.conns.splice(idx, 1);
-    
-    const n1 = neighbors.get(from);
-    const i1 = n1.indexOf(to);
-    if (i1 > -1) n1.splice(i1, 1);
-    
-    const n2 = neighbors.get(to);
-    const i2 = n2.indexOf(from);
-    if (i2 > -1) n2.splice(i2, 1);
-    
-    return true;
+export function installDriver(id) {
+    const driver = DRIVERS[id];
+    if (game.optimizationCode >= driver.cost) {
+        game.optimizationCode -= driver.cost;
+        game.drivers[id]++;
+        // Trigger UI update logic if needed
+    }
 }
 
 // Optimized BFS for connectivity
@@ -245,10 +236,8 @@ export function gameTick(dt) {
             const resKey = def.out;
             game.res[resKey] += effectiveSpeed / RESOURCES[resKey].size;
         } else if (def.type === 'upload') {
-            // Simplified upload logic for benchmark
             const upSpeed = effectiveSpeed * driverUploadMult;
-            // (Resource consumption logic would go here)
-            const gain = upSpeed * 0.1; // Placeholder
+            const gain = upSpeed * 0.1; 
             game.money += gain;
             history.money += gain;
         } else if (node.type === 'miner') {
