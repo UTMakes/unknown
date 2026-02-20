@@ -4942,6 +4942,32 @@
             }
         }
 
+        // Optimized update for a single node's cables (dragging)
+        function updateCablesForNode(nodeId) {
+            game.conns.forEach(c => {
+                if (c.from !== nodeId && c.to !== nodeId) return;
+                
+                const key = `${c.from}-${c.to}`;
+                const cached = cableCache.get(key);
+                if (!cached) return;
+                
+                const n1 = game.nodes.find(n => n.id === c.from);
+                const n2 = game.nodes.find(n => n.id === c.to);
+                
+                if (n1 && n2) {
+                    const x1 = n1.x + 170, y1 = n1.y + 35;
+                    const x2 = n2.x, y2 = n2.y + 35;
+                    const d = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+                    
+                    if (cached.lastD !== d) {
+                        cached.line.setAttribute("d", d);
+                        cached.inner.setAttribute("d", d);
+                        cached.lastD = d;
+                    }
+                }
+            });
+        }
+
         function updateUI(eff = 1.0) {
             document.getElementById('moneyDisplay').innerText = '$' + fmt(game.money);
             document.getElementById('rpDisplay').innerText = fmt(game.rp) + ' RP';
@@ -5280,8 +5306,8 @@
                         el.style.top = drag.node.y+'px'; 
                     }
                     
-                    // Efficiently update cables attached to this node
-                    renderCables(); 
+                    // Efficiently update ONLY attached cables
+                    updateCablesForNode(drag.node.id); 
                 }
             };
             
