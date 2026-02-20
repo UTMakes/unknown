@@ -1,5 +1,6 @@
 import { game, addConnection, removeNode, toggleCableDeleteMode } from './game.js';
 import { updateWorldTransform } from './ui.js';
+import { NODE_DEFS } from './data.js';
 
 let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
 let portDrag = { active: false, srcId: null };
@@ -95,9 +96,14 @@ function showContextMenu(node, e) {
     // Bind actions to this specific node
     window.selectedNodeId = node.id;
     
-    // Update cost display in context menu
-    const ctxCost = document.getElementById('ctxCost');
-    if (ctxCost) {
-       // Placeholder for cost update
+    // Calculate and display cost
+    const def = NODE_DEFS[node.type];
+    const base = node.type === 'router' ? 500 : def.cost;
+    const cost = Math.floor(base * Math.pow(1.5, node.level));
+    
+    const costEl = document.getElementById('ctxCost');
+    if (costEl) {
+        costEl.innerText = `$${cost.toLocaleString()}`;
+        costEl.style.color = game.money >= cost ? '#fbbf24' : '#ef4444';
     }
 }
