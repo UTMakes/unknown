@@ -204,10 +204,7 @@ export function performPrestige() {
     game.activeContract = null;
     game.codeBits = 0;
     game.optimizationCode = 0;
-    game.unlocked = []; // Typically prestige resets tech, though some games keep it. Following index3 logic where it seems to reset or partial. index3 says "Keep: All Research unlocks" in text but "Resets... tech" in code. Let's follow the UI text: Keep Research.
-    // Wait, index3 `prestige()` function says `game.unlocked = [];`. But the modal says "Keep: All Research unlocks".
-    // I will check the `performPrestige` logic in index3 more closely.
-    // index3 `performPrestige` does NOT clear `game.unlocked`. `prestige()` (legacy) did. I will NOT clear unlocked.
+    // Keep unlocked tech as per index3.html legacy behavior (mostly)
     
     addNode('router', 2500, 2500);
     return true;
@@ -283,101 +280,9 @@ export function updateConnectivity() {
     return newActive;
 }
 
-// --- Advanced Features ---
+// --- Research System ---
 
-export function batchUpgrade(type) {
-    const nodesOfType = Array.from(game.nodes.values()).filter(n => n.type === type && activeNodes.has(n.id));
-    if (nodesOfType.length === 0) return 0;
-    
-    let upgradedCount = 0;
-    let totalCost = 0;
-    
-    nodesOfType.forEach(node => {
-        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
-        if (game.money >= cost + totalCost) {
-            totalCost += cost;
-            upgradedCount++;
-        }
-    });
-    
-    if (upgradedCount === 0) return 0;
-    
-    game.money -= totalCost;
-    game.stats.moneySpent += totalCost;
-    
-    let actualUpgraded = 0;
-    nodesOfType.forEach(node => {
-        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
-        if (actualUpgraded < upgradedCount) {
-            node.level++;
-            actualUpgraded++;
-        }
-    });
-    
-    game.stats.upgrades += actualUpgraded;
-    checkAchievements();
-    return actualUpgraded;
-}
-
-let autoBalancerEnabled = false;
-export function toggleAutoBalancer() {
-    autoBalancerEnabled = !autoBalancerEnabled;
-    return autoBalancerEnabled;
-}
-
-export function analyzeNetwork() {
-    const active = Array.from(game.nodes.values()).filter(n => activeNodes.has(n.id) && !n.infected);
-    const totalNodes = active.length;
-    
-    if (totalNodes === 0) return { efficiency: 0, issues: [], suggestions: [] };
-    
-    const downloaders = active.filter(n => n.type.startsWith('dl_')).length;
-    const uploaders = active.filter(n => n.type === 'uploader').length;
-    const labs = active.filter(n => n.type === 'lab').length;
-    
-    const issues = [];
-    const suggestions = [];
-    
-    if (downloaders > 0 && uploaders === 0) {
-        issues.push('You have downloaders but no uploaders!');
-        suggestions.push('Add Uploader nodes to sell your collected data.');
-    }
-    
-    if (uploaders > downloaders * 2) {
-        issues.push('Too many uploaders compared to downloaders');
-        suggestions.push('Add more downloader nodes to feed your uploaders.');
-    }
-    
-    if (labs > 0 && downloaders === 0) {
-        issues.push('Research Labs need file input');
-        suggestions.push('Add downloader nodes to supply files to your labs.');
-    }
-    
-    let connectedCount = 0;
-    game.conns.forEach(c => {
-        if(game.nodes.has(c.from) && game.nodes.has(c.to)) connectedCount++;
-    });
-    
-    // Check for orphaned nodes
-    const connectedNodes = new Set();
-    game.conns.forEach(c => {
-        connectedNodes.add(c.from);
-        connectedNodes.add(c.to);
-    });
-    const orphaned = active.filter(n => !connectedNodes.has(n.id) && n.type !== 'router').length;
-    
-    if (orphaned > 0) {
-        issues.push(`${orphaned} node(s) have no connections`);
-        suggestions.push('Connect all nodes to your router network.');
-    }
-    
-    let efficiency = 100;
-    if (issues.length > 0) efficiency -= issues.length * 15;
-    if (orphaned > 0) efficiency -= orphaned * 10;
-    efficiency = Math.max(0, Math.min(100, efficiency));
-    
-    return { efficiency, issues, suggestions, stats: { downloaders, uploaders, labs, totalNodes } };
-}
+export function canUnlockTech(id) {
     const tech = TECH_TREE.find(t => t.id === id);
     if (!tech) return false;
     if (!tech.requires || tech.requires.length === 0) return true;
@@ -485,9 +390,99 @@ export function checkAchievements() {
         if (ach.condition(game.stats)) {
             game.achievements.push(ach.id);
             game.money += ach.reward;
-            // Trigger UI update in main loop or return list of new achievements
         }
     });
+}
+
+// --- Advanced Features ---
+
+export function batchUpgrade(type) {
+    const nodesOfType = Array.from(game.nodes.values()).filter(n => n.type === type && activeNodes.has(n.id));
+    if (nodesOfType.length === 0) return 0;
+    
+    let upgradedCount = 0;
+    let totalCost = 0;
+    
+    nodesOfType.forEach(node => {
+        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+        if (game.money >= cost + totalCost) {
+            totalCost += cost;
+            upgradedCount++;
+        }
+    });
+    
+    if (upgradedCount === 0) return 0;
+    
+    game.money -= totalCost;
+    game.stats.moneySpent += totalCost;
+    
+    let actualUpgraded = 0;
+    nodesOfType.forEach(node => {
+        const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+        if (actualUpgraded < upgradedCount) {
+            node.level++;
+            actualUpgraded++;
+        }
+    });
+    
+    game.stats.upgrades += actualUpgraded;
+    checkAchievements();
+    return actualUpgraded;
+}
+
+let autoBalancerEnabled = false;
+export function toggleAutoBalancer() {
+    autoBalancerEnabled = !autoBalancerEnabled;
+    return autoBalancerEnabled;
+}
+
+export function analyzeNetwork() {
+    const active = Array.from(game.nodes.values()).filter(n => activeNodes.has(n.id) && !n.infected);
+    const totalNodes = active.length;
+    
+    if (totalNodes === 0) return { efficiency: 0, issues: [], suggestions: [] };
+    
+    const downloaders = active.filter(n => n.type.startsWith('dl_')).length;
+    const uploaders = active.filter(n => n.type === 'uploader').length;
+    const labs = active.filter(n => n.type === 'lab').length;
+    
+    const issues = [];
+    const suggestions = [];
+    
+    if (downloaders > 0 && uploaders === 0) {
+        issues.push('You have downloaders but no uploaders!');
+        suggestions.push('Add Uploader nodes to sell your collected data.');
+    }
+    
+    if (uploaders > downloaders * 2) {
+        issues.push('Too many uploaders compared to downloaders');
+        suggestions.push('Add more downloader nodes to feed your uploaders.');
+    }
+    
+    if (labs > 0 && downloaders === 0) {
+        issues.push('Research Labs need file input');
+        suggestions.push('Add downloader nodes to supply files to your labs.');
+    }
+    
+    // Check for orphaned nodes
+    const connectedNodes = new Set();
+    game.conns.forEach(c => {
+        connectedNodes.add(c.from);
+        connectedNodes.add(c.to);
+    });
+    const orphaned = active.filter(n => !connectedNodes.has(n.id) && n.type !== 'router').length;
+    
+    if (orphaned > 0) {
+        issues.push(`${orphaned} node(s) have no connections`);
+        suggestions.push('Connect all nodes to your router network.');
+    }
+    
+    let efficiency = 100;
+    if (issues.length > 0) efficiency -= issues.length * 15;
+    if (orphaned > 0) efficiency -= orphaned * 10;
+    efficiency = Math.max(0, Math.min(100, efficiency));
+    
+    return { efficiency, issues, suggestions, stats: { downloaders, uploaders, labs, totalNodes } };
 }
 
 // --- Save/Load System ---
