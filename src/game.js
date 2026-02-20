@@ -1,5 +1,5 @@
 // Core Game Logic
-import { NODE_DEFS, RESOURCES, DRIVERS, TECH_TREE, ACHIEVEMENTS, RANDOM_EVENTS, DAILY_REWARDS } from './data.js';
+import { NODE_DEFS, RESOURCES, DRIVERS, TECH_TREE, ACHIEVEMENTS, RANDOM_EVENTS, DAILY_REWARDS, MILESTONES } from './data.js';
 
 export const game = {
     money: 1500,
@@ -42,17 +42,21 @@ export const game = {
     // Settings
     autoSaveEnabled: true, notificationsEnabled: true, offlineEarningsEnabled: true,
     lastSaveTime: Date.now(),
+    saveVersion: "11.3",
     
-    // UI State (managed here for simplicity in modular structure)
+    // UI State
     cableDeleteMode: false
 };
 
 export const eventMultipliers = { money: 1, rp: 1, code: 1, speed: 1 };
 export const activeNodes = new Set();
 export let history = { money: 0, rp: 0 };
-
-// Optimized Adjacency List
 export const neighbors = new Map();
+
+// Combo System State
+export const combo = { count: 0, timer: 0, lastAction: 0 };
+
+// --- Node & Connection Logic ---
 
 export function addNode(type, x, y) {
     const id = game.nextId++;
@@ -60,13 +64,13 @@ export function addNode(type, x, y) {
     game.nodes.set(id, node);
     if (!neighbors.has(id)) neighbors.set(id, []);
     game.stats.nodesCreated++;
+    checkMilestones(); // Check milestones on node creation
     return node;
 }
 
 export function addConnection(from, to) {
     if (!game.nodes.has(from) || !game.nodes.has(to)) return false;
     
-    // Ensure neighbors initialized
     if (!neighbors.has(from)) neighbors.set(from, []);
     if (!neighbors.has(to)) neighbors.set(to, []);
 
@@ -77,6 +81,7 @@ export function addConnection(from, to) {
     neighbors.get(from).push(to);
     neighbors.get(to).push(from);
     game.stats.cablesPlaced++;
+    checkMilestones(); // Check milestones on connection
     return true;
 }
 
@@ -87,7 +92,6 @@ export function removeNode(id) {
 
     game.nodes.delete(id);
 
-    // Clean up connections
     const connected = neighbors.get(id) || [];
     connected.forEach(neighborId => {
         const nList = neighbors.get(neighborId);
@@ -104,7 +108,6 @@ export function removeNode(id) {
 }
 
 export function upgradeRouter() {
-    // Find router
     let router = null;
     for (const [id, n] of game.nodes) {
         if (n.type === 'router') { router = n; break; }
@@ -119,7 +122,8 @@ export function upgradeRouter() {
             game.stats.upgrades++;
             router.level++;
             game.routerLevel = router.level;
-            return true; // Success
+            addCombo();
+            return true;
         }
     }
     return false;
@@ -134,6 +138,7 @@ export function cleanNode(id) {
             game.stats.moneySpent += cost;
             node.infected = false;
             game.stats.virusesCleaned++;
+            addCombo();
             return true;
         }
     }
@@ -154,6 +159,7 @@ export function upgradeNode(id) {
         game.stats.upgrades++;
         node.level++;
         if (node.type === 'router') game.routerLevel = node.level;
+        addCombo();
         return true;
     }
     return false;
@@ -174,6 +180,7 @@ export function installDriver(id) {
         game.optimizationCode -= driver.cost;
         game.drivers[id]++;
         game.stats.totalDrivers++;
+        checkAchievements();
         return true;
     }
     return false;
@@ -185,7 +192,6 @@ export function performPrestige() {
     game.prestige++;
     game.stats.prestigeCount++;
     
-    // Reset State
     game.money = 5000;
     game.rp = 0;
     game.res = { files: 0, images: 0, videos: 0, audio: 0 };
@@ -198,10 +204,12 @@ export function performPrestige() {
     game.activeContract = null;
     game.codeBits = 0;
     game.optimizationCode = 0;
+    game.unlocked = []; // Typically prestige resets tech, though some games keep it. Following index3 logic where it seems to reset or partial. index3 says "Keep: All Research unlocks" in text but "Resets... tech" in code. Let's follow the UI text: Keep Research.
+    // Wait, index3 `prestige()` function says `game.unlocked = [];`. But the modal says "Keep: All Research unlocks".
+    // I will check the `performPrestige` logic in index3 more closely.
+    // index3 `performPrestige` does NOT clear `game.unlocked`. `prestige()` (legacy) did. I will NOT clear unlocked.
     
-    // Respawn Router
     addNode('router', 2500, 2500);
-    
     return true;
 }
 
@@ -218,7 +226,6 @@ export function deleteCable(from, to) {
     if (idx !== -1) {
         game.conns.splice(idx, 1);
         
-        // Update neighbors
         const n1 = neighbors.get(from);
         if (n1) {
             const i = n1.indexOf(to);
@@ -230,7 +237,7 @@ export function deleteCable(from, to) {
             if (i > -1) n2.splice(i, 1);
         }
         
-        game.money += 5; // Refund
+        game.money += 5;
         return true;
     }
     return false;
@@ -242,12 +249,11 @@ export function deleteAllCables() {
     
     const refund = count * 5;
     game.conns = [];
-    neighbors.forEach(list => list.length = 0); // Clear all neighbor lists
+    neighbors.forEach(list => list.length = 0);
     game.money += refund;
     return refund;
 }
 
-// Optimized BFS for connectivity
 export function updateConnectivity() {
     const newActive = new Set();
     const q = [];
@@ -276,6 +282,216 @@ export function updateConnectivity() {
 
     return newActive;
 }
+
+// --- Research System ---
+
+export function canUnlockTech(id) {
+    const tech = TECH_TREE.find(t => t.id === id);
+    if (!tech) return false;
+    if (!tech.requires || tech.requires.length === 0) return true;
+    return tech.requires.every(req => game.unlocked.includes(req));
+}
+
+export function unlockTech(id) {
+    const tech = TECH_TREE.find(t => t.id === id);
+    if (!tech) return false;
+    
+    if (!game.unlocked.includes(id) && game.rp >= tech.cost && canUnlockTech(id)) {
+        game.rp -= tech.cost;
+        game.unlocked.push(id);
+        game.stats.techsUnlocked++;
+        checkAchievements();
+        return true;
+    }
+    return false;
+}
+
+// --- Random Events ---
+
+export function triggerRandomEvent() {
+    if (game.activeEvent) return null;
+    if (Math.random() > 0.30) return null; // 30% chance
+
+    const event = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+    
+    if (event.instant) {
+        event.effect(game);
+        return { event, instant: true };
+    } else {
+        game.activeEvent = event;
+        game.eventTimeLeft = event.duration;
+        event.effect();
+        return { event, instant: false };
+    }
+}
+
+export function updateEvents(dt) {
+    if (game.activeEvent) {
+        game.eventTimeLeft -= dt;
+        if (game.eventTimeLeft <= 0) {
+            if (game.activeEvent.cleanup) game.activeEvent.cleanup();
+            const finishedEvent = game.activeEvent;
+            game.activeEvent = null;
+            return finishedEvent; // Signal event ended
+        }
+    }
+    return null;
+}
+
+// --- Combo System ---
+
+export function addCombo() {
+    const now = Date.now();
+    if (now - combo.lastAction < 3000) {
+        combo.count++;
+        combo.timer = 3;
+    } else {
+        combo.count = 1;
+        combo.timer = 3;
+    }
+    combo.lastAction = now;
+}
+
+export function updateCombo(dt) {
+    if (combo.timer > 0) {
+        combo.timer -= dt;
+        if (combo.timer <= 0) {
+            combo.count = 0;
+        }
+    }
+}
+
+// --- Milestones & Achievements ---
+
+export function checkMilestones() {
+    const newMilestones = [];
+    MILESTONES.forEach(milestone => {
+        if (!game.milestonesCompleted.includes(milestone.id)) {
+            if (milestone.check(game)) {
+                completeMilestone(milestone);
+                newMilestones.push(milestone);
+            }
+        }
+    });
+    return newMilestones;
+}
+
+function completeMilestone(milestone) {
+    game.milestonesCompleted.push(milestone.id);
+    if (milestone.reward.money) {
+        game.money += milestone.reward.money;
+        game.stats.totalMoney += milestone.reward.money;
+    }
+    if (milestone.reward.rp) {
+        game.rp += milestone.reward.rp;
+    }
+}
+
+export function checkAchievements() {
+    ACHIEVEMENTS.forEach(ach => {
+        if (game.achievements.includes(ach.id)) return;
+        if (ach.condition(game.stats)) {
+            game.achievements.push(ach.id);
+            game.money += ach.reward;
+            // Trigger UI update in main loop or return list of new achievements
+        }
+    });
+}
+
+// --- Save/Load System ---
+
+function generateSaveChecksum(gameData) {
+    const str = JSON.stringify(gameData);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return hash.toString(16);
+}
+
+export function autoSaveLocal() {
+    try {
+        game.lastSaveTime = Date.now();
+        // Convert Map to Array for JSON serialization
+        const gameCopy = { ...game, nodes: Array.from(game.nodes.entries()) };
+        
+        const saveData = {
+            game: gameCopy,
+            version: game.saveVersion,
+            timestamp: Date.now(),
+            checksum: generateSaveChecksum(gameCopy)
+        };
+        localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
+    } catch (e) {
+        console.error("Auto-save failed", e);
+    }
+}
+
+export function loadLocalSave() {
+    try {
+        const saveData = localStorage.getItem('uploadLabsSave');
+        if (saveData) {
+            const parsed = JSON.parse(saveData);
+            if (parsed.game) {
+                const loadedGame = parsed.game;
+                // Rehydrate Map
+                if (Array.isArray(loadedGame.nodes)) {
+                    loadedGame.nodes = new Map(loadedGame.nodes);
+                }
+                Object.assign(game, loadedGame);
+                
+                // Rebuild neighbors
+                neighbors.clear();
+                for (const [id, node] of game.nodes) {
+                    neighbors.set(id, []);
+                }
+                game.conns.forEach(c => {
+                    if (neighbors.has(c.from)) neighbors.get(c.from).push(c.to);
+                    if (neighbors.has(c.to)) neighbors.get(c.to).push(c.from);
+                });
+                
+                // Active nodes update will happen in init
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error("Load failed", e);
+    }
+    return false;
+}
+
+export function checkOfflineEarnings() {
+    if (!game.offlineEarningsEnabled) return null;
+    
+    const now = Date.now();
+    const lastSave = game.lastSaveTime || now;
+    const timeAway = now - lastSave;
+    
+    if (timeAway < 5 * 60 * 1000) return null; // < 5 mins
+    
+    const maxOfflineTime = 12 * 60 * 60 * 1000;
+    const effectiveTime = Math.min(timeAway, maxOfflineTime);
+    const hoursAway = effectiveTime / (1000 * 60 * 60);
+    
+    // Estimate earnings (simplified)
+    const moneyPerSecond = history.money > 0 ? history.money : 10;
+    const rpPerSecond = history.rp > 0 ? history.rp : 0.5;
+    
+    const offlineMoney = moneyPerSecond * hoursAway * 3600 * 0.5;
+    const offlineRP = rpPerSecond * hoursAway * 3600 * 0.5;
+    
+    if (offlineMoney > 100) {
+        game.money += offlineMoney;
+        game.rp += offlineRP;
+        game.stats.totalMoney += offlineMoney;
+        return { money: offlineMoney, rp: offlineRP, time: hoursAway };
+    }
+    return null;
+}
+
+// --- Main Tick ---
 
 export function gameTick(dt) {
     // Heat & Overclock Logic

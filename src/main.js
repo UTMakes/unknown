@@ -2,15 +2,19 @@ import {
     game, gameTick, updateConnectivity, addNode, upgradeRouter, 
     cleanNode, performPrestige, convertCodeBits, installDriver, 
     toggleCableDeleteMode, deleteAllCables, activeNodes, addConnection,
-    upgradeNode, removeNode 
+    upgradeNode, removeNode, updateCombo, updateEvents, checkOfflineEarnings,
+    autoSaveLocal, loadLocalSave
 } from './game.js';
-import { initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform } from './ui.js';
+import { initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, showEventNotification } from './ui.js';
 import { setupInputs } from './inputs.js';
 import './style.css';
 
 // Initialize Game
 function init() {
     console.log("Initializing Modular Upload Labs...");
+    
+    // Load local save
+    loadLocalSave();
 
     // Setup Window.Game API for HTML event handlers
     window.Game = {
@@ -97,8 +101,8 @@ function init() {
     };
 
     // Initialize View State
-    game.viewX = window.innerWidth / 2 - 2500;
-    game.viewY = window.innerHeight / 2 - 2500;
+    if (!game.viewX) game.viewX = window.innerWidth / 2 - 2500;
+    if (!game.viewY) game.viewY = window.innerHeight / 2 - 2500;
     game.viewScale = 1;
 
     // Spawn Router if empty
@@ -114,14 +118,38 @@ function init() {
 
     // Initial Connectivity
     updateConnectivity();
+    
+    // Check Offline Earnings
+    setTimeout(() => {
+        const earnings = checkOfflineEarnings();
+        if (earnings) {
+            // UI logic for showing offline earnings modal would go here
+            console.log("Offline Earnings:", earnings);
+        }
+    }, 1000);
 
     // Start Game Loop (Main Thread)
     let lastTime = performance.now();
+    let autoSaveTimer = 0;
+    
     function loop(now) {
         const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;
 
         gameTick(dt);
+        updateCombo(dt);
+        
+        const eventFinished = updateEvents(dt);
+        if (eventFinished) {
+            // Event ended logic if needed
+        }
+        
+        // Auto Save
+        autoSaveTimer += dt;
+        if (autoSaveTimer > 60) {
+            autoSaveLocal();
+            autoSaveTimer = 0;
+        }
         
         // Throttled Rendering
         renderWorld();
@@ -140,3 +168,4 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
