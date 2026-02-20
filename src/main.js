@@ -4,7 +4,8 @@ import {
     toggleCableDeleteMode, deleteAllCables, activeNodes, addConnection,
     upgradeNode, removeNode, updateCombo, updateEvents, checkOfflineEarnings,
     autoSaveLocal, loadLocalSave, batchUpgrade, toggleAutoBalancer,
-    calculateRates, attemptVirusInfection, triggerRandomEvent, startContract
+    calculateRates, attemptVirusInfection, triggerRandomEvent, startContract,
+    deleteCable
 } from './game.js';
 import { 
     initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, 
@@ -88,6 +89,14 @@ function init() {
         renderWorld(); // Re-render to remove cables
     };
     window.setTab = setTab;
+    window.Game.deleteCable = (from, to) => {
+        if (deleteCable(from, to)) {
+            const n = game.nodes.get(from);
+            if (n) spawnParticles(n.x + 90, n.y + 40, '#ef4444', 5);
+            showFloat('+$5', n ? n.x : window.innerWidth/2, n ? n.y : window.innerHeight/2, '#10b981');
+            renderWorld();
+        }
+    };
     window.cleanNode = (id) => {
         if (cleanNode(id)) {
             const n = game.nodes.get(id);

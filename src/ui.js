@@ -142,37 +142,100 @@ export function setTab(tabName) {
     });
 }
 
+// Cable Cache to prevent DOM thrashing
+const cableCache = new Map();
+
 function renderCables() {
     const svg = document.getElementById('cables');
     if (!svg) return;
-    
-    // Efficiently rebuild innerHTML string
-    let html = '';
+
+    // specific key for current set of connections to detect changes
+    const currentKeys = new Set();
+
     game.conns.forEach(c => {
+        const key = `${c.from}-${c.to}`;
+        currentKeys.add(key);
+
+        let cached = cableCache.get(key);
+        if (!cached) {
+            // Create new cable elements
+            const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const inner = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            
+            line.classList.add("cable");
+            inner.classList.add("cable-inner");
+            group.classList.add("cable-group");
+            
+            // Add delete handlers
+            group.onclick = (e) => {
+                if (game.cableDeleteMode) {
+                    e.stopPropagation();
+                    window.Game.deleteCable(c.from, c.to);
+                }
+            };
+
+            group.appendChild(line);
+            group.appendChild(inner);
+            svg.appendChild(group);
+
+            cached = { group, line, inner };
+            cableCache.set(key, cached);
+        }
+
+        // Update positions
         const n1 = game.nodes.get(c.from);
         const n2 = game.nodes.get(c.to);
-        if (!n1 || !n2) return;
+        
+        if (n1 && n2) {
+            const x1 = n1.x + 170, y1 = n1.y + 35;
+            const x2 = n2.x, y2 = n2.y + 35;
+            const d = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+            
+            if (cached.lastD !== d) {
+                cached.line.setAttribute("d", d);
+                cached.inner.setAttribute("d", d);
+                cached.lastD = d;
+            }
 
-        const x1 = n1.x + 170, y1 = n1.y + 35, x2 = n2.x, y2 = n2.y + 35;
-        const d = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
-
-        let typeClass = '';
-        const destDef = NODE_DEFS[n2.type];
-        if (destDef.type === 'upload') typeClass = 'money';
-        if (destDef.type === 'lab') typeClass = 'power';
-        if (destDef.type === 'coding') typeClass = 'code';
-
-        const style = game.cableDeleteMode ? 'pointer-events: all; cursor: crosshair;' : '';
-        const clickHandler = game.cableDeleteMode ? `onclick="window.Game.deleteCable(${c.from}, ${c.to})"` : '';
-
-        html += `<g class="cable-group ${activeNodes.has(c.from) && activeNodes.has(c.to) ? 'active' : ''} ${typeClass}" style="${style}" ${clickHandler}>
-            <path d="${d}" class="cable" style="${game.cableDeleteMode ? 'pointer-events: stroke;' : ''}" />
-            <path d="${d}" class="cable-inner" />
-        </g>`;
+            // Update classes
+            const destDef = NODE_DEFS[n2.type];
+            let typeClass = '';
+            if (destDef.type === 'upload') typeClass = 'money';
+            else if (destDef.type === 'lab') typeClass = 'power';
+            else if (destDef.type === 'coding') typeClass = 'code';
+            
+            // Manage class list efficiently
+            const isActive = activeNodes.has(c.from) && activeNodes.has(c.to);
+            if (cached.lastActive !== isActive) {
+                cached.group.classList.toggle('active', isActive);
+                cached.lastActive = isActive;
+            }
+            if (cached.lastType !== typeClass) {
+                if (cached.lastType) cached.group.classList.remove(cached.lastType);
+                if (typeClass) cached.group.classList.add(typeClass);
+                cached.lastType = typeClass;
+            }
+            
+            // Handle delete mode style
+            const pointerEvents = game.cableDeleteMode ? 'all' : 'none';
+            if (cached.lastPE !== pointerEvents) {
+                cached.group.style.pointerEvents = pointerEvents;
+                cached.line.style.pointerEvents = game.cableDeleteMode ? 'stroke' : 'none';
+                cached.group.style.cursor = game.cableDeleteMode ? 'crosshair' : 'default';
+                cached.lastPE = pointerEvents;
+            }
+        }
     });
-    if (svg.innerHTML !== html) svg.innerHTML = html;
-}
 
+    // Cleanup removed cables
+    for (const [key, cached] of cableCache) {
+        if (!currentKeys.has(key)) {
+            cached.group.remove();
+            cableCache.delete(key);
+        }
+    }
+}
 // Advanced Stats & Sidebar
 export function updateStatsUI() {
     // Header Stats
