@@ -46,6 +46,14 @@ export function renderWorld() {
         el.style.transform = `translate(${node.x}px, ${node.y}px)`;
         el.classList.toggle('disconnected', !activeNodes.has(id));
         el.classList.toggle('infected', node.infected);
+        
+        // Working animation: If connected and not infected
+        if (activeNodes.has(id) && !node.infected) {
+            el.classList.add('working');
+        } else {
+            el.classList.remove('working');
+        }
+        
         if (node.type === 'router' && game.overheatMode) el.classList.add('overheating');
         else el.classList.remove('overheating');
 
@@ -211,12 +219,60 @@ export function updateStatsUI() {
     if(sidebarBits) sidebarBits.innerText = Math.floor(game.codeBits);
     if(sidebarOpt) sidebarOpt.innerText = game.optimizationCode;
     
+    // Update Driver Grid Locks
+    const grid = document.getElementById('driverGrid');
+    if (grid && grid.children.length > 0) {
+        // Efficiently toggle classes without full re-render
+        Object.entries(DRIVERS).forEach(([id, driver], index) => {
+            const card = grid.children[index];
+            const canAfford = game.optimizationCode >= driver.cost;
+            if (canAfford) card.classList.remove('locked');
+            else if (!game.drivers[id]) card.classList.add('locked'); // Only lock if not installed
+        });
+    }
+    
     // Modal RP
     const modalRp = document.getElementById('modalRpDisplay');
     if(modalRp) modalRp.innerText = formatNumber(game.rp);
     
     // Cost display for router
     updateRouterCostDisplay();
+    
+    // Contract Widget
+    const cw = document.getElementById('activeContractWidget');
+    if (cw) {
+        if (game.activeContract) {
+            cw.style.display = 'block';
+            cw.querySelector('#contractDesc').innerText = game.activeContract.desc || 'Uploading...';
+            cw.querySelector('#contractTimer').innerText = Math.floor(game.activeContract.time) + 's';
+            const pct = Math.min(100, (game.activeContract.current / game.activeContract.target) * 100);
+            cw.querySelector('#contractBar').style.width = pct + '%';
+        } else {
+            cw.style.display = 'none';
+        }
+    }
+    
+    // Event Widget
+    const ew = document.getElementById('activeEventWidget');
+    if (ew) {
+        if (game.activeEvent) {
+            ew.style.display = 'block';
+            ew.querySelector('#eventName').innerText = game.activeEvent.name;
+            ew.querySelector('#eventDesc').innerText = game.activeEvent.desc;
+            ew.querySelector('#eventTimer').innerText = Math.floor(game.eventTimeLeft) + 's';
+            ew.style.borderColor = game.activeEvent.type === 'good' ? '#10b981' : '#ef4444';
+            ew.querySelector('#eventName').style.color = game.activeEvent.type === 'good' ? '#10b981' : '#ef4444';
+        } else {
+            ew.style.display = 'none';
+        }
+    }
+}
+
+export function updateRateUI(moneyRate, rpRate) {
+    const mRate = document.getElementById('moneyRate');
+    const rRate = document.getElementById('rpRate');
+    if (mRate) mRate.innerText = `+$${formatNumber(moneyRate)}/s`;
+    if (rRate) rRate.innerText = `+${formatNumber(rpRate)}/s`;
 }
 
 function updateRouterCostDisplay() {
@@ -547,6 +603,46 @@ export function showEventNotification(event) {
         notif.classList.remove('show');
         setTimeout(() => notif.style.display = 'none', 500);
     }, event.instant ? 4000 : 6000);
+}
+
+// Contracts
+export function openContracts() {
+    const list = document.getElementById('contractList');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    const types = [
+        { title: "Data Dump", desc: "Upload 50 MB Data", target: 50 * 1024 * 1024, time: 60, rewardM: 5000, rewardR: 500 },
+        { title: "Streaming Deal", desc: "Upload 500 MB Data", target: 500 * 1024 * 1024, time: 120, rewardM: 25000, rewardR: 2000 },
+        { title: "Corporate Backups", desc: "Upload 1 GB Data", target: 1024 * 1024 * 1024, time: 180, rewardM: 100000, rewardR: 5000 }
+    ];
+    
+    types.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'contract-item';
+        // Escape quotes for the JSON string in onclick
+        const jsonStr = JSON.stringify(c).replace(/"/g, '&quot;');
+        
+        el.innerHTML = `
+            <div>
+                <h4>${c.title}</h4>
+                <p>${c.desc} | Time: ${c.time}s</p>
+            </div>
+            <div class="contract-reward">
+                +$${formatNumber(c.rewardM)}<br>+${formatNumber(c.rewardR)} RP
+                <button class="btn btn-contract" style="margin-top:5px; padding:4px 8px; width:auto;" onclick="window.startContract(${jsonStr})">Accept</button>
+            </div>
+        `;
+        list.appendChild(el);
+    });
+    
+    // Open modal
+    const modal = document.getElementById('contractModal');
+    if (modal) {
+        // Hide others first
+        document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        modal.style.display = 'flex';
+    }
 }
 
 // Global exposure for event handlers

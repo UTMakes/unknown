@@ -1,6 +1,6 @@
 // Firebase Auth Module
-import { game } from './game.js';
-import { updateStatsUI } from './ui.js';
+import { game, restoreGameState } from './game.js';
+import { updateStatsUI, renderWorld } from './ui.js';
 
 let currentUser = null;
 let cloudSaveEnabled = false;
@@ -224,14 +224,8 @@ export async function loadFromCloud() {
         if (docSnap.exists()) {
             const saveData = docSnap.data();
             if (saveData.game) {
-                const loadedGame = saveData.game;
-                
-                // Restore Map structure
-                if (Array.isArray(loadedGame.nodes)) {
-                    loadedGame.nodes = new Map(loadedGame.nodes);
-                }
-                
-                Object.assign(game, loadedGame);
+                // Use centralized restore logic
+                restoreGameState(saveData.game);
                 
                 // Trigger full UI refresh
                 import('./ui.js').then(ui => {

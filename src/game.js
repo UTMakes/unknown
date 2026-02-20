@@ -53,8 +53,81 @@ export const activeNodes = new Set();
 export let history = { money: 0, rp: 0 };
 export const neighbors = new Map();
 
-// Combo System State
-export const combo = { count: 0, timer: 0, lastAction: 0 };
+export const rateTracking = {
+    money: { current: 0, smoothed: 0, history: [] },
+    rp: { current: 0, smoothed: 0, history: [] }
+};
+const RATE_SMOOTHING_WINDOW = 5;
+
+export function calculateRates() {
+    // Calculate actual per-second rates from history buffer
+    const moneyThisSecond = history.money || 0;
+    const rpThisSecond = history.rp || 0;
+    
+    // Update current rates
+    rateTracking.money.current = moneyThisSecond;
+    rateTracking.rp.current = rpThisSecond;
+    
+    // Add to history for smoothing
+    rateTracking.money.history.push(moneyThisSecond);
+    rateTracking.rp.history.push(rpThisSecond);
+    
+    // Keep only last N seconds
+    if (rateTracking.money.history.length > RATE_SMOOTHING_WINDOW) rateTracking.money.history.shift();
+    if (rateTracking.rp.history.length > RATE_SMOOTHING_WINDOW) rateTracking.rp.history.shift();
+    
+    // Calculate smoothed rates
+    const moneySum = rateTracking.money.history.reduce((a, b) => a + b, 0);
+    const rpSum = rateTracking.rp.history.reduce((a, b) => a + b, 0);
+    
+    rateTracking.money.smoothed = moneySum / rateTracking.money.history.length;
+    rateTracking.rp.smoothed = rpSum / rateTracking.rp.history.length;
+    
+    // Reset accumulators for next second
+    history.money = 0;
+    history.rp = 0;
+    
+    return {
+        money: Math.max(0, Math.round(rateTracking.money.smoothed)),
+        rp: Math.max(0, Math.round(rateTracking.rp.smoothed))
+    };
+}
+
+export function attemptVirusInfection() {
+    // Security driver reduces virus chance
+    const securityMult = Math.max(0.1, 1 - (game.drivers.security * DRIVERS.security.effect));
+    if (Math.random() > (0.05 * securityMult)) return null; 
+    
+    // Find valid targets (active, not router/firewall, not already infected)
+    const targets = Array.from(game.nodes.values()).filter(n => 
+        activeNodes.has(n.id) && 
+        n.type !== 'router' && 
+        n.type !== 'firewall' && 
+        !n.infected
+    );
+    
+    if (targets.length === 0) return null;
+    
+    const target = targets[Math.floor(Math.random() * targets.length)];
+    
+    // Check firewall protection from neighbors
+    let protected_node = false;
+    const myNeighbors = neighbors.get(target.id) || [];
+    
+    for (const nid of myNeighbors) {
+        const n = game.nodes.get(nid);
+        if (n && n.type === 'firewall' && activeNodes.has(nid) && !n.infected) {
+            protected_node = true;
+            break;
+        }
+    }
+    
+    if (!protected_node) {
+        target.infected = true;
+        return target;
+    }
+    return null;
+}
 
 // --- Node & Connection Logic ---
 
@@ -511,9 +584,73 @@ export function autoSaveLocal() {
             checksum: generateSaveChecksum(gameCopy)
         };
         localStorage.setItem('uploadLabsSave', JSON.stringify(saveData));
+        console.log("Game saved locally.");
     } catch (e) {
         console.error("Auto-save failed", e);
     }
+}
+
+export function repairSaveData(data) {
+    const s = data || {};
+    
+    // Fix Numbers
+    if (isNaN(s.money)) s.money = 1500;
+    if (isNaN(s.rp)) s.rp = 0;
+    if (isNaN(s.prestige)) s.prestige = 0;
+    if (isNaN(s.routerLevel)) s.routerLevel = 1;
+    if (isNaN(s.codeBits)) s.codeBits = 0;
+    if (isNaN(s.optimizationCode)) s.optimizationCode = 0;
+    
+    // Fix Arrays
+    if (!Array.isArray(s.unlocked)) s.unlocked = [];
+    if (!Array.isArray(s.achievements)) s.achievements = [];
+    if (!Array.isArray(s.milestonesCompleted)) s.milestonesCompleted = [];
+    if (!Array.isArray(s.nodes)) s.nodes = []; // If coming from JSON, it's an array
+    if (!Array.isArray(s.conns)) s.conns = [];
+    
+    // Fix Drivers
+    if (!s.drivers) s.drivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
+    
+    // Fix Stats
+    if (!s.stats) s.stats = {
+        totalMoney: s.money || 0, peakMoney: s.money || 0, moneySpent: 0, totalRP: s.rp || 0,
+        nodesCreated: 0, nodesDeleted: 0, cablesPlaced: 0, upgrades: 0,
+        contractsCompleted: 0, filesDownloaded: 0, virusesCleaned: 0,
+        totalCodeBits: 0, totalDrivers: 0, playTime: 0, techsUnlocked: 0,
+        prestigeCount: 0, synergyBonus: 0, startTime: Date.now()
+    };
+    
+    return s;
+}
+
+export function restoreGameState(loadedGame) {
+    const cleanData = repairSaveData(loadedGame);
+    
+    // Rehydrate Map with explicit Number keys
+    if (Array.isArray(cleanData.nodes)) {
+        cleanData.nodes = new Map(
+            cleanData.nodes.map(([k, v]) => [Number(k), v])
+        );
+    }
+    
+    // Merge loaded state into game object
+    Object.assign(game, cleanData);
+    
+    // Rebuild neighbors
+    neighbors.clear();
+    for (const [id, node] of game.nodes) {
+        neighbors.set(id, []);
+    }
+    
+    game.conns.forEach(c => {
+        c.from = Number(c.from);
+        c.to = Number(c.to);
+        if (neighbors.has(c.from)) neighbors.get(c.from).push(c.to);
+        if (neighbors.has(c.to)) neighbors.get(c.to).push(c.from);
+    });
+    
+    updateConnectivity();
+    console.log("Game state restored.", game.nodes.size, "nodes.");
 }
 
 export function loadLocalSave() {
@@ -522,24 +659,8 @@ export function loadLocalSave() {
         if (saveData) {
             const parsed = JSON.parse(saveData);
             if (parsed.game) {
-                const loadedGame = parsed.game;
-                // Rehydrate Map
-                if (Array.isArray(loadedGame.nodes)) {
-                    loadedGame.nodes = new Map(loadedGame.nodes);
-                }
-                Object.assign(game, loadedGame);
-                
-                // Rebuild neighbors
-                neighbors.clear();
-                for (const [id, node] of game.nodes) {
-                    neighbors.set(id, []);
-                }
-                game.conns.forEach(c => {
-                    if (neighbors.has(c.from)) neighbors.get(c.from).push(c.to);
-                    if (neighbors.has(c.to)) neighbors.get(c.to).push(c.from);
-                });
-                
-                // Active nodes update will happen in init
+                restoreGameState(parsed.game);
+                console.log("Local save loaded successfully.");
                 return true;
             }
         }
@@ -576,6 +697,20 @@ export function checkOfflineEarnings() {
         return { money: offlineMoney, rp: offlineRP, time: hoursAway };
     }
     return null;
+}
+
+export function startContract(c) {
+    game.activeContract = { 
+        type: 'upload', 
+        target: c.target, 
+        current: 0, 
+        time: c.time, 
+        rewardMoney: c.rewardM, 
+        rewardRp: c.rewardR,
+        desc: c.desc 
+    };
+    console.log("Contract Started: " + c.title);
+    return true;
 }
 
 // --- Main Tick ---

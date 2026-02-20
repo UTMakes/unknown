@@ -3,9 +3,14 @@ import {
     cleanNode, performPrestige, convertCodeBits, installDriver, 
     toggleCableDeleteMode, deleteAllCables, activeNodes, addConnection,
     upgradeNode, removeNode, updateCombo, updateEvents, checkOfflineEarnings,
-    autoSaveLocal, loadLocalSave, batchUpgrade, toggleAutoBalancer
+    autoSaveLocal, loadLocalSave, batchUpgrade, toggleAutoBalancer,
+    calculateRates, attemptVirusInfection, triggerRandomEvent, startContract
 } from './game.js';
-import { initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, showEventNotification, showNetworkAnalysis } from './ui.js';
+import { 
+    initUI, renderWorld, updateStatsUI, setTab, updateWorldTransform, 
+    showEventNotification, showNetworkAnalysis, updateRateUI, showFloat, spawnParticles,
+    openContracts
+} from './ui.js';
 import { setupInputs } from './inputs.js';
 import { initFirebase, loginUser, registerUser, logoutUser, syncToCloud, loadFromCloud } from './auth.js';
 import './style.css';
@@ -60,9 +65,15 @@ function init() {
         performPrestige: () => performPrestige(),
         addMoney: (e) => {
             game.money += 5;
-            // Simple visual feedback could be added here
+            showFloat('+$5', e.clientX, e.clientY, '#10b981');
         },
-        batchUpgrade: (type) => batchUpgrade(type),
+        batchUpgrade: (type) => {
+            const count = batchUpgrade(type);
+            if (count > 0) {
+                renderWorld();
+                showFloat(`Upgraded ${count} nodes!`, window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+            }
+        },
         toggleAutoBalancer: () => toggleAutoBalancer(),
         showNetworkAnalysis: () => showNetworkAnalysis()
     };
@@ -78,8 +89,25 @@ function init() {
     };
     window.setTab = setTab;
     window.cleanNode = (id) => {
-        cleanNode(id);
-        renderWorld();
+        if (cleanNode(id)) {
+            const n = game.nodes.get(id);
+            if (n) {
+                spawnParticles(n.x + 90, n.y + 40, '#10b981', 10);
+                showFloat("CLEANED", n.x + 90, n.y, '#10b981');
+            }
+            renderWorld();
+        }
+    };
+    
+    // Contract Globals
+    window.openContracts = openContracts;
+    window.startContract = (c) => {
+        if (startContract(c)) {
+            // Close modal
+            document.getElementById('contractModal').style.display = 'none';
+            // Visual feedback
+            showFloat('Contract Started!', window.innerWidth/2, window.innerHeight/2, '#fbbf24');
+        }
     };
     
     // Auth Globals
@@ -92,13 +120,18 @@ function init() {
     // Context Menu Actions
     window.upgradeSelectedNode = () => {
         if (window.selectedNodeId) {
-            upgradeNode(window.selectedNodeId);
-            renderWorld(); // Force update to show new level
+            if (upgradeNode(window.selectedNodeId)) {
+                const n = game.nodes.get(window.selectedNodeId);
+                spawnParticles(n.x + 90, n.y + 40, '#fbbf24', 10);
+                renderWorld();
+            }
             document.getElementById('contextMenu').style.display = 'none';
         }
     };
     window.deleteSelectedNode = () => {
         if (window.selectedNodeId) {
+            const n = game.nodes.get(window.selectedNodeId);
+            if (n) spawnParticles(n.x + 90, n.y + 40, '#ef4444', 8);
             removeNode(window.selectedNodeId);
             renderWorld();
             document.getElementById('contextMenu').style.display = 'none';
@@ -173,8 +206,37 @@ function init() {
     }
     requestAnimationFrame(loop);
     
+    // 1-Second Loop (Rates)
+    setInterval(() => {
+        const rates = calculateRates();
+        updateRateUI(rates.money, rates.rp);
+    }, 1000);
+    
+    // 2-Minute Loop (Viruses)
+    setInterval(() => {
+        const target = attemptVirusInfection();
+        if (target) {
+            showFloat("⚠️ VIRUS", target.x + 90, target.y, '#8b5cf6');
+            console.log("Virus infection at node", target.id);
+            renderWorld();
+        }
+    }, 120000);
+    
+    // 10-Minute Loop (Events)
+    setInterval(() => {
+        const result = triggerRandomEvent();
+        if (result) {
+            showEventNotification(result.event);
+        }
+    }, 600000);
+    
     // Periodic tasks
     setInterval(() => updateConnectivity(), 1000);
+    
+    // Save on exit
+    window.addEventListener('beforeunload', () => {
+        autoSaveLocal();
+    });
     
     // Initial Render
     renderWorld();
@@ -182,4 +244,3 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
