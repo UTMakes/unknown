@@ -1,9 +1,9 @@
-
 import { game, gameTick, updateConnectivity, addNode } from './game.js';
-import { initUI, renderWorld, updateStatsUI } from './ui.js';
+import { initUI, renderWorld, updateStatsUI, setTab } from './ui.js';
+import { setupInputs } from './inputs.js';
 import './style.css';
 
-// 1. Initialize Web Worker for Background Logic
+// Web Worker for Background Logic
 const engineWorker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
 engineWorker.onmessage = (e) => {
@@ -13,32 +13,28 @@ engineWorker.onmessage = (e) => {
     }
 };
 
-// 2. Setup Interactions
-function setupEvents() {
-    const resBtn = document.querySelector('.btn-research');
-    if (resBtn) {
-        resBtn.onclick = () => {
-            document.getElementById('researchModal').style.display = 'flex';
-        };
-    }
-    
-    const zoomIn = document.getElementById('zoomInBtn');
-    if (zoomIn) zoomIn.onclick = () => { /* Zoom Logic */ };
-    
-    // Add more bindings as needed
-}
-
 function init() {
-    console.log("Initializing Optimized Engine...");
+    console.log("Re-initializing Gameplay Systems...");
     
     if (game.nodes.size === 0) {
         addNode('router', 2500, 2500);
     }
     
     initUI();
-    setupEvents();
     
-    // Start Worker
+    const viewport = document.getElementById('viewport');
+    const world = document.getElementById('world');
+    setupInputs(viewport, world);
+    
+    // Tab handlers
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            setTab(tab.dataset.tab);
+        };
+    });
+
     engineWorker.postMessage({ type: 'INIT', data: { game } });
 
     function renderLoop(timestamp) {
@@ -47,6 +43,8 @@ function init() {
         requestAnimationFrame(renderLoop);
     }
     requestAnimationFrame(renderLoop);
+    
+    setInterval(() => updateConnectivity(), 1000);
 }
 
 document.addEventListener('DOMContentLoaded', init);
