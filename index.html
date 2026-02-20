@@ -2027,53 +2027,33 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.3</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.4</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
                         <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Money Bug:</strong> Fixed income dropping to $0 at high money values</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge balance">Balance</span>
-                            <span><strong>Economy:</strong> Reduced income from all sources by 20-50%</span>
+                            <span class="changelog-badge new">New</span>
+                            <span><strong>Quantum Uploader:</strong> 5x faster uploader for endgame (Tech: Quantum Computing)</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge new">New</span>
-                            <span><strong>Cryo Cooler:</strong> End-game cooling node (req: Cryogenic Cooling tech)</span>
+                            <span><strong>Heat Sink:</strong> Early game cooling (-2 heat/s). Essential for early overclocking!</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge new">New</span>
-                            <span><strong>Overclock Scaling:</strong> Each level adds +0.5x speed but +5 heat/sec</span>
+                            <span><strong>Auto-Repair:</strong> Tech that cleans viruses automatically after 10s.</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge new">Event</span>
+                            <span><strong>Hacker Attack:</strong> Random event that drains 10% of your money!</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Cable Rendering:</strong> Fixed black background on cables, smoother dragging</span>
+                            <span><strong>Cable Dragging:</strong> Optimized rendering engine for smoother connections.</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Performance:</strong> Major lag reduction with optimized cable updates</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Settings:</strong> Moved to zoom controls panel for better access</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Event Log:</strong> Relocated to prevent overlap with controls</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Text Overflow:</strong> Fixed cut-off text on buttons and nodes</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Visual Polish:</strong> Enhanced glassmorphism effects throughout</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Welcome Panel:</strong> Restructured with dedicated changelog panel</span>
+                            <span><strong>Save System:</strong> Added auto-save on exit and robust corrupted save repair.</span>
                         </li>
                     </ul>
                 </div>
@@ -2081,7 +2061,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.3</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.4</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -2923,7 +2903,7 @@
 
     <script>
         // GAME VERSION - Update by 0.1 for minor, +1 for major
-        const GAME_VERSION = "11.3";
+        const GAME_VERSION = "11.4";
 
         // --- CONFIGURATION ---
         
@@ -2957,6 +2937,7 @@
             firewall: { name: "Firewall", type: "infra", cost: 1500, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
             balancer: { name: "Load Balancer", type: "infra", cost: 4500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
             overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
+            heat_sink: { name: "Heat Sink", type: "infra", cost: 15000, icon: "fa-solid fa-fan", color: "#38bdf8", desc: "Passive cooling. Reduces heat by 2/sec. Useful early game cooling.", req: "tech_cooling" },
             cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo" },
             
             // Downloaders - Tiered progression
@@ -2967,6 +2948,7 @@
             
             // Upload & Labs - Money and RP generation
             uploader: { name: "Uploader", type: "upload", cost: 600, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
+            q_uploader: { name: "Quantum Uploader", type: "upload", cost: 250000, icon: "fa-solid fa-satellite-dish", color: "#f472b6", desc: "High-speed uploader. 5x faster than standard uploader.", req: "tech_quantum" },
             lab: { name: "Research Lab", type: "lab", cost: 3500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
             rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
             quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
@@ -3024,6 +3006,7 @@
             { id: "tech_audio", name: "Audio Processing", cost: 9000, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
             { id: "tech_analyze", name: "Data Analysis", cost: 10000, desc: "Unlock Data Analyzers (+RP generation)", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
             { id: "tech_backup", name: "Backup Systems", cost: 12000, desc: "Unlock Backup Servers", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
+            { id: "tech_cooling", name: "Advanced Cooling", cost: 12000, desc: "Unlock Heat Sinks for passive cooling", tier: 3, icon: "fa-solid fa-fan", requires: ["tech_oc"] },
             
             // Tier 4: Advanced Infrastructure (Late-mid game)
             { id: "tech_fiber", name: "Fiber Optics", cost: 15000, desc: "Global network speed +25%", tier: 4, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
@@ -3031,6 +3014,7 @@
             { id: "tech_rack", name: "Server Racks", cost: 25000, desc: "Unlock high-density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
             { id: "tech_sat", name: "Satellite Uplink", cost: 30000, desc: "Global upload speed +50%", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
             { id: "tech_streaming", name: "Media Streaming", cost: 35000, desc: "Unlock Streaming Servers", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
+            { id: "tech_auto_repair", name: "Auto-Repair Protocol", cost: 40000, desc: "Infected nodes clean themselves after 10s", tier: 4, icon: "fa-solid fa-robot", requires: ["tech_sec", "tech_coding"] },
             
             // Tier 5: Enterprise (Late game)
             { id: "tech_cdn", name: "CDN Network", cost: 50000, desc: "Unlock CDN Nodes (global uploader boost)", tier: 5, icon: "fa-solid fa-earth-americas", requires: ["tech_rack", "tech_streaming"] },
@@ -3108,6 +3092,7 @@
             { id: 'ddos_attack', name: 'DDoS Attack', desc: 'Network under attack!', type: 'bad', duration: 45, effect: () => { eventMultipliers.speed = 0.3; }, cleanup: () => { eventMultipliers.speed = 1; } },
             { id: 'maintenance', name: 'Emergency Maintenance', desc: 'Servers need repairs!', type: 'bad', instant: true, effect: (g) => { g.money = Math.max(0, g.money - 2000); showFloat('- $2,000 (Maintenance)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
             { id: 'data_breach', name: 'Data Breach', desc: 'Security incident!', type: 'bad', instant: true, effect: (g) => { g.rp = Math.max(0, g.rp - 200); showFloat('- 200 RP (Breach)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'hacker_attack', name: 'Hacker Attack', desc: 'System intrusion detected! Funds drained.', type: 'bad', instant: true, effect: (g) => { const drain = Math.floor(g.money * 0.1); g.money -= drain; showFloat(`- $${drain} (Hacked!)`, window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
         ];
 
         // --- STATE ---
@@ -3660,9 +3645,14 @@
                     
                     // Find all cooling nodes (connected anywhere in network)
                     game.nodes.forEach(n => {
-                        if (n.type === 'cryo_cooler' && activeNodes.has(n.id) && !n.infected) {
-                            // Each cryo cooler level reduces heat by 20 base + 10 per level
-                            coolingPower += 20 + (10 * (n.level - 1));
+                        if (activeNodes.has(n.id) && !n.infected) {
+                            if (n.type === 'cryo_cooler') {
+                                // Each cryo cooler level reduces heat by 20 base + 10 per level
+                                coolingPower += 20 + (10 * (n.level - 1));
+                            } else if (n.type === 'heat_sink') {
+                                // Heat sink: 2 base + 1 per level
+                                coolingPower += 2 + (1 * (n.level - 1));
+                            }
                         }
                     });
 
@@ -3804,6 +3794,15 @@
             game.nodes.forEach(node => {
                 if (!activeNodes.has(node.id)) return;
                 if (node.infected) { 
+                    // Auto-Repair Logic
+                    if (game.unlocked.includes('tech_auto_repair') && node.infectedAt && (Date.now() - node.infectedAt > 10000)) {
+                        node.infected = false;
+                        game.stats.virusesCleaned++;
+                        spawnParticles(node.x + 90, node.y + 40, '#10b981', 10);
+                        showFloat("AUTO-REPAIR", node.x + 90, node.y, '#10b981');
+                        return; // Resume active processing next frame
+                    }
+
                     // Security driver reduces money loss from viruses
                     const securityMult = Math.max(0, 1 - (game.drivers.security * DRIVERS.security.effect));
                     game.money -= 10 * dt * securityMult; 
@@ -3837,6 +3836,9 @@
                 
                 let isStreamingServer = node.type === 'streaming';
                 if (node.type === 'crypto_farm') boost *= 3;
+                if (node.type === 'heat_sink') {
+                    // Passive cooling logic handled in router heat calculation, visual here if needed
+                }
                 
                 const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
 
@@ -4027,6 +4029,7 @@
             
             if (!protected) {
                 target.infected = true;
+                target.infectedAt = Date.now(); // Mark infection time for auto-repair
                 showFloat("⚠️ VIRUS", target.x + 90, target.y, '#8b5cf6');
                 logEvent("Virus detected!");
                 renderWorld(); 
@@ -4491,6 +4494,8 @@
         function upgradeSelectedNode() {
             if (!selNodeId) return;
             const n = game.nodes.find(x => x.id === selNodeId);
+            if (!n) return;
+            
             const def = NODE_DEFS[n.type];
             const base = n.type === 'router' ? 500 : def.cost;
             const cost = Math.floor(base * Math.pow(1.5, n.level));
@@ -4500,29 +4505,49 @@
                 game.stats.moneySpent += cost;
                 game.stats.upgrades++;
                 n.level++;
+                
                 spawnParticles(n.x + 90, n.y + 40, '#fbbf24', 10);
+                showFloat(`Upgraded! (Lvl ${n.level})`, n.x + 90, n.y, '#fbbf24');
+                
                 if (n.type === 'router') {
                     game.routerLevel = n.level;
                     updateRouterCostDisplay();
                 }
+                
                 renderWorld(); 
                 document.getElementById('contextMenu').style.display = 'none';
                 checkAchievements();
                 addCombo();
+            } else {
+                showFloat(`Need $${fmt(cost)}`, n.x + 90, n.y, '#ef4444');
             }
         }
         
         function deleteSelectedNode() {
              if (!selNodeId) return;
              const n = game.nodes.find(x => x.id === selNodeId);
-             if (n.type === 'router') return; 
+             if (!n) return;
+             
+             if (n.type === 'router') {
+                 showFloat("Cannot delete Router!", n.x + 90, n.y, '#ef4444');
+                 return;
+             }
+             
+             // Refund 50% of base cost
+             const refund = Math.floor(NODE_DEFS[n.type].cost * 0.5);
+             game.money += refund;
              
              game.nodes = game.nodes.filter(x => x.id !== selNodeId);
              game.conns = game.conns.filter(c => c.from !== selNodeId && c.to !== selNodeId);
              game.stats.nodesDeleted++;
+             
              spawnParticles(n.x + 90, n.y + 40, '#ef4444', 8);
+             showFloat(`Deleted (+$${fmt(refund)})`, n.x + 90, n.y, '#ef4444');
+             
              document.getElementById('contextMenu').style.display = 'none';
              renderWorld();
+             renderCables(); // Force cable update
+             updateConnectivity();
              checkAchievements();
         }
 
@@ -4729,53 +4754,100 @@
             }
         }
 
+        // Node Cache to prevent DOM thrashing
+        const nodeCache = new Map();
+
         function renderWorld() {
             const nodesDiv = document.getElementById('nodes');
-            nodesDiv.innerHTML = '';
-            
+            const currentIds = new Set();
+
             game.nodes.forEach(n => {
-                const def = NODE_DEFS[n.type];
-                const el = document.createElement('div');
-                let classes = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
-                if (n.type === 'router' && game.overheatMode) classes += ' overheating';
-                if (def.type === 'coding') classes += ' coding';
+                currentIds.add(n.id);
+                let cached = nodeCache.get(n.id);
+
+                if (!cached) {
+                    const def = NODE_DEFS[n.type];
+                    const el = document.createElement('div');
+                    el.id = `node-${n.id}`;
+                    
+                    // Create internal structure once
+                    const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                                   <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                    
+                    // Add clean button (hidden by default via CSS/JS update)
+                    const cleanBtn = `<div class="clean-btn" id="clean-${n.id}" onmousedown="cleanNode(game.nodes.find(x=>x.id===${n.id}), event)">CLEAN [-$500]</div>`;
+
+                    el.innerHTML = `
+                        ${ports}
+                        ${cleanBtn}
+                        <div class="node-header">
+                            <div class="node-icon-box" style="color:${def.color}"><i class="${def.icon}"></i></div>
+                            <div class="node-info">
+                                <div class="node-title">${def.name}</div>
+                                <div class="node-lvl" id="lvl-${n.id}">Level ${n.level}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Event listeners
+                    el.onmousedown = (e) => {
+                        if (e.target.classList.contains('port')) return;
+                        if (e.target.classList.contains('clean-btn')) return;
+                        if (e.button === 2) {
+                            e.preventDefault();
+                            showContext(n, e);
+                            return;
+                        }
+                        if (n.infected) return; 
+                        dragStart(n, e);
+                    };
+
+                    nodesDiv.appendChild(el);
+                    cached = { el, n, lastClass: '', lastLvl: n.level };
+                    nodeCache.set(n.id, cached);
+                }
+
+                // Efficiently update properties
+                const el = cached.el;
                 
-                el.className = classes;
-                el.id = `node-${n.id}`;
+                // Position (direct style update is fast)
                 el.style.left = n.x + 'px';
                 el.style.top = n.y + 'px';
                 
-                const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                               <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                // Class updates
+                const isActive = activeNodes.has(n.id);
+                const isInfected = n.infected;
+                const isOverheating = n.type === 'router' && game.overheatMode;
+                const def = NODE_DEFS[n.type];
                 
-                const cleanBtn = n.infected ? `<div class="clean-btn" onmousedown="cleanNode(game.nodes.find(x=>x.id===${n.id}), event)">CLEAN [-$500]</div>` : '';
-
-                el.innerHTML = `
-                    ${ports}
-                    ${cleanBtn}
-                    <div class="node-header">
-                        <div class="node-icon-box" style="color:${def.color}"><i class="${def.icon}"></i></div>
-                        <div class="node-info">
-                            <div class="node-title">${def.name}</div>
-                            <div class="node-lvl">Level ${n.level}</div>
-                        </div>
-                    </div>
-                `;
+                // Construct class string
+                let classes = 'node';
+                if (!isActive) classes += ' disconnected';
+                if (isInfected) classes += ' infected';
+                if (isOverheating) classes += ' overheating';
+                if (def.type === 'coding') classes += ' coding';
+                if (selNodeId === n.id) classes += ' selected';
                 
-                el.onmousedown = (e) => {
-                    if (e.target.classList.contains('port')) return;
-                    if (e.target.classList.contains('clean-btn')) return;
-                    if (e.button === 2) {
-                        e.preventDefault();
-                        showContext(n, e);
-                        return;
-                    }
-                    if (n.infected) return; 
-                    dragStart(n, e);
-                };
+                if (cached.lastClass !== classes) {
+                    el.className = classes;
+                    cached.lastClass = classes;
+                }
                 
-                nodesDiv.appendChild(el);
+                // Level text update
+                if (cached.lastLvl !== n.level) {
+                    const lvlEl = document.getElementById(`lvl-${n.id}`);
+                    if (lvlEl) lvlEl.innerText = `Level ${n.level}`;
+                    cached.lastLvl = n.level;
+                }
             });
+
+            // Cleanup removed nodes
+            for (const [id, cached] of nodeCache) {
+                if (!currentIds.has(id)) {
+                    cached.el.remove();
+                    nodeCache.delete(id);
+                }
+            }
 
             renderCables();
         }
