@@ -134,7 +134,7 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v12.0</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v12.1</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
@@ -184,7 +184,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v12.0</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v12.1</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -234,7 +234,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v12.0</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v12.1</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -597,6 +597,43 @@
                 </div>
                 
                 <div class="settings-section">
+                    <h3>Display Options</h3>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-item-label"><i class="fa-solid fa-eye" style="color: #06b6d4; margin-right: 8px;"></i> Particle Effects</div>
+                            <div class="setting-item-desc">Show floating background particles</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="particlesToggle" checked onchange="toggleSetting('particlesEnabled', this.checked); document.getElementById('particlesContainer').style.display = this.checked ? 'block' : 'none';">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-item-label"><i class="fa-solid fa-wand-magic-sparkles" style="color: #a855f7; margin-right: 8px;"></i> Animations</div>
+                            <div class="setting-item-desc">Enable UI animations and transitions</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animationsToggle" checked onchange="toggleSetting('animationsEnabled', this.checked); document.body.classList.toggle('reduce-motion', !this.checked);">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-item-label"><i class="fa-solid fa-volume-high" style="color: #10b981; margin-right: 8px;"></i> Event Alerts</div>
+                            <div class="setting-item-desc">Show random event notifications</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="eventAlertsToggle" checked onchange="toggleSetting('eventAlertsEnabled', this.checked);">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
                     <h3>Save Management</h3>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn" onclick="exportSave(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white;">
@@ -822,7 +859,7 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v12.0</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v12.1</span>
             </div>
             <div class="header-stats">
                 <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">

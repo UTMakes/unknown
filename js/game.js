@@ -1,4 +1,4 @@
-        const GAME_VERSION = "12.0";
+﻿        const GAME_VERSION = "12.1";
 
         // --- CONFIGURATION ---
         
@@ -15,12 +15,28 @@
         
         // MILESTONES CONFIGURATION
         const MILESTONES = [
+            // Early game milestones
             { id: 'first_node', name: 'First Steps', desc: 'Place your first node', check: () => game.stats.nodesCreated >= 1, reward: { money: 100 } },
+            { id: 'first_cable', name: 'Connected', desc: 'Place your first cable', check: () => game.conns.length >= 1, reward: { money: 50 } },
+            { id: 'first_download', name: 'Data Collector', desc: 'Place a downloader node', check: () => game.nodes.some(n => n.type.startsWith('dl_')), reward: { money: 200 } },
+            { id: 'first_upload', name: 'Data Seller', desc: 'Place an uploader node', check: () => game.nodes.some(n => n.type === 'uploader'), reward: { money: 300 } },
+            
+            // Mid game milestones
             { id: 'network_builder', name: 'Network Builder', desc: 'Have 10 nodes at once', check: () => game.nodes.length >= 10, reward: { money: 1000 } },
+            { id: 'connected_25', name: 'Fully Connected', desc: 'Have 25 cables at once', check: () => game.conns.length >= 25, reward: { money: 2500 } },
+            { id: 'first_tech', name: 'Researcher', desc: 'Unlock your first technology', check: () => game.unlocked.length >= 1, reward: { rp: 200 } },
+            { id: 'first_contract', name: 'Contractor', desc: 'Complete your first contract', check: () => game.stats.contractsCompleted >= 1, reward: { money: 1000 } },
+            
+            // Late game milestones
             { id: 'data_empire', name: 'Data Empire', desc: 'Have 50 nodes at once', check: () => game.nodes.length >= 50, reward: { money: 10000, rp: 500 } },
             { id: 'first_million', name: 'First Million', desc: 'Earn $1,000,000 total', check: () => game.stats.totalMoney >= 1000000, reward: { money: 100000 } },
-            { id: 'researcher', name: 'Researcher', desc: 'Unlock 10 technologies', check: () => game.unlocked.length >= 10, reward: { rp: 1000 } },
-            { id: 'connected', name: 'Fully Connected', desc: 'Have 25 cables at once', check: () => game.conns.length >= 25, reward: { money: 2500 } }
+            { id: 'tech_master', name: 'Tech Master', desc: 'Unlock 10 technologies', check: () => game.unlocked.length >= 10, reward: { rp: 1000 } },
+            { id: 'coder', name: 'Programmer', desc: 'Generate your first code bits', check: () => (game.codeBits || 0) > 0 || (game.stats.totalCodeBits || 0) > 0, reward: { money: 500 } },
+            
+            // Endgame milestones
+            { id: 'mega_network', name: 'Mega Network', desc: 'Have 100 nodes at once', check: () => game.nodes.length >= 100, reward: { money: 50000, rp: 5000 } },
+            { id: 'all_tech', name: 'Omniscient', desc: 'Unlock all technologies', check: () => game.unlocked.length >= TECH_TREE.length, reward: { money: 500000, rp: 50000 } },
+            { id: 'first_prestige', name: 'Migration', desc: 'Prestige for the first time', check: () => (game.prestigeLevel || 0) >= 1, reward: { money: 100000 } },
         ];
         
         const NODE_DEFS = {
@@ -166,6 +182,20 @@
             { id: 'synergy_1', name: 'Synergy Starter', desc: 'Activate your first node synergy', icon: 'fa-solid fa-link', condition: (s) => s.synergyBonus >= 15, reward: 300 },
             { id: 'synergy_2', name: 'Synergy Master', desc: 'Activate 3+ synergies at once', icon: 'fa-solid fa-project-diagram', condition: (s) => s.synergyBonus >= 50, reward: 1000 },
             { id: 'synergy_3', name: 'Full Stack', desc: 'Activate all 5 synergy bonuses', icon: 'fa-solid fa-layer-group', condition: (s) => s.synergyBonus >= 100, reward: 2500 },
+            
+            // Expanded Achievements (New in v12)
+            { id: 'money_4', name: 'Billionaire', desc: 'Earn $1,000,000,000 total', icon: 'fa-solid fa-gem', condition: (s) => s.totalMoney >= 1000000000, reward: 50000 },
+            { id: 'peak_3', name: 'Tycoon', desc: 'Have $1,000,000 at once', icon: 'fa-solid fa-money-bill-trend-up', condition: (s) => s.peakMoney >= 1000000, reward: 5000 },
+            { id: 'contracts_3', name: 'Enterprise Client', desc: 'Complete 100 contracts', icon: 'fa-solid fa-building-columns', condition: (s) => s.contractsCompleted >= 100, reward: 5000 },
+            { id: 'cables_2', name: 'Network Architect', desc: 'Place 200 cables', icon: 'fa-solid fa-diagram-project', condition: (s) => s.cablesPlaced >= 200, reward: 500 },
+            { id: 'upgrades_2', name: 'Maxed Out', desc: 'Upgrade nodes 100 times', icon: 'fa-solid fa-arrow-up-right-dots', condition: (s) => s.upgrades >= 100, reward: 1000 },
+            { id: 'code_3', name: 'Senior Developer', desc: 'Generate 1,000,000 code bits', icon: 'fa-solid fa-code', condition: (s) => s.totalCodeBits >= 1000000, reward: 5000 },
+            { id: 'driver_3', name: 'Driver Collector', desc: 'Install 50 drivers', icon: 'fa-solid fa-hard-drive', condition: (s) => s.totalDrivers >= 50, reward: 5000 },
+            { id: 'research_3', name: 'Nobel Prize', desc: 'Earn 1,000,000 RP total', icon: 'fa-solid fa-award', condition: (s) => s.totalRP >= 1000000, reward: 10000 },
+            { id: 'prestige_3', name: 'Empire Builder', desc: 'Migrate 10 times', icon: 'fa-solid fa-crown', condition: (s) => s.prestigeCount >= 10, reward: 10000 },
+            { id: 'security_2', name: 'Antivirus Pro', desc: 'Clean 50 viruses', icon: 'fa-solid fa-shield-virus', condition: (s) => s.virusesCleaned >= 50, reward: 1000 },
+            { id: 'time_3', name: 'No Life', desc: 'Play for 100 hours', icon: 'fa-solid fa-infinity', condition: (s) => s.playTime >= 360000, reward: 25000 },
+            { id: 'nodes_5', name: 'Megacorp', desc: 'Create 500 nodes', icon: 'fa-solid fa-globe', condition: (s) => s.nodesCreated >= 500, reward: 10000 },
         ];
 
         // RANDOM EVENTS CONFIGURATION
@@ -177,6 +207,10 @@
             { id: 'fiber_upgrade', name: 'Fiber Upgrade', desc: 'ISP upgraded your connection!', type: 'good', duration: 120, effect: () => { eventMultipliers.speed = 1.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
             { id: 'investment', name: 'Angel Investment', desc: 'An investor believes in you!', type: 'good', instant: true, effect: (g) => { g.money += 5000; showFloat('+ $5,000 (Investment)', window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
             { id: 'bonus_rp', name: 'Research Breakthrough', desc: 'Sudden insight!', type: 'good', instant: true, effect: (g) => { g.rp += 500; showFloat('+ 500 RP (Breakthrough!)', window.innerWidth/2, window.innerHeight/2, '#8b5cf6'); } },
+            { id: 'crypto_surge', name: 'Crypto Surge', desc: 'Cryptocurrency values skyrocketing!', type: 'good', duration: 90, effect: () => { eventMultipliers.money = 2.5; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'open_source', name: 'Open Source Contribution', desc: 'Community code contributions!', type: 'good', instant: true, effect: (g) => { g.codeBits = (g.codeBits || 0) + 500; showFloat('+ 500 Code Bits (Open Source)', window.innerWidth/2, window.innerHeight/2, '#00d4aa'); } },
+            { id: 'bandwidth_bonus', name: 'Bandwidth Bonus', desc: 'ISP doubled your bandwidth!', type: 'good', duration: 60, effect: () => { eventMultipliers.speed = 2; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'tax_refund', name: 'Tax Refund', desc: 'Government tax refund received!', type: 'good', instant: true, effect: (g) => { const refund = Math.floor(g.stats.totalMoney * 0.01); g.money += refund; showFloat(`+ $${fmt(refund)} (Tax Refund)`, window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
             
             // Bad Events
             { id: 'market_crash', name: 'Market Crash', desc: 'Data prices are plummeting!', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.5; }, cleanup: () => { eventMultipliers.money = 1; } },
@@ -184,6 +218,10 @@
             { id: 'ddos_attack', name: 'DDoS Attack', desc: 'Network under attack!', type: 'bad', duration: 45, effect: () => { eventMultipliers.speed = 0.3; }, cleanup: () => { eventMultipliers.speed = 1; } },
             { id: 'maintenance', name: 'Emergency Maintenance', desc: 'Servers need repairs!', type: 'bad', instant: true, effect: (g) => { g.money = Math.max(0, g.money - 2000); showFloat('- $2,000 (Maintenance)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
             { id: 'data_breach', name: 'Data Breach', desc: 'Security incident!', type: 'bad', instant: true, effect: (g) => { g.rp = Math.max(0, g.rp - 200); showFloat('- 200 RP (Breach)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'hardware_failure', name: 'Hardware Failure', desc: 'A component overheated!', type: 'bad', duration: 40, effect: () => { eventMultipliers.speed = 0.6; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'isp_throttle', name: 'ISP Throttling', desc: 'Your ISP is throttling bandwidth!', type: 'bad', duration: 90, effect: () => { eventMultipliers.speed = 0.7; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'crypto_crash', name: 'Crypto Crash', desc: 'Cryptocurrency values plummeting!', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.4; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'ransomware', name: 'Ransomware Alert', desc: 'Ransomware detected! Pay to recover!', type: 'bad', instant: true, effect: (g) => { const loss = Math.floor(g.money * 0.1); g.money = Math.max(0, g.money - loss); showFloat(`- $${fmt(loss)} (Ransomware)`, window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
         ];
 
         // --- STATE ---
@@ -1839,11 +1877,31 @@
             const list = document.getElementById('contractList');
             list.innerHTML = '';
             
-            const types = [
-                { title: "Data Dump", desc: "Upload 50 MB Data", target: 50 * 1024 * 1024, time: 60, rewardM: 5000, rewardR: 500 },
-                { title: "Streaming Deal", desc: "Upload 500 MB Data", target: 500 * 1024 * 1024, time: 120, rewardM: 25000, rewardR: 2000 },
-                { title: "Corporate Backups", desc: "Upload 1 GB Data", target: 1024 * 1024 * 1024, time: 180, rewardM: 100000, rewardR: 5000 }
+            // Scale contracts based on prestige level for replayability
+            const prestigeScale = 1 + (game.prestigeLevel || 0) * 0.5;
+            const allContracts = [
+                // Tier 1: Starter contracts
+                { title: "Data Dump", desc: "Upload 50 MB Data", target: 50 * 1024 * 1024, time: 60, rewardM: Math.floor(5000 * prestigeScale), rewardR: Math.floor(500 * prestigeScale), tier: 1 },
+                { title: "Quick Upload", desc: "Upload 20 MB Data", target: 20 * 1024 * 1024, time: 30, rewardM: Math.floor(2000 * prestigeScale), rewardR: Math.floor(200 * prestigeScale), tier: 1 },
+                
+                // Tier 2: Mid contracts
+                { title: "Streaming Deal", desc: "Upload 500 MB Data", target: 500 * 1024 * 1024, time: 120, rewardM: Math.floor(25000 * prestigeScale), rewardR: Math.floor(2000 * prestigeScale), tier: 2 },
+                { title: "Media Package", desc: "Upload 250 MB Data", target: 250 * 1024 * 1024, time: 90, rewardM: Math.floor(15000 * prestigeScale), rewardR: Math.floor(1500 * prestigeScale), tier: 2 },
+                { title: "Research Grant", desc: "Upload 100 MB Data", target: 100 * 1024 * 1024, time: 75, rewardM: Math.floor(3000 * prestigeScale), rewardR: Math.floor(5000 * prestigeScale), tier: 2 },
+                
+                // Tier 3: Advanced contracts
+                { title: "Corporate Backups", desc: "Upload 1 GB Data", target: 1024 * 1024 * 1024, time: 180, rewardM: Math.floor(100000 * prestigeScale), rewardR: Math.floor(5000 * prestigeScale), tier: 3 },
+                { title: "Government Archive", desc: "Upload 2 GB Data", target: 2 * 1024 * 1024 * 1024, time: 300, rewardM: Math.floor(250000 * prestigeScale), rewardR: Math.floor(15000 * prestigeScale), tier: 3 },
+                { title: "Cloud Migration", desc: "Upload 5 GB Data", target: 5 * 1024 * 1024 * 1024, time: 600, rewardM: Math.floor(750000 * prestigeScale), rewardR: Math.floor(50000 * prestigeScale), tier: 3 },
+                
+                // Tier 4: Endgame contracts
+                { title: "Data Center Transfer", desc: "Upload 10 GB Data", target: 10 * 1024 * 1024 * 1024, time: 900, rewardM: Math.floor(2000000 * prestigeScale), rewardR: Math.floor(100000 * prestigeScale), tier: 4 },
+                { title: "Satellite Uplink", desc: "Upload 25 GB Data", target: 25 * 1024 * 1024 * 1024, time: 1200, rewardM: Math.floor(5000000 * prestigeScale), rewardR: Math.floor(250000 * prestigeScale), tier: 4 },
             ];
+            
+            // Show contracts appropriate to player's progress (based on total money earned)
+            const playerTier = game.stats.totalMoney >= 1000000 ? 4 : game.stats.totalMoney >= 100000 ? 3 : game.stats.totalMoney >= 10000 ? 2 : 1;
+            const types = allContracts.filter(c => c.tier <= playerTier);
             
             types.forEach(c => {
                 const el = document.createElement('div');
@@ -2879,7 +2937,7 @@
                 
                 showAccountError('');
                 logEvent('Logged in successfully!', 'good');
-                showFloat('âœ… Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
+                showFloat('Logged In!', window.innerWidth/2, window.innerHeight/2, '#10b981');
                 
                 // Load cloud save
                 await loadFromCloud();
@@ -2910,7 +2968,7 @@
                 }
                 
                 logEvent('Logged out', 'info');
-                showFloat('ðŸ‘‹ Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
+                showFloat('Logged Out', window.innerWidth/2, window.innerHeight/2, '#64748b');
                 
             } catch (error) {
                 console.error('Logout error:', error);
@@ -3670,6 +3728,26 @@
             document.getElementById('autoSaveToggle').checked = game.autoSaveEnabled !== false;
             document.getElementById('offlineEarningsToggle').checked = game.offlineEarningsEnabled !== false;
             document.getElementById('notificationsToggle').checked = game.notificationsEnabled !== false;
+            
+            // Update display settings UI
+            const particlesToggle = document.getElementById('particlesToggle');
+            if (particlesToggle) {
+                particlesToggle.checked = game.particlesEnabled !== false;
+                if (game.particlesEnabled === false) {
+                    document.getElementById('particlesContainer').style.display = 'none';
+                }
+            }
+            const animationsToggle = document.getElementById('animationsToggle');
+            if (animationsToggle) {
+                animationsToggle.checked = game.animationsEnabled !== false;
+                if (game.animationsEnabled === false) {
+                    document.body.classList.add('reduce-motion');
+                }
+            }
+            const eventAlertsToggle = document.getElementById('eventAlertsToggle');
+            if (eventAlertsToggle) {
+                eventAlertsToggle.checked = game.eventAlertsEnabled !== false;
+            }
             
             // Check milestones periodically
             setInterval(checkMilestones, 5000);
