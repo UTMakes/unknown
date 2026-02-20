@@ -1,42 +1,50 @@
-
 // Game Engine Worker
-// This runs the game logic at 60FPS on a separate CPU thread.
+import { gameTick, game, updateConnectivity } from './game.js';
 
-let game = null;
+let isRunning = false;
 let lastTime = 0;
 
 self.onmessage = (e) => {
     const { type, data } = e.data;
     
     if (type === 'INIT') {
-        game = data.game;
+        Object.assign(game, data.game);
         lastTime = performance.now();
+        isRunning = true;
         tick();
     }
     
     if (type === 'UPDATE_STATE') {
-        // Sync state from UI thread (e.g., node added)
-        game = { ...game, ...data };
+        Object.assign(game, data);
     }
 };
 
 function tick() {
+    if (!isRunning) return;
+    
     const now = performance.now();
     const dt = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
 
-    if (game) {
-        // Run physics/math loop
-        // (Worker-side calculation logic)
-        
-        // Post updated state back to UI thread
-        self.postMessage({ type: 'TICK_UPDATE', data: { 
+    // Run physics/math loop
+    gameTick(dt);
+    
+    // Periodically update connectivity in worker too
+    if (Math.random() < 0.01) updateConnectivity();
+
+    // Post updated state back to UI thread
+    // Only send what's needed to reduce serialization overhead
+    self.postMessage({ 
+        type: 'TICK_UPDATE', 
+        data: { 
             money: game.money,
             rp: game.rp,
             res: game.res,
-            stats: game.stats
-        }});
-    }
+            stats: game.stats,
+            routerHeat: game.routerHeat,
+            overheatMode: game.overheatMode
+        }
+    });
 
-    setTimeout(tick, 16); // Target 60FPS
+    setTimeout(tick, 16); 
 }
