@@ -60,7 +60,7 @@
             
             // CODING - Programming system
             coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
-            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "tech_dev_station" },
+            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station" },
             compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" }
         };
 
@@ -126,7 +126,7 @@
         const ACHIEVEMENTS = [
             // Money Achievements
             { id: 'money_1', name: 'First Profits', desc: 'Earn $1,000 total', icon: 'fa-solid fa-coins', condition: (s) => s.totalMoney >= 1000, reward: 100 },
-            { id: 'money_2', name: ' entrepreneur', desc: 'Earn $10,000 total', icon: 'fa-solid fa-sack-dollar', condition: (s) => s.totalMoney >= 10000, reward: 500 },
+            { id: 'money_2', name: 'Entrepreneur', desc: 'Earn $10,000 total', icon: 'fa-solid fa-sack-dollar', condition: (s) => s.totalMoney >= 10000, reward: 500 },
             { id: 'money_3', name: 'Millionaire', desc: 'Earn $1,000,000 total', icon: 'fa-solid fa-vault', condition: (s) => s.totalMoney >= 1000000, reward: 5000 },
             { id: 'peak_1', name: 'Saving Up', desc: 'Have $5,000 at once', icon: 'fa-solid fa-piggy-bank', condition: (s) => s.peakMoney >= 5000, reward: 200 },
             { id: 'peak_2', name: 'Wealthy', desc: 'Have $100,000 at once', icon: 'fa-solid fa-crown', condition: (s) => s.peakMoney >= 100000, reward: 1000 },
@@ -1794,6 +1794,7 @@
 
         function unlockTech(id) {
             const tech = TECH_TREE.find(t => t.id === id);
+            if (!tech) return;
             if (!game.unlocked.includes(id) && game.rp >= tech.cost && canUnlockTech(id)) {
                 game.rp -= tech.cost;
                 game.unlocked.push(id);
@@ -1805,6 +1806,7 @@
         
         function canUnlockTech(id) {
             const tech = TECH_TREE.find(t => t.id === id);
+            if (!tech) return false;
             if (!tech.requires || tech.requires.length === 0) return true;
             return tech.requires.every(req => game.unlocked.includes(req));
         }
@@ -2936,6 +2938,11 @@
                 document.getElementById('accountModal').style.display='flex';
                 return;
             }
+            if (!window.firebaseDb || !window.firebaseDoc || !window.firebaseSetDoc) {
+                console.warn('Firebase not ready for sync');
+                updateCloudSaveStatus('error', 'Cloud not ready');
+                return;
+            }
             
             updateCloudSaveStatus('syncing', 'Syncing...');
             
@@ -2976,6 +2983,11 @@
                 logEvent('Cloud save not available - please login first', 'bad');
                 showFloat('âš ï¸ Please login first', window.innerWidth/2, window.innerHeight/2, '#f59e0b');
                 document.getElementById('accountModal').style.display='flex';
+                return;
+            }
+            if (!window.firebaseDb || !window.firebaseDoc || !window.firebaseGetDoc) {
+                console.warn('Firebase not ready for load');
+                updateCloudSaveStatus('error', 'Cloud not ready');
                 return;
             }
             
@@ -3043,6 +3055,7 @@
                                 playTime: Number(importedGame.stats.playTime) || 0,
                                 techsUnlocked: Number(importedGame.stats.techsUnlocked) || game.unlocked.length,
                                 prestigeCount: Number(importedGame.stats.prestigeCount) || game.prestige,
+                                synergyBonus: Number(importedGame.stats.synergyBonus) || 0,
                                 startTime: Date.now()
                             };
                         }
@@ -3052,7 +3065,24 @@
                             if (typeof n.level === 'undefined') n.level = 1;
                         });
                         
+                        // Restore optional game state so the game is not broken after load
+                        game.activeContract = importedGame.activeContract || null;
+                        game.milestonesCompleted = Array.isArray(importedGame.milestonesCompleted) ? importedGame.milestonesCompleted : [];
+                        game.lastLoginDate = importedGame.lastLoginDate || null;
+                        game.loginStreak = Number(importedGame.loginStreak) || 0;
+                        game.dailyRewardClaimed = Boolean(importedGame.dailyRewardClaimed);
+                        game.playerName = importedGame.playerName || '';
+                        game.saveCreated = importedGame.saveCreated || Date.now();
+                        game.saveVersion = importedGame.saveVersion || GAME_VERSION;
+                        game.playTime = Number(importedGame.playTime) || 0;
+                        
+                        // Rebuild active nodes from connectivity (critical: was missing, caused broken game)
                         activeNodes.clear();
+                        updateConnectivity();
+                        const router = game.nodes.find(n => n.type === 'router');
+                        if (router && !activeNodes.has(router.id)) {
+                            activeNodes.add(router.id);
+                        }
                         selectedNode = null;
                         
                         renderWorld();
@@ -3172,19 +3202,19 @@
                 const isClaimed = isCurrent && claimed;
                 
                 let style = 'background: rgba(30, 40, 55, 0.5); border: 1px solid var(--border-color);';
-                let icon = 'ðŸ“¦';
+                let iconClass = 'fa-solid fa-cube';
                 
                 if (isPast || isClaimed) {
                     style = 'background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; opacity: 0.6;';
-                    icon = 'âœ…';
+                    iconClass = 'fa-solid fa-circle-check';
                 } else if (isCurrent) {
                     style = 'background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);';
-                    icon = 'ðŸŽ';
+                    iconClass = 'fa-solid fa-gift';
                 }
                 
                 return `
                     <div style="${style} border-radius: 8px; padding: 10px; text-align: center;">
-                        <div style="font-size: 20px; margin-bottom: 5px;">${icon}</div>
+                        <div style="font-size: 20px; margin-bottom: 5px;"><i class="${iconClass}"></i></div>
                         <div style="font-size: 10px; color: var(--text-muted);">Day ${day}</div>
                         <div style="font-size: 11px; color: #fbbf24; font-weight: bold;">$${fmt(reward.money)}</div>
                     </div>
