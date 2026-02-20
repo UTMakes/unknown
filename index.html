@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,22 +21,91 @@
     
     <title>Upload Labs: Network Empire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3EðŸŒ%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E">
     
     <!-- Firebase SDK -->
-    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
+            authDomain: "upload-labs-game-d874a.firebaseapp.com",
+            projectId: "upload-labs-game-d874a",
+            storageBucket: "upload-labs-game-d874a.firebasestorage.app",
+            messagingSenderId: "642883299920",
+            appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Make available globally
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseSignInAnonymously = signInAnonymously;
+        window.firebaseCreateUser = createUserWithEmailAndPassword;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseSignOut = signOut;
+        window.firebaseUpdateProfile = updateProfile;
+        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseOnSnapshot = onSnapshot;
+    </script>
     
     <!-- Vercel Speed Insights -->
-    
+    <script>
+      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
     
     <!-- Vercel Web Analytics -->
-    
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
     <script defer src="/_vercel/insights/script.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber': {
+                            900: '#0a0e14',
+                            800: '#141a23',
+                            700: '#1a2332',
+                            600: '#2a3447',
+                            500: '#3b82f6',
+                            400: '#60a5fa',
+                            accent: '#00d4ff',
+                            success: '#10b981',
+                            danger: '#ef4444',
+                            warning: '#f59e0b',
+                            code: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+                        'mono': ['"JetBrains Mono"', 'monospace']
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'slide-in': 'slide-in 0.3s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
     
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -46,8 +115,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    
-<script src=\"https://cdn.tailwindcss.com\"></script><link rel=\"stylesheet\" href=\"/src/style.css\"><script type=\"module\" src=\"/src/main.js\"></script></head>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
 <body>
     <!-- Animated Background -->
     <div class="bg-grid"></div>
@@ -192,7 +261,7 @@
                         <h3><i class="fa-solid fa-code"></i> NEW: Coding System</h3>
                         <ul class="instructions-list">
                             <li><strong>Coder Nodes</strong> generate code bits over time</li>
-                            <li>Convert 100 code bits â†’ 1 Optimization Code</li>
+                            <li>Convert 100 code bits → 1 Optimization Code</li>
                             <li>Use optimization code to create <strong>Drivers</strong></li>
                             <li>Drivers provide permanent global bonuses!</li>
                         </ul>
@@ -311,7 +380,7 @@
                     </div>
                     <div class="code-actions">
                         <button class="code-btn" id="convertBitsBtn" onclick="convertCodeBits()">
-                            <span><i class="fa-solid fa-right-left"></i> 100 Bits â†’ 1 Opt. Code</span>
+                            <span><i class="fa-solid fa-right-left"></i> 100 Bits → 1 Opt. Code</span>
                             <span class="code-btn-cost">Cost: 100 bits</span>
                         </button>
                     </div>
@@ -336,7 +405,7 @@
     <div id="contractModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2 style="color:#fff">ðŸ“œ Available Contracts</h2>
+                <h2 style="color:#fff">📜 Available Contracts</h2>
                 <button class="btn" onclick="document.getElementById('contractModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body" id="contractList"></div>
@@ -492,7 +561,7 @@
             </div>
             <div class="modal-body">
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 48px; margin-bottom: 10px;">ðŸŽ</div>
+                    <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
                     <h3 style="color: #fbbf24; margin-bottom: 5px;">Login Streak: <span id="streakDisplay">0</span> Days</h3>
                     <p style="color: var(--text-muted); font-size: 12px;">Come back every day for bigger rewards!</p>
                 </div>
@@ -584,7 +653,7 @@
                 <h2 style="color:#10b981"><i class="fa-solid fa-clock"></i> Welcome Back!</h2>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <div style="font-size: 64px; margin-bottom: 15px;">ðŸ’¤</div>
+                <div style="font-size: 64px; margin-bottom: 15px;">💤</div>
                 <h3 style="color: #fff; margin-bottom: 10px;">You were away for</h3>
                 <p id="offlineTime" style="font-size: 24px; color: #10b981; font-weight: bold; margin-bottom: 20px;">0 hours</p>
                 
@@ -630,7 +699,7 @@
                         </button>
                     </div>
                     
-                    <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">â€” OR â€”</div>
+                    <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">— OR —</div>
                     
                     <div class="help-section">
                         <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
@@ -905,7 +974,7 @@
                 </div>
                 <div class="code-actions">
                     <button class="code-btn" id="sidebarConvertBtn" onclick="convertCodeBits()">
-                        <span>100 Bits â†’ Opt Code</span>
+                        <span>100 Bits → Opt Code</span>
                     </button>
                 </div>
                 <div style="margin-top: 10px;">
@@ -925,7 +994,7 @@
                 <div class="heat-container">
                     <div style="display:flex; justify-content:space-between; font-size:10px; color:#a0aec0; margin-bottom:2px;">
                         <span>Router Heat</span>
-                        <span id="heatText">0Â°C</span>
+                        <span id="heatText">0°C</span>
                     </div>
                     <div class="heat-track">
                         <div class="heat-fill" id="heatBar"></div>
@@ -991,8 +1060,6 @@
             <div class="items-tray" id="tray"></div>
         </div>
     </div>
-
-    
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>
-
