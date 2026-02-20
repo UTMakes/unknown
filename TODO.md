@@ -1,9 +1,72 @@
-# Task checklist
-Quick reminder this is a github repo project and it is being deployed on vercel.
+# 📋 TODO — Upload Labs: Network Empire
 
-- [x] Add a fun but practically new node to gameplay — Task one
-- [x]Slow make this a more modular system so at the start the website game should still deploy normal with this big index.html Task two
-- []enhance visuals Task three
-- [x] Work on incomplete functions in the game — Task four
-- [x] Cloud functions not working and broken game after semi modular system — Task five
-- [x] Fix any errors in code anything red lined - task six
+> **Project:** Cyberpunk network management idle game  
+> **Deployment:** Vercel  
+> **Build Tool:** Vite (dev only)  
+> **Repo:** GitHub
+
+---
+
+## ✅ Completed
+
+### Features
+
+- [x] Add a fun but practical new node to gameplay — _Task 1_
+
+### Improvements
+
+- [x] Modularize the system — start transitioning from monolithic `index.html` while keeping the game deployable — _Task 2_
+- [x] **Enhance visuals** — _Task 3_
+  > Improved game visual presentation and UI polish:
+  >
+  > - Added ambient glow effects to canvas background with color-shifting animation
+  > - Added cyberpunk scanline overlay on canvas
+  > - Enhanced header/toolbar/sidebar with animated gradient border glows
+  > - Added type-colored glow effects on node hover (core, download, upload, infra, lab, special, advanced)
+  > - Enhanced cable glow effects with drop-shadow filters
+  > - Enhanced port hover effects with multi-layered glow
+  > - Added working node spinning conic-gradient animation
+  > - Enhanced particle variety (multi-colored: blue, purple, cyan, gold)
+  > - Added grid breathing animation and drift effect
+  > - Enhanced panel hover effects with top glow line
+  > - Enhanced shop item hover with radial glow
+  > - Enhanced stat box micro-interactions with text glow
+  > - Added prestige button spinning conic-gradient effect
+  > - Enhanced modal backdrop with radial gradient
+  > - Added smooth game container fade-in animation
+  > - Enhanced selection box with glow effects
+  > - Improved focus states for accessibility
+  > - Fixed orphaned CSS properties (broken code at line ~779)
+  > - Added font smoothing and text rendering optimization
+
+### Bug Fixes
+
+- [x] Work on incomplete functions in the game — _Task 4_
+- [x] Fix broken cloud functions and game breakage after semi-modular refactor — _Task 5_
+- [x] Fix all red-lined code errors — _Task 6_
+- [x] **Fix Vercel deployment: game content not loading** — _Task 7_
+  > Root cause: Vite build (`vite build`) failed due to inline `<script type="module">` tags and non-module script references that Vite 7.x couldn't process. Vercel was attempting to run the build step, which failed, resulting in missing game content.
+  >
+  > Fixes applied:
+  >
+  > - Created `vite.config.js` for local dev server configuration
+  > - Updated `vercel.json` with `"framework": null` and `"buildCommand": ""` to serve as static files (no build step needed)
+  > - Set `"outputDirectory": "."` to serve from project root
+  > - Extracted inline Firebase module script to `js/firebase-init.js` for cleaner architecture and Vite dev compatibility
+  > - Added proper caching headers for JS and CSS assets
+
+---
+
+## 🔧 In Progress / Pending
+
+_No pending tasks at this time._
+
+---
+
+## 📝 Notes
+
+- This is a GitHub repo deployed on Vercel
+- The game uses a large monolithic structure (`index.html` ~65KB, `game.js` ~188KB, `styles.css` ~78KB)
+- Modularization effort is ongoing (Task 2 completed initial phase)
+- Vercel deployment uses static file serving (no build step) — Vite is used for local dev only
+- Firebase init was extracted to `js/firebase-init.js` for better modularity
