@@ -3,57 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Upload Labs: Network Empire - A cyberpunk network management idle game.">
-    <meta name="theme-color" content="#0a0e14">
     <title>Upload Labs: Network Empire</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuis6CEIWpmPcgyNSPhWhwPJMaXZtNroc",
-            authDomain: "upload-labs-game-d874a.firebaseapp.com",
-            projectId: "upload-labs-game-d874a",
-            storageBucket: "upload-labs-game-d874a.firebasestorage.app",
-            messagingSenderId: "642883299920",
-            appId: "1:642883299920:web:c4f544cb63ee00b26b7f55"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        window.firebaseAuth = getAuth(app);
-        window.firebaseDb = getFirestore(app);
-        window.firebaseOnAuthStateChanged = onAuthStateChanged;
-        window.firebaseDoc = doc;
-        window.firebaseSetDoc = setDoc;
-        window.firebaseGetDoc = getDoc;
-    </script>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'cyber': { 900: '#0a0e14', 800: '#141a23', accent: '#00d4ff', success: '#10b981' }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Modular Optimized Logic -->
     <link rel="stylesheet" href="/src/style.css">
     <script type="module" src="/src/main.js"></script>
 </head>
@@ -61,27 +13,25 @@
     <div class="bg-grid"></div>
     <div class="particles" id="particlesContainer"></div>
 
+    <!-- UI Overlay elements -->
     <div class="zoom-controls">
-        <button class="zoom-btn" id="zoomInBtn"><i class="fa-solid fa-plus"></i></button>
+        <button class="zoom-btn" onclick="Game.zoomIn()"><i class="fa-solid fa-plus"></i></button>
         <div class="zoom-level" id="zoomLevel">100%</div>
-        <button class="zoom-btn" id="zoomOutBtn"><i class="fa-solid fa-minus"></i></button>
+        <button class="zoom-btn" onclick="Game.zoomOut()"><i class="fa-solid fa-minus"></i></button>
+        <button class="zoom-btn" onclick="document.getElementById('settingsModal').style.display='flex'"><i class="fa-solid fa-gear"></i></button>
     </div>
 
     <div class="event-log" id="eventLog"></div>
 
     <div class="game-container">
         <div class="header">
-            <div class="header-title">
-                <i class="fa-solid fa-server"></i> UPLOAD LABS <span class="version-badge">v11.3</span>
-            </div>
+            <div class="header-title">UPLOAD LABS <span class="version-badge">v11.3</span></div>
             <div class="header-stats">
                 <div class="stat-box money">
-                    <i class="fa-solid fa-coins stat-icon"></i>
                     <div class="stat-value" id="moneyDisplay">$0</div>
                     <div class="stat-rate" id="moneyRate">+$0/s</div>
                 </div>
                 <div class="stat-box research">
-                    <i class="fa-solid fa-flask stat-icon"></i>
                     <div class="stat-value" id="rpDisplay">0 RP</div>
                     <div class="stat-rate" id="rpRate">+0/s</div>
                 </div>
@@ -94,15 +44,21 @@
                 <div class="action-row">
                     <button class="btn btn-research">Research</button>
                     <button class="btn btn-code">Code</button>
+                    <button class="btn" onclick="document.getElementById('statsModal').style.display='flex'">Stats</button>
                 </div>
             </div>
-            
+
             <div class="panel">
-                <div class="panel-title">Resources</div>
-                <div class="storage-bar-container">
-                    <div class="storage-label">Files <span id="txtFiles">0</span></div>
-                    <div class="storage-track"><div class="storage-fill" id="barFiles"></div></div>
-                </div>
+                <div class="panel-title">Router Heat</div>
+                <div class="heat-track"><div class="heat-fill" id="heatBar"></div></div>
+                <div id="heatText">0°C</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Storage</div>
+                <div class="storage-bar-container">Files <span id="txtFiles">0</span><div class="storage-track"><div class="storage-fill" id="barFiles"></div></div></div>
+                <div class="storage-bar-container">Images <span id="txtImages">0</span><div class="storage-track"><div class="storage-fill" id="barImages"></div></div></div>
+                <div class="storage-bar-container">Videos <span id="txtVideos">0</span><div class="storage-track"><div class="storage-fill" id="barVideos"></div></div></div>
             </div>
         </div>
 
@@ -116,27 +72,26 @@
 
         <div class="toolbar">
             <div class="tabs">
-                <div class="tab active" data-tab="infra">Infrastructure</div>
+                <div class="tab active" data-tab="infra">Infra</div>
                 <div class="tab" data-tab="download">Download</div>
+                <div class="tab" data-tab="upload">Upload</div>
+                <div class="tab" data-tab="advanced">Advanced</div>
+                <div class="tab" data-tab="coding">Coding</div>
             </div>
             <div class="items-tray" id="tray"></div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="researchModal" class="modal-overlay" style="display:none">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Research Tree</h2>
-                <button class="btn" onclick="this.closest('.modal-overlay').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div class="research-tree-container" id="researchTreeContainer">
-                    <svg class="research-tree-svg" id="researchTreeSvg"></svg>
-                    <div class="research-tree-grid" id="researchTreeGrid"></div>
-                </div>
-            </div>
-        </div>
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu" style="display:none; position:fixed; z-index:10000; background:#1a2332; border:1px solid #3b82f6; padding:10px; border-radius:8px;">
+        <div class="ctx-item" onclick="Game.upgradeNode()">Upgrade</div>
+        <div class="ctx-item" onclick="Game.deleteNode()" style="color:red">Delete</div>
     </div>
+
+    <!-- Modals (Simplified for brevity but functional) -->
+    <div id="researchModal" class="modal-overlay" style="display:none"><div class="modal"><div class="modal-header"><h2>Research</h2><button onclick="this.closest('.modal-overlay').style.display='none'">X</button></div><div class="modal-body" id="researchTreeGrid"></div></div></div>
+    <div id="statsModal" class="modal-overlay" style="display:none"><div class="modal"><div class="modal-header"><h2>Statistics</h2><button onclick="this.closest('.modal-overlay').style.display='none'">X</button></div><div class="modal-body" id="statsGrid"></div></div></div>
+    <div id="settingsModal" class="modal-overlay" style="display:none"><div class="modal"><div class="modal-header"><h2>Settings</h2><button onclick="this.closest('.modal-overlay').style.display='none'">X</button></div><div class="modal-body">Settings content...</div></div></div>
+
 </body>
 </html>

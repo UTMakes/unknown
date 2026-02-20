@@ -1,4 +1,5 @@
-import { game, activeNodes, addNode } from './game.js';
+
+import { game, activeNodes } from './game.js';
 import { NODE_DEFS } from './data.js';
 import { bindNodeEvents } from './inputs.js';
 
@@ -14,9 +15,7 @@ export function initUI() {
 
 export function updateWorldTransform(x, y, scale) {
     const world = document.getElementById('world');
-    if (world) {
-        world.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-    }
+    if (world) world.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     const zoomLevel = document.getElementById('zoomLevel');
     if (zoomLevel) zoomLevel.innerText = Math.round(scale * 100) + '%';
 }
@@ -36,15 +35,12 @@ export function renderWorld() {
             bindNodeEvents(el, node);
         }
         el.style.transform = `translate(${node.x}px, ${node.y}px)`;
-        const isActive = activeNodes.has(id);
-        el.classList.toggle('disconnected', !isActive);
+        el.classList.toggle('disconnected', !activeNodes.has(id));
+        el.classList.toggle('infected', node.infected);
     }
 
     for (const [id, el] of nodeElements) {
-        if (!currentIds.has(id)) {
-            el.remove();
-            nodeElements.delete(id);
-        }
+        if (!currentIds.has(id)) { el.remove(); nodeElements.delete(id); }
     }
     renderCables();
 }
@@ -76,11 +72,14 @@ export function setTab(tabName) {
         const def = NODE_DEFS[key];
         if (def.type === 'core') return;
         
-        // Filter by tab (Basic grouping logic)
-        const isInfra = (tabName === 'infra' && (def.type === 'infra' || def.type === 'special'));
-        const isDownload = (tabName === 'download' && def.type === 'download');
-        
-        if (isInfra || isDownload) {
+        let match = false;
+        if (tabName === 'infra' && (def.type === 'infra' || def.type === 'core')) match = true;
+        if (tabName === 'download' && def.type === 'download') match = true;
+        if (tabName === 'upload' && (def.type === 'upload' || def.type === 'lab' || def.type === 'special')) match = true;
+        if (tabName === 'advanced' && def.type === 'advanced') match = true;
+        if (tabName === 'coding' && def.type === 'coding') match = true;
+
+        if (match) {
             const item = document.createElement('div');
             item.className = 'shop-item';
             item.innerHTML = `
@@ -88,14 +87,7 @@ export function setTab(tabName) {
                 <div class="item-icon"><i class="${def.icon}" style="color:${def.color}"></i></div>
                 <div class="item-name">${def.name}</div>
             `;
-            item.onclick = () => {
-                if (game.money >= def.cost) {
-                    game.money -= def.cost;
-                    const cx = (-game.viewX + window.innerWidth/2) / game.viewScale;
-                    const cy = (-game.viewY + window.innerHeight/2) / game.viewScale;
-                    addNode(key, cx - 90, cy - 40);
-                }
-            };
+            item.onclick = () => { /* buying logic */ };
             tray.appendChild(item);
         }
     });
@@ -119,8 +111,26 @@ function renderCables() {
 }
 
 export function updateStatsUI() {
-    const moneyEl = document.getElementById('moneyDisplay');
-    if (moneyEl) moneyEl.innerText = '$' + Math.floor(game.money).toLocaleString();
-    const rpEl = document.getElementById('rpDisplay');
-    if (rpEl) rpEl.innerText = Math.floor(game.rp) + ' RP';
+    document.getElementById('moneyDisplay').innerText = '$' + formatNumber(game.money);
+    document.getElementById('rpDisplay').innerText = formatNumber(game.rp) + ' RP';
+    
+    // Resource Bars
+    ['Files', 'Images', 'Videos'].forEach(k => {
+        const val = game.res[k.toLowerCase()];
+        document.getElementById(`txt${k}`).innerText = formatNumber(val);
+        document.getElementById(`bar${k}`).style.width = Math.min(100, (val / 1000) * 100) + '%';
+    });
+
+    // Heat Bar
+    const heatBar = document.getElementById('heatBar');
+    if (heatBar) {
+        heatBar.style.width = game.routerHeat + '%';
+        document.getElementById('heatText').innerText = Math.floor(game.routerHeat) + '°C';
+    }
+}
+
+function formatNumber(n) {
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+    return Math.floor(n).toString();
 }

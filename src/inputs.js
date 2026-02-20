@@ -1,17 +1,16 @@
-
-import { game, addConnection, removeConnection, addNode, removeNode } from './game.js';
+import { game, addConnection, removeNode } from './game.js';
 import { updateWorldTransform } from './ui.js';
 
 let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
-let view = { x: 0, y: 0, scale: 1 }; // Internal state for inputs
+let portDrag = { active: false, srcId: null };
 
-export function setupInputs(viewport, world, scaleRef) {
-    // Panning
+export function setupInputs(viewport) {
     viewport.onmousedown = (e) => {
         if (e.target.closest('.node')) return;
         drag.active = true;
         drag.startX = e.clientX; drag.startY = e.clientY;
         drag.offX = game.viewX || 0; drag.offY = game.viewY || 0;
+        document.getElementById('contextMenu').style.display = 'none';
     };
 
     window.onmousemove = (e) => {
@@ -27,12 +26,12 @@ export function setupInputs(viewport, world, scaleRef) {
         }
     };
 
-    window.onmouseup = () => {
+    window.onmouseup = (e) => {
         drag.active = false;
         drag.node = null;
+        portDrag.active = false;
     };
 
-    // Zooming
     viewport.onwheel = (e) => {
         e.preventDefault();
         const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
@@ -43,9 +42,35 @@ export function setupInputs(viewport, world, scaleRef) {
 
 export function bindNodeEvents(el, node) {
     el.onmousedown = (e) => {
-        if (e.target.classList.contains('port')) return;
+        if (e.button === 2) { // Right Click
+            e.preventDefault();
+            showContextMenu(node, e);
+            return;
+        }
+        if (e.target.classList.contains('port')) {
+            portDrag.active = true;
+            portDrag.srcId = node.id;
+            e.stopPropagation();
+            return;
+        }
         drag.node = node;
         drag.sx = e.clientX; drag.sy = e.clientY;
         drag.node.ix = node.x; drag.node.iy = node.y;
     };
+
+    el.onmouseup = (e) => {
+        if (portDrag.active && portDrag.srcId !== node.id) {
+            addConnection(portDrag.srcId, node.id);
+        }
+    };
+}
+
+function showContextMenu(node, e) {
+    const menu = document.getElementById('contextMenu');
+    menu.style.display = 'block';
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    
+    // Bind actions to this specific node
+    window.selectedNodeId = node.id;
 }
