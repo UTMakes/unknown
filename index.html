@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Upload Labs: Network Empire - A cyberpunk network management idle game. Build your data empire, research technologies, and optimize your network!">
     <meta name="theme-color" content="#0a0e14">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- Open Graph / Social Media -->
@@ -134,53 +134,49 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v11.3</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v12.0</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
                         <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Money Bug:</strong> Fixed income dropping to $0 at high money values</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge balance">Balance</span>
-                            <span><strong>Economy:</strong> Reduced income from all sources by 20-50%</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Cryo Cooler:</strong> End-game cooling node (req: Cryogenic Cooling tech)</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Overclock Scaling:</strong> Each level adds +0.5x speed but +5 heat/sec</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Cable Rendering:</strong> Fixed black background on cables, smoother dragging</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Performance:</strong> Major lag reduction with optimized cable updates</span>
+                            <span class="changelog-badge ui">UI</span>
+                            <span><strong>Visual Overhaul:</strong> Ambient glow effects, scanline overlay, animated borders</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge ui">UI</span>
-                            <span><strong>Settings:</strong> Moved to zoom controls panel for better access</span>
+                            <span><strong>Node Glow:</strong> Type-colored glow effects on hover for all node types</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge ui">UI</span>
-                            <span><strong>Event Log:</strong> Relocated to prevent overlap with controls</span>
+                            <span><strong>Particles:</strong> Multi-colored particle variety (blue, purple, cyan, gold)</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Text Overflow:</strong> Fixed cut-off text on buttons and nodes</span>
+                            <span><strong>Deployment:</strong> Fixed Vercel deployment — game content now loads properly</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Health Check:</strong> Fixed false emergency recovery on every page load</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Encoding:</strong> Fixed corrupted bullet and checkmark characters</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Forms:</strong> Login/register fields now in proper form elements</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge ui">UI</span>
-                            <span><strong>Visual Polish:</strong> Enhanced glassmorphism effects throughout</span>
+                            <span><strong>Cables:</strong> Enhanced glow effects with drop-shadow filters</span>
                         </li>
                         <li class="changelog-item">
                             <span class="changelog-badge new">New</span>
-                            <span><strong>Welcome Panel:</strong> Restructured with dedicated changelog panel</span>
+                            <span><strong>Form Styling:</strong> Improved input fields with focus states</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Clean Code:</strong> Removed duplicate CSS/JS, extracted inline styles</span>
                         </li>
                     </ul>
                 </div>
@@ -188,7 +184,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v11.3</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v12.0</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -238,64 +234,64 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v11.3</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v12.0</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
-                            <div class="feature-icon new" style="background: linear-gradient(135deg, #22d3ee, #0891b2);"><i class="fa-solid fa-snowflake"></i></div>
+                            <div class="feature-icon new" style="background: linear-gradient(135deg, #60a5fa, #3b82f6);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                             <div class="feature-content">
-                                <h4>NEW: Cryo Cooling!</h4>
-                                <p>End-game cooling nodes to counteract overclocking heat. Unlock with Cryogenic Cooling tech!</p>
+                                <h4>Visual Overhaul!</h4>
+                                <p>Ambient glow effects, cyberpunk scanlines, animated borders, and enhanced node glow effects!</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-rocket"></i></div>
+                            <div class="feature-content">
+                                <h4>Deployment Fixed!</h4>
+                                <p>Game now loads properly on Vercel. Static file serving with optimized caching headers.</p>
+                            </div>
+                        </li>
+                        <li class="feature-item">
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-palette"></i></div>
+                            <div class="feature-content">
+                                <h4>Enhanced Particles!</h4>
+                                <p>Multi-colored floating particles in blue, purple, cyan, and gold. Grid breathing animation!</p>
                             </div>
                         </li>
                         <li class="feature-item">
                             <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-bolt"></i></div>
                             <div class="feature-content">
-                                <h4>Overclock Scaling!</h4>
-                                <p>Each overclocker level now adds +0.5x speed but generates more heat. Strategy matters!</p>
+                                <h4>Cable Glow Effects!</h4>
+                                <p>Enhanced cable rendering with type-colored glow filters for power, money, and code flows.</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fa-solid fa-scale-balanced"></i></div>
-                            <div class="feature-content">
-                                <h4>Game Rebalanced!</h4>
-                                <p>Reduced income from nodes, resources, and boosts. Longer progression, more strategic depth!</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-bug"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fa-solid fa-bug-slash"></i></div>
                             <div class="feature-content">
                                 <h4>Bug Fixes!</h4>
-                                <p>Fixed money display issues and added safety checks for large numbers. More stable economy!</p>
+                                <p>Fixed false emergency recovery, encoding issues, form warnings, and duplicate code.</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-scissors"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);"><i class="fa-solid fa-code"></i></div>
                             <div class="feature-content">
-                                <h4>Cable Deletion!</h4>
-                                <p>Press X or click "Delete Cables" to remove connections. Get $5 refund per cable!</p>
+                                <h4>Clean Code!</h4>
+                                <p>Extracted inline styles to CSS classes, removed duplicates, improved code organization.</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-cloud"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fa-solid fa-fire"></i></div>
                             <div class="feature-content">
-                                <h4>Cloud Save!</h4>
-                                <p>Save your progress to Firebase and play anywhere! Automatic sync every 5 minutes.</p>
+                                <h4>Firebase Modularized!</h4>
+                                <p>Firebase initialization extracted to separate module for better architecture.</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-trophy"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #22d3ee, #0891b2);"><i class="fa-solid fa-universal-access"></i></div>
                             <div class="feature-content">
-                                <h4>Achievements System!</h4>
-                                <p>25+ achievements to unlock! Earn rewards for reaching milestones and completing challenges.</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-rotate"></i></div>
-                            <div class="feature-content">
-                                <h4>Prestige System!</h4>
-                                <p>Migrate your data center to gain permanent +100% speed bonuses. Stackable rewards!</p>
+                                <h4>Accessibility!</h4>
+                                <p>Added focus-visible states, improved form inputs with focus styling and autocomplete.</p>
                             </div>
                         </li>
                     </ul>
@@ -563,13 +559,13 @@
                 <button class="btn" onclick="document.getElementById('settingsModal').style.display='none'">Close</button>
             </div>
             <div class="modal-body">
-                <div class="settings-section" style="margin-bottom: 20px;">
-                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Game Options</h3>
+                <div class="settings-section">
+                    <h3>Game Options</h3>
                     
-                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px;">
+                    <div class="setting-item">
                         <div>
-                            <div style="font-weight: 600;"><i class="fa-solid fa-floppy-disk" style="color: #3b82f6; margin-right: 8px;"></i> Auto-Save</div>
-                            <div style="font-size: 11px; color: var(--text-muted);">Automatically save every minute</div>
+                            <div class="setting-item-label"><i class="fa-solid fa-floppy-disk" style="color: #3b82f6; margin-right: 8px;"></i> Auto-Save</div>
+                            <div class="setting-item-desc">Automatically save every minute</div>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)">
@@ -577,10 +573,10 @@
                         </label>
                     </div>
                     
-                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px;">
+                    <div class="setting-item">
                         <div>
-                            <div style="font-weight: 600;"><i class="fa-solid fa-clock" style="color: #8b5cf6; margin-right: 8px;"></i> Offline Earnings</div>
-                            <div style="font-size: 11px; color: var(--text-muted);">Earn 50% while away (up to 12h)</div>
+                            <div class="setting-item-label"><i class="fa-solid fa-clock" style="color: #8b5cf6; margin-right: 8px;"></i> Offline Earnings</div>
+                            <div class="setting-item-desc">Earn 50% while away (up to 12h)</div>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)">
@@ -588,10 +584,10 @@
                         </label>
                     </div>
                     
-                    <div class="setting-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <div class="setting-item">
                         <div>
-                            <div style="font-weight: 600;"><i class="fa-solid fa-bell" style="color: #f59e0b; margin-right: 8px;"></i> Notifications</div>
-                            <div style="font-size: 11px; color: var(--text-muted);">Show achievement popups</div>
+                            <div class="setting-item-label"><i class="fa-solid fa-bell" style="color: #f59e0b; margin-right: 8px;"></i> Notifications</div>
+                            <div class="setting-item-desc">Show achievement popups</div>
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)">
@@ -600,8 +596,8 @@
                     </div>
                 </div>
                 
-                <div class="settings-section" style="margin-bottom: 20px;">
-                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Save Management</h3>
+                <div class="settings-section">
+                    <h3>Save Management</h3>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn" onclick="exportSave(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white;">
                             <i class="fa-solid fa-download"></i> Export Save
@@ -613,7 +609,7 @@
                 </div>
                 
                 <div class="settings-section">
-                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Danger Zone</h3>
+                    <h3>Danger Zone</h3>
                     <button class="btn" onclick="Game.clearSaveAndReset();" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
                         <i class="fa-solid fa-trash"></i> Clear Save & Reset
                     </button>
@@ -667,27 +663,31 @@
                 <div id="accountLoggedOut">
                     <div class="help-section">
                         <h3><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
-                        <div style="margin-bottom: 15px;">
-                            <input type="email" id="loginEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
-                            <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
-                        </div>
-                        <button class="btn btn-primary" style="width: 100%;" onclick="loginUser()">
-                            <i class="fa-solid fa-sign-in-alt"></i> Login
-                        </button>
+                        <form onsubmit="event.preventDefault(); loginUser();" autocomplete="on">
+                            <div style="margin-bottom: 15px;">
+                                <input type="email" id="loginEmail" class="form-input" placeholder="Email" autocomplete="email">
+                                <input type="password" id="loginPassword" class="form-input" placeholder="Password" autocomplete="current-password">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fa-solid fa-sign-in-alt"></i> Login
+                            </button>
+                        </form>
                     </div>
                     
                     <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">— OR —</div>
                     
                     <div class="help-section">
                         <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
-                        <div style="margin-bottom: 15px;">
-                            <input type="text" id="registerDisplayName" placeholder="Display Name" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
-                            <input type="email" id="registerEmail" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
-                            <input type="password" id="registerPassword" placeholder="Password (min 6 chars)" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; color: #fff;">
-                        </div>
-                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white;" onclick="registerUser()">
-                            <i class="fa-solid fa-user-plus"></i> Create Account
-                        </button>
+                        <form onsubmit="event.preventDefault(); registerUser();" autocomplete="on">
+                            <div style="margin-bottom: 15px;">
+                                <input type="text" id="registerDisplayName" class="form-input" placeholder="Display Name" autocomplete="name">
+                                <input type="email" id="registerEmail" class="form-input" placeholder="Email" autocomplete="email">
+                                <input type="password" id="registerPassword" class="form-input" placeholder="Password (min 6 chars)" autocomplete="new-password">
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                                <i class="fa-solid fa-user-plus"></i> Create Account
+                            </button>
+                        </form>
                     </div>
                 </div>
                 
@@ -822,7 +822,7 @@
     <div class="game-container">
         <div class="header">
             <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v11.3</span>
+                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v12.0</span>
             </div>
             <div class="header-stats">
                 <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">

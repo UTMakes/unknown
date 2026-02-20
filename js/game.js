@@ -1,4 +1,4 @@
-        const GAME_VERSION = "11.3";
+        const GAME_VERSION = "12.0";
 
         // --- CONFIGURATION ---
         
@@ -395,6 +395,7 @@
 
         function init() {
             if (game.nodes.length === 0) spawnNode('router', 2500, 2500);
+            updateConnectivity();
             renderWorld();
             updateUI();
             logEvent("System initialized.");
@@ -3399,12 +3400,6 @@
             return false;
         }
         
-        function toggleSetting(setting, value) {
-            game[setting] = value;
-            logEvent(`${setting.replace('Enabled', '')} ${value ? 'enabled' : 'disabled'}`, 'info');
-            autoSaveLocal();
-        }
-
         // ==================== MILESTONES SYSTEM ====================
         function checkMilestones() {
             MILESTONES.forEach(milestone => {
@@ -3634,11 +3629,21 @@
         }
         
         // Check game health periodically
+        let healthCheckSkips = 2; // Skip first 2 checks to allow game to initialize
         function checkGameHealth() {
+            if (healthCheckSkips > 0) {
+                healthCheckSkips--;
+                return;
+            }
+            
             // Check for stuck game (no generation)
             if (game.nodes.length > 0 && activeNodes.size === 0) {
                 console.warn('Game health check: No active nodes but nodes exist');
-                emergencyRecover();
+                // Try updateConnectivity first before full recovery
+                updateConnectivity();
+                if (activeNodes.size === 0) {
+                    emergencyRecover();
+                }
             }
             
             // Check for NaN values

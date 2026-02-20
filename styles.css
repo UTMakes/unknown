@@ -797,7 +797,7 @@
             transform: translateX(4px);
         }
         .instructions-list li::before { 
-            content: 'â–¸'; 
+            content: '\25B8'; 
             position: absolute; 
             left: 0; 
             color: #60a5fa;
@@ -955,7 +955,6 @@
         }
         .node.infected .clean-btn { display: block; }
         .node:hover { border-color: var(--text-muted); }
-        .node.selected { border-color: var(--accent-color); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.6); z-index: 20; }
 
         .node-header { 
             padding: 10px 12px; 
@@ -1282,7 +1281,6 @@
             gap: 12px;
         }
         .feature-item:last-child { border-bottom: none; }
-        .feature-item:last-child { border-bottom: none; }
         .feature-icon { 
             width: 36px; 
             height: 36px; 
@@ -1399,9 +1397,6 @@
         .research-tree-container::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 6px; }
         .research-tree-container::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
 
-        .modal-header { padding: 20px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 20px; overflow-y: auto; }
-
         /* Research Tree - Optimized */
         .research-tree-container { 
             position: relative; 
@@ -1465,9 +1460,9 @@
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)); 
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.25); 
         }
-        .tech-card.owned::after { 
-            content: "âœ“"; 
-            position: absolute; 
+        .tech-card.owned::after {
+            content: "\2713";
+            position: absolute;
             top: -8px; 
             right: -8px; 
             background: var(--success); 
@@ -2471,6 +2466,72 @@
         .tech-card:focus-visible {
             outline: 2px solid rgba(59, 130, 246, 0.5);
             outline-offset: 2px;
+        }
+
+        /* === Form Input Styles (extracted from inline) === */
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 13px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        .form-input + .form-input {
+            margin-top: 10px;
+        }
+
+        /* === Setting Item Styles (extracted from inline) === */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s ease;
+        }
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+        .setting-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .setting-item-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+        .setting-item-desc {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+        }
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+        .settings-section h3 {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* === Enhanced Disabled State === */
