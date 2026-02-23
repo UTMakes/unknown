@@ -45,6 +45,31 @@
 
 ## 🔧 In Progress / Pending
 
+### 🚀 Upcoming Features & Improvements
+
+| Priority | Task                                                  |
+| -------- | ----------------------------------------------------- |
+| 🔴 High  | Create Desktop App (.exe) using Electron              |
+| 🔴 High  | Modularize `game.js` - Phase 2                        |
+| 🟡 Med   | Expand Coding System mechanics                        |
+| 🟡 Med   | Migrate Tailwind from CDN to Local Vite Build         |
+| 🟢 Low   | Fix package version in `package.json` to match `12.1` |
+
+- [ ] **Create Desktop App (.exe) using Electron** — _Task 11_
+  > - Wrap the existing web game into a standalone Windows executable.
+  > - Use Electron, which acts as a bundled Chromium browser that runs the local Vite build.
+  > - This requires no backend server. Game logic stays client-side, and saves continue using Firebase.
+  > - The Vercel web deployment will remain exactly the same.
+- [ ] **Modularize `game.js` - Phase 2** — _Task 12_
+  > - Split monolithic `game.js` (3700+ lines) into separate modules (`engine.js`, `ui.js`, `save.js`, `data.js`, etc.)
+  > - Use ES modules implementation for cleaner imports and structure
+- [ ] **Expand Coding System mechanics** — _Task 13_
+  > - Expand the usefulness of Code Bits and provide an upgrade tree specifically for the Coder node line or a dedicated Coding mini-game
+- [ ] **Migrate Tailwind from CDN to Local Vite Build** — _Task 14_
+  > - Process Tailwind CSS locally instead of via CDN script to improve production loading speeds
+- [ ] **Sync Package Versioning** — _Task 15_
+  > - Update `package.json` version string from `10.0.0` to `12.1.0` to match the actual game timeline
+
 ### 📦 Maintenance
 
 | Priority | Task                       |
