@@ -51,6 +51,10 @@
 - [x] **Expand Coding System mechanics** — _Task 13_
   > - Added Coding Upgrade Tree with 9 upgrades across 3 tiers (Basic, Intermediate, Advanced)
   > - Upgrades boost code speed, reduce conversion costs, enable passive income, and enhance compilers
+- [x] **Migrate Tailwind from CDN to Local Vite Build** — _Task 14_
+  > - Process Tailwind CSS locally instead of via CDN script to improve production loading speeds
+- [x] **Sync Package Versioning** — _Task 15_
+  > - Update `package.json` version string from `10.0.0` to `13.0.0` to match the actual game timeline
 
 ---
 
@@ -58,15 +62,7 @@
 
 ### 🚀 Upcoming Features & Improvements
 
-| Priority | Task                                                  |
-| -------- | ----------------------------------------------------- |
-| 🟡 Med   | Migrate Tailwind from CDN to Local Vite Build         |
-| 🟢 Low   | Fix package version in `package.json` to match `13.0` |
-
-- [ ] **Migrate Tailwind from CDN to Local Vite Build** — _Task 14_
-  > - Process Tailwind CSS locally instead of via CDN script to improve production loading speeds
-- [ ] **Sync Package Versioning** — _Task 15_
-  > - Update `package.json` version string from `10.0.0` to `13.0.0` to match the actual game timeline
+_(All current tasks have been completed!)_
 
 ### 📦 Maintenance
 

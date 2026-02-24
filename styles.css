@@ -1,4 +1,8 @@
-﻿:root {
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
   --bg-color: #0a0e14;
   --panel-bg: rgba(20, 26, 35, 0.95);
   --border-color: #2a3447;
