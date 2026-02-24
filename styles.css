@@ -3795,3 +3795,39 @@ body {
 .coding-upgrade-card.owned .upgrade-cost {
   color: #10b981;
 }
+
+/* === Ultra Low Performance Mode === */
+body.ultra-low-perf * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.ultra-low-perf .bg-grid {
+  display: none !important;
+}
+
+body.ultra-low-perf .node:hover,
+body.ultra-low-perf .btn:hover,
+body.ultra-low-perf .stat-box:hover,
+body.ultra-low-perf .action-btn:hover {
+  transform: none !important;
+}
+
+body.ultra-low-perf .cable.active {
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+body.ultra-low-perf .router-node .node-icon-bg,
+body.ultra-low-perf .quantum-node .node-icon-bg {
+  animation: none !important;
+}
+
+body.ultra-low-perf .version-badge {
+  animation: none !important;
+}
+
+body.ultra-low-perf .btn-prestige {
+  animation: none !important;
+}

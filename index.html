@@ -101,37 +101,25 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v13.0</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v13.1</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
                         <li class="changelog-item">
                             <span class="changelog-badge new">New</span>
-                            <span><strong>Coding Upgrade Tree:</strong> 9 upgrades in 3 tiers to level up your coding infrastructure</span>
+                            <span><strong>Ultra Low Perf:</strong> Disable costly rendering to improve framerates on old devices</span>
                         </li>
                         <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Code Speed Boosts:</strong> Syntax Highlighting, AI Autocoder, Parallel Threads</span>
+                            <span class="changelog-badge new">Perf</span>
+                            <span><strong>Throttled Updates:</strong> UI refresh rate scales down smartly when low perf mode is on</span>
                         </li>
                         <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Passive Income:</strong> Git VCS turns code bits into money, Open Source earns RP</span>
+                            <span class="changelog-badge new">Perf</span>
+                            <span><strong>Visual Spam filter:</strong> Drastically reduce particles, animations, and flying text</span>
                         </li>
                         <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Cheaper Conversion:</strong> Auto-Complete & Refactoring reduce optimization costs</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Quantum Compiler:</strong> Compilers work 5x faster with this top-tier upgrade</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge ui">UI</span>
-                            <span><strong>Desktop Download:</strong> Premium download button in Settings panel</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Driver Boost:</strong> Code Linter upgrade enhances all driver effects +10%</span>
+                            <span class="changelog-badge fix">Clean</span>
+                            <span><strong>Codebase Optimization:</strong> Game logic continues to be cleaned up and refactored</span>
                         </li>
                     </ul>
                 </div>
@@ -139,7 +127,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v13.0</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v13.1</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -189,7 +177,7 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v13.0</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v13.1</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
@@ -223,7 +211,7 @@
                         </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-code-branch"></i> Version 13.0 - "Coding Evolution"
+                        <i class="fa-solid fa-gauge-simple-high"></i> Version 13.1 - "Performance Update"
                     </div>
                 </div>
             </div>
@@ -563,6 +551,17 @@
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="eventAlertsToggle" checked onchange="toggleSetting('eventAlertsEnabled', this.checked);">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-item-label"><i class="fa-solid fa-gauge-simple" style="color: #ef4444; margin-right: 8px;"></i> Ultra Low Perf</div>
+                            <div class="setting-item-desc">Disables expensive effects for low-end devices</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="ultraLowPerfToggle" onchange="toggleSetting('ultraLowPerfEnabled', this.checked); document.body.classList.toggle('ultra-low-perf', this.checked);">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>

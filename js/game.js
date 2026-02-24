@@ -1,4 +1,4 @@
-﻿        const GAME_VERSION = "13.0";
+﻿        const GAME_VERSION = "13.1";
 
         // --- CONFIGURATION ---
         
@@ -316,6 +316,10 @@
             autoSaveEnabled: true,
             notificationsEnabled: true,
             offlineEarningsEnabled: true,
+            particlesEnabled: true,
+            animationsEnabled: true,
+            eventAlertsEnabled: true,
+            ultraLowPerfEnabled: false,
             lastSaveTime: Date.now(),
             
             // PLAYER INFO
@@ -381,7 +385,8 @@
                 const settingNames = {
                     'autoSaveEnabled': 'Auto-Save',
                     'offlineEarningsEnabled': 'Offline Earnings',
-                    'notificationsEnabled': 'Notifications'
+                    'notificationsEnabled': 'Notifications',
+                    'ultraLowPerfEnabled': 'Ultra Low Performance Mode'
                 };
                 logEvent(`${settingNames[setting] || setting} ${value ? 'enabled' : 'disabled'}`, 'info');
                 autoSaveLocal();
@@ -714,10 +719,11 @@
             
             document.getElementById('prestigeModal').style.display = 'none';
             logEvent(`Data Center Migrated! +50% speed bonus (Total: +${game.prestige * 50}%)`, 'good');
-            showFloat(`MIGRATED! +50% Speed`, window.innerWidth/2, window.innerHeight/2, '#a855f7');
+                showFloat(`MIGRATED! +50% Speed`, window.innerWidth/2, window.innerHeight/2, '#a855f7');
             
             checkAchievements();
         }
+
 
         // ==================== COMBO SYSTEM ====================
         let combo = { count: 0, timer: 0, lastAction: 0 };
@@ -757,6 +763,8 @@
 
         // ==================== PARTICLE EFFECTS ====================
         function spawnParticles(x, y, color, count = 5) {
+            if (game.ultraLowPerfEnabled && Math.random() > 0.1) return; // Drop 90% of particles in ultra-low perf mode
+            
             const world = document.getElementById('world');
             for (let i = 0; i < count; i++) {
                 const p = document.createElement('div');
@@ -1228,8 +1236,9 @@
             updateEvents(dt);
             updateCombo(dt);
             
-            // Throttle UI updates to every 3rd frame for performance
-            if (frameCount % 3 === 0) {
+            // Throttle UI updates for performance
+            const uiThrottle = game.ultraLowPerfEnabled ? 15 : 3;
+            if (frameCount % uiThrottle === 0) {
                 updateStatistics();
                 updatePrestigeUI();
                 updateUI(efficiency);
@@ -2647,11 +2656,13 @@
         }
 
         function workAnim(node) {
+            if (game.ultraLowPerfEnabled && Math.random() > 0.05) return; // Drop 95% of animations in ultra-low perf mode
             const el = document.getElementById(`node-${node.id}`);
             if (el) { el.classList.remove('working'); void el.offsetWidth; el.classList.add('working'); }
         }
         
         function showFloat(txt, x, y, col) {
+            if (game.ultraLowPerfEnabled && Math.random() > 0.1) return; // Drop 90% of floating text in ultra-low perf mode
             const el = document.createElement('div');
             el.className = 'floating-text'; el.innerText = txt;
             el.style.left = x+'px'; el.style.top = y+'px'; el.style.color = col;
