@@ -1,4 +1,4 @@
-﻿        const GAME_VERSION = "12.1";
+﻿        const GAME_VERSION = "13.0";
 
         // --- CONFIGURATION ---
         
@@ -97,6 +97,22 @@
             upload: { name: "Upload Driver", icon: "fa-solid fa-cloud-arrow-up", desc: "+10% upload speed", cost: 1, effect: 0.1 },
             download: { name: "Download Driver", icon: "fa-solid fa-download", desc: "+10% download speed", cost: 1, effect: 0.1 }
         };
+
+        // CODING UPGRADES CONFIGURATION
+        const CODING_UPGRADES = [
+            // Tier 1 - Basic (affordable early)
+            { id: 'syntax_highlight', name: 'Syntax Highlighting', tier: 1, cost: 500, icon: 'fa-solid fa-highlighter', desc: '+25% code generation speed', effect: 'codeSpeed', value: 0.25 },
+            { id: 'autocomplete', name: 'Auto-Complete', tier: 1, cost: 1000, icon: 'fa-solid fa-wand-magic-sparkles', desc: '-20% conversion cost (80 bits)', effect: 'conversionDiscount', value: 20 },
+            { id: 'code_linter', name: 'Code Linter', tier: 1, cost: 1500, icon: 'fa-solid fa-magnifying-glass-chart', desc: '+10% all driver effects', effect: 'driverBoost', value: 0.1 },
+            // Tier 2 - Intermediate
+            { id: 'parallel_threads', name: 'Parallel Threads', tier: 2, cost: 5000, icon: 'fa-solid fa-code-branch', desc: 'Coder nodes generate 2x bits', effect: 'coderDouble', value: 2 },
+            { id: 'git_vcs', name: 'Git Version Control', tier: 2, cost: 8000, icon: 'fa-brands fa-git-alt', desc: 'Code bits → passive money ($1/100 bits/s)', effect: 'codeIncome', value: 0.01 },
+            { id: 'refactoring', name: 'Code Refactoring', tier: 2, cost: 12000, icon: 'fa-solid fa-arrows-rotate', desc: 'Conversion cost halved (50 bits)', effect: 'conversionDiscount', value: 50 },
+            // Tier 3 - Advanced
+            { id: 'ai_autocoder', name: 'AI Autocoder', tier: 3, cost: 30000, icon: 'fa-solid fa-robot', desc: '+100% code gen globally', effect: 'codeSpeed', value: 1.0 },
+            { id: 'open_source_net', name: 'Open Source Network', tier: 3, cost: 50000, icon: 'fa-solid fa-people-group', desc: 'Every 10 code bits → 1 RP', effect: 'codeToRP', value: 0.1 },
+            { id: 'quantum_compiler', name: 'Quantum Compiler', tier: 3, cost: 100000, icon: 'fa-solid fa-atom', desc: 'Compilers work 5x faster', effect: 'compilerSpeed', value: 5 },
+        ];
 
         const TECH_TREE = [
             // Tier 1: Basics (Early game)
@@ -293,6 +309,9 @@
             // MILESTONES
             milestonesCompleted: [],
             
+            // CODING UPGRADES
+            codingUpgrades: [],
+            
             // SETTINGS
             autoSaveEnabled: true,
             notificationsEnabled: true,
@@ -413,7 +432,7 @@
             clearSaveAndReset, showGameInfo, toggleSetting,
             batchUpgrade, toggleAutoBalancer, showNetworkAnalysis,
             installDriver, handleDriverClick, openModal, closeModal, closeAllModals,
-            clearDriverGridCache, debugMoney
+            clearDriverGridCache, debugMoney, buyCodingUpgrade, renderCodingUpgrades
         };
         
         // Log help message for debugging
@@ -851,11 +870,12 @@
             efficiency *= overclockMult;  // Apply scaled overclock multiplier
             if (game.overheatMode) efficiency *= 0.7;
             
-            // Driver effects
-            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
-            const driverUploadMult = 1 + (game.drivers.upload * DRIVERS.upload.effect);
-            const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect);
-            const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect);
+            // Driver effects (boosted by code_linter upgrade)
+            const driverBoostMult = (game.codingUpgrades || []).includes('code_linter') ? 1.1 : 1.0;
+            const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect * driverBoostMult);
+            const driverUploadMult = 1 + (game.drivers.upload * DRIVERS.upload.effect * driverBoostMult);
+            const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect * driverBoostMult);
+            const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect * driverBoostMult);
 
             // Prestige multiplier (doubled in v11: +100% per prestige)
             const prestigeMult = 1 + (game.prestige * 1.0);
@@ -927,28 +947,52 @@
             const devStations = game.nodes.filter(n => n.type === 'dev_station' && activeNodes.has(n.id) && !n.infected);
             const compilers = game.nodes.filter(n => n.type === 'compiler' && activeNodes.has(n.id) && !n.infected);
             
+            // Coding upgrade multipliers
+            const codingUps = game.codingUpgrades || [];
+            let codeSpeedMult = 1;
+            if (codingUps.includes('syntax_highlight')) codeSpeedMult += 0.25;
+            if (codingUps.includes('ai_autocoder')) codeSpeedMult += 1.0;
+            const coderNodeMult = codingUps.includes('parallel_threads') ? 2 : 1;
+            
             let codeGenRate = 0;
             coders.forEach(coder => {
                 const lvlMult = Math.pow(1.2, coder.level - 1);
-                codeGenRate += 6.25 * lvlMult * eventCodeMult; // 6.25 bits per second base (buffed +25% in v11)
+                codeGenRate += 6.25 * lvlMult * eventCodeMult * coderNodeMult;
             });
             devStations.forEach(station => {
                 const lvlMult = Math.pow(1.2, station.level - 1);
-                codeGenRate += 12.5 * lvlMult * eventCodeMult; // 12.5 bits per second (buffed +25% in v11)
+                codeGenRate += 12.5 * lvlMult * eventCodeMult;
             });
+            codeGenRate *= codeSpeedMult;
             
             const bitsGenerated = codeGenRate * dt;
             game.codeBits += bitsGenerated;
             game.stats.totalCodeBits += bitsGenerated;
             
-            // Auto-compiler - benefits from level (more conversion capacity per level)
-            if (compilers.length > 0 && game.codeBits >= 100) {
+            // Auto-compiler - benefits from level and upgrades
+            const compilerConvCost = getConversionCost();
+            const compilerSpeedMult = codingUps.includes('quantum_compiler') ? 5 : 1;
+            if (compilers.length > 0 && game.codeBits >= compilerConvCost) {
                 const totalCompilerPower = compilers.reduce((sum, c) => sum + Math.pow(1.2, c.level - 1), 0);
-                const toConvert = Math.min(Math.floor(game.codeBits / 100), Math.floor(totalCompilerPower * 10));
+                const toConvert = Math.min(Math.floor(game.codeBits / compilerConvCost), Math.floor(totalCompilerPower * 10 * compilerSpeedMult));
                 if (toConvert > 0) {
-                    game.codeBits -= toConvert * 100;
+                    game.codeBits -= toConvert * compilerConvCost;
                     game.optimizationCode += toConvert;
                 }
+            }
+            
+            // Git VCS - passive money from code bits
+            if (codingUps.includes('git_vcs') && codeGenRate > 0) {
+                const codeIncome = codeGenRate * 0.01 * dt;
+                game.money += codeIncome;
+                game.stats.totalMoney += codeIncome;
+            }
+            
+            // Open Source Network - code bits generate RP
+            if (codingUps.includes('open_source_net') && bitsGenerated > 0) {
+                const codeRP = bitsGenerated * 0.1;
+                game.rp += codeRP;
+                game.stats.totalRP += codeRP;
             }
 
             // Process resources
@@ -1420,13 +1464,83 @@
 
         // --- CODE SYSTEM FUNCTIONS ---
         
+        function getConversionCost() {
+            let cost = 100;
+            const upgrades = game.codingUpgrades || [];
+            if (upgrades.includes('refactoring')) cost = 50;
+            else if (upgrades.includes('autocomplete')) cost = 80;
+            return cost;
+        }
+
         function convertCodeBits() {
-            if (game.codeBits >= 100) {
-                game.codeBits -= 100;
+            const cost = getConversionCost();
+            if (game.codeBits >= cost) {
+                game.codeBits -= cost;
                 game.optimizationCode += 1;
-                logEvent("Converted 100 code bits to 1 optimization code", 'code');
+                logEvent(`Converted ${cost} code bits to 1 optimization code`, 'code');
                 updateCodeUI();
             }
+        }
+
+        function buyCodingUpgrade(upgradeId) {
+            const upgrade = CODING_UPGRADES.find(u => u.id === upgradeId);
+            if (!upgrade) return;
+            if ((game.codingUpgrades || []).includes(upgradeId)) return;
+            if (game.codeBits < upgrade.cost) return;
+            
+            // Check tier requirements - all previous tier upgrades must be owned
+            const prevTierUpgrades = CODING_UPGRADES.filter(u => u.tier < upgrade.tier);
+            const ownedCount = prevTierUpgrades.filter(u => (game.codingUpgrades || []).includes(u.id)).length;
+            if (ownedCount < prevTierUpgrades.length) return;
+            
+            game.codeBits -= upgrade.cost;
+            if (!game.codingUpgrades) game.codingUpgrades = [];
+            game.codingUpgrades.push(upgradeId);
+            
+            logEvent(`Coding Upgrade: ${upgrade.name}!`, 'code');
+            showFloat(`${upgrade.name} Unlocked!`, window.innerWidth/2, window.innerHeight/2, '#00d4aa');
+            
+            updateCodeUI();
+            renderCodingUpgrades();
+            clearDriverGridCache();
+            checkAchievements();
+        }
+
+        function renderCodingUpgrades() {
+            const container = document.getElementById('codingUpgradeTree');
+            if (!container) return;
+            
+            const owned = game.codingUpgrades || [];
+            
+            let html = '';
+            [1, 2, 3].forEach(tier => {
+                const tierNames = { 1: 'Basic', 2: 'Intermediate', 3: 'Advanced' };
+                const tierUpgrades = CODING_UPGRADES.filter(u => u.tier === tier);
+                const prevTierUpgrades = CODING_UPGRADES.filter(u => u.tier < tier);
+                const prevOwned = prevTierUpgrades.filter(u => owned.includes(u.id)).length;
+                const tierLocked = prevOwned < prevTierUpgrades.length;
+                
+                html += `<div class="coding-tier">`;
+                html += `<div class="coding-tier-label tier-${tier}">Tier ${tier} \u2014 ${tierNames[tier]}</div>`;
+                html += `<div class="coding-upgrade-grid">`;
+                tierUpgrades.forEach(u => {
+                    const isOwned = owned.includes(u.id);
+                    const canAfford = game.codeBits >= u.cost;
+                    const locked = tierLocked && !isOwned;
+                    const cls = isOwned ? 'owned' : (locked || !canAfford ? 'locked' : '');
+                    html += `
+                        <div class="coding-upgrade-card ${cls}" onclick="${isOwned || locked ? '' : `buyCodingUpgrade('${u.id}')`}">
+                            <div class="upgrade-icon"><i class="${u.icon}"></i></div>
+                            <div class="upgrade-name">${u.name}</div>
+                            <div class="upgrade-desc">${u.desc}</div>
+                            <div class="upgrade-cost">${isOwned ? '<i class="fa-solid fa-check"></i> Owned' : (locked ? '<i class="fa-solid fa-lock"></i> Locked' : `${u.cost.toLocaleString()} Bits`)}</div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+            
+            container.innerHTML = html;
         }
         
         // Optimized driver installation
@@ -1510,11 +1624,13 @@
                 
                 const convertBtn = document.getElementById('convertBitsBtn');
                 const sidebarConvertBtn = document.getElementById('sidebarConvertBtn');
-                if (convertBtn) convertBtn.disabled = game.codeBits < 100;
-                if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < 100;
+                const convCost = getConversionCost();
+                if (convertBtn) convertBtn.disabled = game.codeBits < convCost;
+                if (sidebarConvertBtn) sidebarConvertBtn.disabled = game.codeBits < convCost;
                 
                 updateInstalledDriversList();
                 renderDriverGrid();
+                renderCodingUpgrades();
                 
                 codeUIUpdatePending = false;
             });
