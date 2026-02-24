@@ -4,7 +4,7 @@
 > **Deployment:** Vercel  
 > **Build Tool:** Vite (dev only)  
 > **Repo:** GitHub  
-> **Current Version:** 13.0
+> **Current Version:** 13.1
 
 ---
 
@@ -29,9 +29,11 @@
   > - Added CSS `.reduce-motion` class to disable all animations when toggled off
   > - Settings state persists across sessions via game save
   > - Fixed corrupted emoji characters in cloud save notification messages
+  > - Added "Ultra Low Performance" mode for low-end devices
+  > - Game loop UI updates are throttled appropriately
 - [x] **Keep everything up to date** — _Task 10 (Maintenance)_
-  > - Updated version 12.0 → 12.1
-  > - Updated welcome screen panels with v12.1 content
+  > - Updated version 13.0 → 13.1
+  > - Updated welcome screen panels with v13.1 content
 
 ### Bug Fixes
 
@@ -62,7 +64,30 @@
 
 ### 🚀 Upcoming Features & Improvements
 
-_(All current tasks have been completed!)_
+- [ ] **Implement "Dark Net" Layer** — _High Risk, High Reward_
+  > - Add a toggle for a red/black "Dark Net" view.
+  > - Introduce specialized nodes (Botnets, Zero-Day Miners) that generate high profits but increase a new "Threat Level" stat.
+  > - Add risks: high Threat Level triggers "Traceroute Attacks" or "Server Raids" that disable nodes or steal money.
+  > - Add RP research for "Spoofing" and "Encryption" to mitigate Threat generation.
+- [ ] **Add Corporate Factions & Contracts**
+  > - Introduce Megacorporations (Omnicorp, NeoNet, CyberDyne) offering exclusive contracts.
+  > - Each corp provides a unique global buff (e.g., free cables, firewalls produce RP).
+  > - Gain Reputation by fulfilling corp-specific demands (e.g., "Upload 1M Video files").
+  > - Max Reputation unlocks a unique, powerful end-game Node exclusive to that corp.
+- [ ] **Implement Server Rack Customization (RPG Equipment)**
+  > - Add an equipment system for high-tier nodes (Server Rack, Quantum Core).
+  > - Nodes get slots: CPU, RAM, Cooling, Storage.
+  > - Players find "Hardware Scraps" from events/cleaning viruses.
+  > - Craft scraps in the Lab into components of varying rarities (Common to Legendary).
+  > - Examples: Legendary Liquid Cooler negates all heat on an overclocked node.
+- [ ] **Revamp Prestige: The "Singularity" Skill Tree**
+  > - Change prestige reward to "Singularity Shards" based on total network value.
+  > - Create a massive, permanent Skill Tree to spend Shards on game-breaking rules.
+  > - Examples: "Wireless Protocol" (no cables needed), "Self-Aware Code" (random free upgrades), "Absolute Zero" (Router never overheats).
+- [ ] **Add Logic Controller Node for Automation**
+  > - Introduce a new "Logic Controller" node to automate late-game micro-management.
+  > - Allow players to write simple "If/Then" statements.
+  > - Examples: "If Heat > 80%, toggle Overclock off", "If Money > $500k, Auto-Buy Server Racks".
 
 ### 📦 Maintenance
 
