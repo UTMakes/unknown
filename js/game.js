@@ -1,4 +1,4 @@
-﻿        const GAME_VERSION = "13.1";
+﻿        const GAME_VERSION = "13.3";
 
         // --- CONFIGURATION ---
         
@@ -43,7 +43,7 @@
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
             
             // Infra - Early game utility
-            miner: { name: "Crypto Miner", type: "infra", cost: 750, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
+            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
             cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
             firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
             balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
@@ -51,13 +51,13 @@
             cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo" },
             
             // Downloaders - Tiered progression
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 400, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
             dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
             dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
             dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
             
             // Upload & Labs - Money and RP generation
-            uploader: { name: "Uploader", type: "upload", cost: 800, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
+            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
             lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
             rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
             quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
@@ -77,14 +77,17 @@
             // CODING - Programming system
             coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
             dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station" },
-            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" }
+            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" },
+            
+            // AUTOMATION
+            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation" }
         };
 
         const RESOURCES = {
-            files: { size: 20, price: 4, rp: 2 },      // Reduced from 6
-            images: { size: 80, price: 18, rp: 8 },    // Reduced from 28
-            videos: { size: 350, price: 75, rp: 40 },  // Reduced from 120
-            audio: { size: 120, price: 28, rp: 15 }    // Reduced from 42
+            files: { size: 20, price: 6, rp: 3 },
+            images: { size: 80, price: 22, rp: 10 },
+            videos: { size: 350, price: 65, rp: 35 },
+            audio: { size: 120, price: 32, rp: 18 }
         };
 
         // DRIVER CONFIGURATION
@@ -242,7 +245,7 @@
 
         // --- STATE ---
         let game = {
-            money: 1500,  // Reduced from 2000
+            money: 2000,
             rp: 0,
             prestige: 0, 
             res: { files: 0, images: 0, videos: 0, audio: 0 },
@@ -330,7 +333,11 @@
             
             // PLAYTIME
             playTime: 0,  // Total seconds played
-            lastPlayTimeUpdate: Date.now()
+            lastPlayTimeUpdate: Date.now(),
+            
+            // TUTORIAL
+            tutorialCompleted: false,
+            tutorialStep: 0
         };
 
         // Offline earnings tracking
@@ -393,10 +400,31 @@
             }
         }
         
-        // Clear save and reset game
-        function clearSaveAndReset() {
-            if (!confirm('WARNING: This will DELETE your save and reset the game. Are you sure?')) return;
+        // Clear save and reset game (local + cloud)
+        async function clearSaveAndReset() {
+            if (!confirm('WARNING: This will permanently DELETE ALL your save data (local AND cloud) and reset the game completely.\n\nAre you sure?')) return;
+            if (!confirm('FINAL WARNING: This action CANNOT be undone. All progress, nodes, upgrades, drivers, and achievements will be lost forever.\n\nType OK to confirm.')) return;
+            
+            // 1. Clear local save
             localStorage.removeItem('uploadLabsSave');
+            console.log('Local save cleared.');
+            
+            // 2. Delete cloud save if logged in
+            if (currentUser && window.firebaseDb && window.firebaseDoc && window.firebaseDeleteDoc) {
+                try {
+                    const db = window.firebaseDb;
+                    const doc = window.firebaseDoc;
+                    const deleteDoc = window.firebaseDeleteDoc;
+                    
+                    await deleteDoc(doc(db, 'saves', currentUser.uid));
+                    console.log('Cloud save deleted for user:', currentUser.uid);
+                } catch (error) {
+                    console.error('Failed to delete cloud save:', error);
+                    // Continue with reset even if cloud delete fails
+                }
+            }
+            
+            // 3. Reload page to start fresh
             location.reload();
         }
         
@@ -437,7 +465,8 @@
             clearSaveAndReset, showGameInfo, toggleSetting,
             batchUpgrade, toggleAutoBalancer, showNetworkAnalysis,
             installDriver, handleDriverClick, openModal, closeModal, closeAllModals,
-            clearDriverGridCache, debugMoney, buyCodingUpgrade, renderCodingUpgrades
+            clearDriverGridCache, debugMoney, buyCodingUpgrade, renderCodingUpgrades,
+            openLogicControllerModal, saveLogicRules
         };
         
         // Log help message for debugging
@@ -481,6 +510,11 @@
             
             // Initialize background particles
             initParticles();
+            
+            // Start tutorial for new players
+            if (!game.tutorialCompleted && window.Tutorial) {
+                window.Tutorial.start();
+            }
         }
         
         // Initialize floating particles (reduced count for performance)
@@ -885,8 +919,9 @@
             const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect * driverBoostMult);
             const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect * driverBoostMult);
 
-            // Prestige multiplier (doubled in v11: +100% per prestige)
-            const prestigeMult = 1 + (game.prestige * 1.0);
+            // Prestige multiplier (soft cap: diminishing returns after 3 prestiges)
+            const rawPrestige = game.prestige * 0.5;
+            const prestigeMult = 1 + Math.min(rawPrestige, 3) + Math.sqrt(Math.max(0, rawPrestige - 3));
             
             // NODE SYNERGY BONUSES (New in v11)
             let synergyBoost = 1.0;
@@ -935,12 +970,20 @@
             const fiberMult = game.unlocked.includes('tech_fiber') ? 1.25 : 1;
             const satMult = game.unlocked.includes('tech_sat') ? 1.5 : 1;
             const neuralMult = game.unlocked.includes('tech_neural') ? 1.5 : 1;
-            const cdnBoost = 1 + (game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).length * 0.20); // Reduced from 0.25
-            const aiBoost = 1 + (game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).length * 0.5); // Reduced from 1.0
-            const clusterCount = game.nodes.filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).length;
-            const clusterBoost = 1 + (clusterCount * 0.15); // Reduced from 0.2
+            
+            // Calculate total levels for global buff nodes instead of just counting them
+            const cdnTotalLevel = game.nodes.filter(n => n.type === 'cdn' && activeNodes.has(n.id) && !n.infected).reduce((sum, n) => sum + n.level, 0);
+            const cdnBoost = 1 + (cdnTotalLevel * 0.20); 
+            
+            const aiTotalLevel = game.nodes.filter(n => n.type === 'ai_processor' && activeNodes.has(n.id) && !n.infected).reduce((sum, n) => sum + n.level, 0);
+            const aiBoost = 1 + Math.min(aiTotalLevel * 0.4, 5); // Cap at 6x
+            
+            const clusterTotalLevel = game.nodes.filter(n => n.type === 'cluster' && activeNodes.has(n.id) && !n.infected).reduce((sum, n) => sum + n.level, 0);
+            const clusterBoost = 1 + (clusterTotalLevel * 0.15); 
+            
             let quantumMult = 1;
-            game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= 2; });
+            game.nodes.forEach(n => { if (n.type === 'quantum' && activeNodes.has(n.id) && !n.infected) quantumMult *= (1 + n.level); }); // 2x at Lv1, 3x at Lv2 (down from 2.5x/4x)
+            quantumMult = Math.min(quantumMult, 10); // Hard cap at 10x
             
             // Event multipliers
             const eventSpeedMult = eventMultipliers.speed;
@@ -948,7 +991,7 @@
             const eventRPMult = eventMultipliers.rp;
             const eventCodeMult = eventMultipliers.code;
             
-            const baseSpeed = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost; // Reduced from 25/1.5
+            const baseSpeed = 35 * Math.pow(1.25, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost;
             
             // CODE GENERATION
             const coders = game.nodes.filter(n => n.type === 'coder' && activeNodes.has(n.id) && !n.infected);
@@ -1006,9 +1049,9 @@
             // Process resources
             let fileConsumers = [];
             let totalFileDemand = 0;
-            let analyzerCount = game.nodes.filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).length;
-            let rpBoost = 1 + (analyzerCount * 0.5);
-            const warehouseCount = game.nodes.filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).length;
+            const analyzerTotalLevel = game.nodes.filter(n => n.type === 'analyzer' && activeNodes.has(n.id) && !n.infected).reduce((sum, n) => sum + n.level, 0);
+            let rpBoost = 1 + (analyzerTotalLevel * 0.5);
+            const warehouseTotalLevel = game.nodes.filter(n => n.type === 'warehouse' && activeNodes.has(n.id) && !n.infected).reduce((sum, n) => sum + n.level, 0);
 
             // PERFORMANCE: Cache node lookups in a Map for O(1) access
             const nodeMap = new Map(game.nodes.map(n => [n.id, n]));
@@ -1033,19 +1076,22 @@
                     const nid = c.from === node.id ? c.to : c.from;
                     const n = nodeMap.get(nid);
                     if (n && activeNodes.has(nid) && !n.infected) {
-                        if (n.type === 'cache') boost *= 1.5;
-                        if (n.type === 'rack') boost *= 1.2;
-                        if (n.type === 'compressor') hasCompressor = true;
+                        if (n.type === 'cache') boost *= (1 + 0.5 * n.level); // 1.5x at lv1, 2.0x at lv2
+                        if (n.type === 'rack') boost *= (1 + 0.2 * n.level); // 1.2x at lv1
+                        if (n.type === 'compressor') hasCompressor = Math.max(hasCompressor || 0, n.level); // track highest compressor level
                     }
                 });
                 
                 if (node.type === 'balancer') {
-                    const neighbors = [];
+                    let connectedBalancerLevels = 0;
                     game.conns.forEach(c => {
-                        if (c.from === node.id) neighbors.push(c.to);
-                        else if (c.to === node.id) neighbors.push(c.from);
+                        const nid = c.from === node.id ? c.to : c.from;
+                        const n = nodeMap.get(nid);
+                        if (n && n.type === 'balancer' && activeNodes.has(nid) && !n.infected) {
+                            connectedBalancerLevels += n.level;
+                        }
                     });
-                    boost *= (1 + neighbors.length * 0.1);
+                    boost *= (1 + connectedBalancerLevels * 0.1);
                 }
                 
                 let isStreamingServer = node.type === 'streaming';
@@ -1056,7 +1102,7 @@
                 if (def.type === 'download' || node.type === 'dl_audio') {
                     const resourceKey = def.out || node.type.replace('dl_', '');
                     let amt = effectiveSpeed / RESOURCES[resourceKey].size;
-                    if (warehouseCount > 0) amt *= (1 + warehouseCount * 0.3);
+                    if (warehouseTotalLevel > 0) amt *= (1 + warehouseTotalLevel * 0.3);
                     game.res[resourceKey] += amt;
                     workAnim(node);
                 }
@@ -1094,7 +1140,7 @@
                     ['audio', 'videos', 'images'].forEach(k => {
                         if (cap <= 0 || game.res[k] <= 0) return;
                         let size = RESOURCES[k].size;
-                        if (hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
+                        if (hasCompressor) size *= Math.max(0.1, (0.7 - (hasCompressor * 0.05) - (game.drivers.compression * DRIVERS.compression.effect))); // Scale compressor with level
                         if (isStreamingServer && (k === 'audio' || k === 'videos')) size *= 0.5;
                         
                         const count = Math.min(game.res[k], cap / size);
@@ -1144,7 +1190,7 @@
                     if (allocatedBytes <= 0) return;
                     
                     let size = RESOURCES.files.size;
-                    if (c.hasCompressor) size *= (0.7 - (game.drivers.compression * DRIVERS.compression.effect));
+                    if (c.hasCompressor) size *= Math.max(0.1, (0.7 - (c.hasCompressor * 0.05) - (game.drivers.compression * DRIVERS.compression.effect)));
                     
                     const count = allocatedBytes / size;
                     
@@ -1326,6 +1372,9 @@
             if (moneyRateEl) moneyRateEl.innerText = `+$${fmt(displayMoneyRate)}/s`;
             if (rpRateEl) rpRateEl.innerText = `+${fmt(displayRPRate)}/s`;
             
+            // Process automation rules from Logic Controllers
+            processAutomationRules();
+            
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
             
@@ -1352,7 +1401,8 @@
             let totalCost = 0;
             
             nodesOfType.forEach(node => {
-                const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+                const baseCost = NODE_DEFS[type].cost || 500;
+                const cost = Math.floor(baseCost * Math.pow(1.5, node.level));
                 if (game.money >= cost + totalCost) {
                     totalCost += cost;
                     upgradedCount++;
@@ -1370,7 +1420,8 @@
             
             let actualUpgraded = 0;
             nodesOfType.forEach(node => {
-                const cost = NODE_DEFS[type].cost * Math.pow(1.5, node.level - 1);
+                const baseCost = NODE_DEFS[type].cost || 500;
+                const cost = Math.floor(baseCost * Math.pow(1.5, node.level));
                 if (actualUpgraded < upgradedCount) {
                     node.level++;
                     actualUpgraded++;
@@ -1788,6 +1839,8 @@
             addCombo();
             spawnParticles(x + 90, y + 40, NODE_DEFS[type]?.color || '#3b82f6', 8);
             renderWorld();
+            // Tutorial callback
+            if (window._tutorialOnNodeCreated) window._tutorialOnNodeCreated(type);
         }
 
         function buyNode(type) {
@@ -1825,6 +1878,7 @@
             const n = game.nodes.find(x => x.id === selNodeId);
             const def = NODE_DEFS[n.type];
             const base = n.type === 'router' ? 500 : def.cost;
+            // A node going from level 1 to level 2 effectively uses level=1 in the formula context (since the math checks the current level before addition)
             const cost = Math.floor(base * Math.pow(1.5, n.level));
             
             if (game.money >= cost) {
@@ -2275,8 +2329,10 @@
             
             heatStatus.innerText = 'Status: ' + statusText;
             
-            if (game.money >= 10000000 || game.prestige > 0) document.getElementById('prestigeSection').style.display = 'block';
-            document.getElementById('prestigeBonusDisplay').innerText = `Data Center Bonus: +${Math.round(game.prestige * 100)}%`;
+            const prestigeSectionEl = document.getElementById('prestigeSection');
+            if (prestigeSectionEl && (game.money >= 10000000 || game.prestige > 0)) prestigeSectionEl.style.display = 'block';
+            const prestigeBonusEl = document.getElementById('prestigeBonusDisplay');
+            if (prestigeBonusEl) prestigeBonusEl.innerText = `Data Center Bonus: +${Math.round(game.prestige * 100)}%`;
             
             // Calculate and display synergy bonus
             let synergyPercent = 0;
@@ -2286,7 +2342,8 @@
             if (activeNodeTypes.has('firewall')) synergyPercent += 10;
             if (activeNodeTypes.has('coder') && activeNodeTypes.has('dev_station') && activeNodeTypes.has('compiler')) synergyPercent += 25;
             if (activeNodeTypes.has('miner') && activeNodeTypes.has('crypto_farm')) synergyPercent += 30;
-            document.getElementById('synergyBonusDisplay').innerText = `Node Synergy: +${synergyPercent}%`;
+            const synergyEl = document.getElementById('synergyBonusDisplay');
+            if (synergyEl) synergyEl.innerText = `Node Synergy: +${synergyPercent}%`;
             
             const cw = document.getElementById('activeContractWidget');
             if (activeContract) {
@@ -2494,6 +2551,8 @@
             document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
             if (el) el.classList.add('active');
             else document.querySelector(`.tab[data-tab="${t}"]`)?.classList.add('active');
+            // Tutorial callback
+            if (window._tutorialOnTabChanged) window._tutorialOnTabChanged(t);
             
             const tray = document.getElementById('tray');
             tray.innerHTML = '';
@@ -2640,6 +2699,8 @@
                     updateConnectivity();
                     checkAchievements();
                     addCombo();
+                    // Tutorial callback
+                    if (window._tutorialOnCableCreated) window._tutorialOnCableCreated();
                 }
             }
             port.active = false;
@@ -2653,6 +2714,222 @@
             const base = node.type === 'router' ? 500 : NODE_DEFS[node.type].cost;
             const cost = Math.floor(base * Math.pow(1.5, node.level));
             document.getElementById('ctxCost').innerText = '$' + fmt(cost);
+            
+            // Show/hide Logic Controller button
+            const logicBtn = document.getElementById('ctxLogicRules');
+            if (logicBtn) logicBtn.style.display = node.type === 'logic_controller' ? 'block' : 'none';
+        }
+        
+        // ==================== LOGIC CONTROLLER AUTOMATION ====================
+        
+        function processAutomationRules() {
+            const controllers = game.nodes.filter(n => n.type === 'logic_controller' && activeNodes.has(n.id) && !n.infected && n.rules && n.rules.length > 0);
+            if (controllers.length === 0) return;
+            
+            controllers.forEach(ctrl => {
+                ctrl.rules.forEach(rule => {
+                    if (!rule || !rule.condition || !rule.action) return;
+                    
+                    // Evaluate condition
+                    let conditionMet = false;
+                    const val = getConditionValue(rule.condition);
+                    const threshold = parseFloat(rule.threshold) || 0;
+                    
+                    switch (rule.comparator) {
+                        case '>': conditionMet = val > threshold; break;
+                        case '<': conditionMet = val < threshold; break;
+                        case '>=': conditionMet = val >= threshold; break;
+                        case '<=': conditionMet = val <= threshold; break;
+                    }
+                    
+                    if (!conditionMet) return;
+                    
+                    // Cooldown: prevent spamming (min 2 seconds between fires per rule)
+                    const now = Date.now();
+                    if (rule._lastFired && (now - rule._lastFired) < 2000) return;
+                    
+                    // Execute action
+                    executeAutomationAction(rule, ctrl);
+                    rule._lastFired = now;
+                });
+            });
+        }
+        
+        function getConditionValue(condition) {
+            switch (condition) {
+                case 'money': return game.money;
+                case 'heat': return game.routerHeat;
+                case 'files': return game.res.files;
+                case 'images': return game.res.images;
+                case 'videos': return game.res.videos;
+                case 'audio': return game.res.audio;
+                case 'rp': return game.rp;
+                case 'codeBits': return game.codeBits;
+                default: return 0;
+            }
+        }
+        
+        function executeAutomationAction(rule, ctrl) {
+            switch (rule.action) {
+                case 'buy_node': {
+                    const type = rule.actionTarget;
+                    if (!type || !NODE_DEFS[type]) return;
+                    const def = NODE_DEFS[type];
+                    if (def.req && !game.unlocked.includes(def.req)) return;
+                    if (game.money >= def.cost) {
+                        buyNode(type);
+                        showFloat(`🤖 Auto-bought ${def.name}`, ctrl.x + 30, ctrl.y - 20, '#f472b6');
+                    }
+                    break;
+                }
+                case 'upgrade_all': {
+                    const type = rule.actionTarget;
+                    if (!type || !NODE_DEFS[type]) return;
+                    batchUpgrade(type);
+                    break;
+                }
+                case 'overclock_on': {
+                    // Find overclock nodes and ensure they exist
+                    const ocNodes = game.nodes.filter(n => n.type === 'overclock' && !n.infected);
+                    if (ocNodes.length === 0) return;
+                    // Overclock is always on if connected - this action connects/activates them
+                    showFloat('🤖 Overclock Active', ctrl.x + 30, ctrl.y - 20, '#f59e0b');
+                    break;
+                }
+                case 'overclock_off': {
+                    // Can't really "toggle" overclock - it's always active. But we can signal the user.
+                    // A future enhancement could add an enabled/disabled flag.
+                    showFloat('⚠️ Disconnect OC manually', ctrl.x + 30, ctrl.y - 20, '#ef4444');
+                    break;
+                }
+            }
+        }
+        
+        function openLogicControllerModal(nodeId) {
+            const node = game.nodes.find(n => n.id === nodeId);
+            if (!node || node.type !== 'logic_controller') return;
+            
+            if (!node.rules) node.rules = [];
+            
+            // Close the context menu
+            document.getElementById('contextMenu').style.display = 'none';
+            
+            const modal = document.getElementById('logicControllerModal');
+            modal.style.display = 'flex';
+            modal.dataset.nodeId = nodeId;
+            
+            renderLogicRules(node);
+        }
+        
+        function renderLogicRules(node) {
+            const container = document.getElementById('logicRulesContainer');
+            container.innerHTML = '';
+            
+            const maxRules = 4;
+            
+            // Build node type options for action targets
+            const nodeTypeOptions = Object.keys(NODE_DEFS)
+                .filter(k => k !== 'router' && k !== 'logic_controller')
+                .map(k => `<option value="${k}">${NODE_DEFS[k].name}</option>`)
+                .join('');
+            
+            for (let i = 0; i < maxRules; i++) {
+                const rule = node.rules[i] || {};
+                const row = document.createElement('div');
+                row.className = 'logic-rule-row';
+                row.innerHTML = `
+                    <div class="logic-rule-header">
+                        <span class="logic-rule-num">Rule ${i + 1}</span>
+                        <span class="logic-rule-status ${rule.condition ? 'active' : ''}">${rule.condition ? '● Active' : '○ Empty'}</span>
+                    </div>
+                    <div class="logic-rule-body">
+                        <div class="logic-rule-condition">
+                            <label>IF</label>
+                            <select class="logic-select" data-rule="${i}" data-field="condition">
+                                <option value="">-- Select --</option>
+                                <option value="money" ${rule.condition === 'money' ? 'selected' : ''}>Money ($)</option>
+                                <option value="heat" ${rule.condition === 'heat' ? 'selected' : ''}>Router Heat (%)</option>
+                                <option value="files" ${rule.condition === 'files' ? 'selected' : ''}>Files</option>
+                                <option value="images" ${rule.condition === 'images' ? 'selected' : ''}>Images</option>
+                                <option value="videos" ${rule.condition === 'videos' ? 'selected' : ''}>Videos</option>
+                                <option value="audio" ${rule.condition === 'audio' ? 'selected' : ''}>Audio</option>
+                                <option value="rp" ${rule.condition === 'rp' ? 'selected' : ''}>Research Points</option>
+                                <option value="codeBits" ${rule.condition === 'codeBits' ? 'selected' : ''}>Code Bits</option>
+                            </select>
+                            <select class="logic-select logic-select-sm" data-rule="${i}" data-field="comparator">
+                                <option value=">" ${rule.comparator === '>' ? 'selected' : ''}>></option>
+                                <option value="<" ${rule.comparator === '<' ? 'selected' : ''}><</option>
+                                <option value=">=" ${rule.comparator === '>=' ? 'selected' : ''}>≥</option>
+                                <option value="<=" ${rule.comparator === '<=' ? 'selected' : ''}>≤</option>
+                            </select>
+                            <input type="number" class="logic-input" data-rule="${i}" data-field="threshold" value="${rule.threshold || ''}" placeholder="Value">
+                        </div>
+                        <div class="logic-rule-action">
+                            <label>THEN</label>
+                            <select class="logic-select" data-rule="${i}" data-field="action">
+                                <option value="">-- Select --</option>
+                                <option value="buy_node" ${rule.action === 'buy_node' ? 'selected' : ''}>Buy Node</option>
+                                <option value="upgrade_all" ${rule.action === 'upgrade_all' ? 'selected' : ''}>Upgrade All</option>
+                            </select>
+                            <select class="logic-select" data-rule="${i}" data-field="actionTarget" style="${(rule.action === 'buy_node' || rule.action === 'upgrade_all') ? '' : 'display:none'}">
+                                <option value="">-- Target --</option>
+                                ${nodeTypeOptions}
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            }
+            
+            // Show/hide actionTarget when action changes
+            container.querySelectorAll('select[data-field="action"]').forEach(sel => {
+                sel.addEventListener('change', (e) => {
+                    const row = e.target.closest('.logic-rule-row');
+                    const targetSel = row.querySelector('select[data-field="actionTarget"]');
+                    if (e.target.value === 'buy_node' || e.target.value === 'upgrade_all') {
+                        targetSel.style.display = '';
+                    } else {
+                        targetSel.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Pre-select action targets
+            for (let i = 0; i < maxRules; i++) {
+                const rule = node.rules[i];
+                if (rule && rule.actionTarget) {
+                    const targetSel = container.querySelector(`select[data-rule="${i}"][data-field="actionTarget"]`);
+                    if (targetSel) targetSel.value = rule.actionTarget;
+                }
+            }
+        }
+        
+        function saveLogicRules() {
+            const modal = document.getElementById('logicControllerModal');
+            const nodeId = parseInt(modal.dataset.nodeId);
+            const node = game.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+            
+            const container = document.getElementById('logicRulesContainer');
+            const rules = [];
+            
+            for (let i = 0; i < 4; i++) {
+                const condition = container.querySelector(`select[data-rule="${i}"][data-field="condition"]`)?.value;
+                const comparator = container.querySelector(`select[data-rule="${i}"][data-field="comparator"]`)?.value;
+                const threshold = container.querySelector(`input[data-rule="${i}"][data-field="threshold"]`)?.value;
+                const action = container.querySelector(`select[data-rule="${i}"][data-field="action"]`)?.value;
+                const actionTarget = container.querySelector(`select[data-rule="${i}"][data-field="actionTarget"]`)?.value;
+                
+                if (condition && action) {
+                    rules.push({ condition, comparator: comparator || '>', threshold: parseFloat(threshold) || 0, action, actionTarget: actionTarget || '' });
+                }
+            }
+            
+            node.rules = rules;
+            modal.style.display = 'none';
+            logEvent(`Logic Controller updated: ${rules.length} rule(s) active`, 'good');
+            showFloat(`🤖 ${rules.length} rule(s) saved`, window.innerWidth/2, window.innerHeight/2, '#f472b6');
+            autoSaveLocal();
         }
 
         function workAnim(node) {
@@ -2759,16 +3036,22 @@
         function repairSaveData(gameData) {
             const repaired = { ...gameData };
             
-            // Fix NaN values
-            if (isNaN(repaired.money) || repaired.money < 0) repaired.money = 2000;
-            if (isNaN(repaired.rp) || repaired.rp < 0) repaired.rp = 0;
-            if (isNaN(repaired.codeBits) || repaired.codeBits < 0) repaired.codeBits = 0;
-            if (isNaN(repaired.optimizationCode) || repaired.optimizationCode < 0) repaired.optimizationCode = 0;
-            if (isNaN(repaired.routerHeat)) repaired.routerHeat = 0;
+            // Fix NaN, Infinity, and negative values
+            if (typeof repaired.money !== 'number' || !isFinite(repaired.money) || repaired.money < 0) repaired.money = 2000;
+            if (typeof repaired.rp !== 'number' || !isFinite(repaired.rp) || repaired.rp < 0) repaired.rp = 0;
+            if (typeof repaired.codeBits !== 'number' || !isFinite(repaired.codeBits) || repaired.codeBits < 0) repaired.codeBits = 0;
+            if (typeof repaired.optimizationCode !== 'number' || !isFinite(repaired.optimizationCode) || repaired.optimizationCode < 0) repaired.optimizationCode = 0;
+            if (typeof repaired.routerHeat !== 'number' || !isFinite(repaired.routerHeat)) repaired.routerHeat = 0;
             if (typeof repaired.overheatMode !== 'boolean') repaired.overheatMode = false;
-            if (isNaN(repaired.overclockMult)) repaired.overclockMult = 1.0;
-            if (isNaN(repaired.coolingPower)) repaired.coolingPower = 0;
-            if (isNaN(repaired.overclockHeatGen)) repaired.overclockHeatGen = 0;
+            if (typeof repaired.overclockMult !== 'number' || !isFinite(repaired.overclockMult)) repaired.overclockMult = 1.0;
+            if (typeof repaired.coolingPower !== 'number' || !isFinite(repaired.coolingPower)) repaired.coolingPower = 0;
+            if (typeof repaired.overclockHeatGen !== 'number' || !isFinite(repaired.overclockHeatGen)) repaired.overclockHeatGen = 0;
+            
+            // Fix Resources
+            if (!repaired.res || typeof repaired.res !== 'object') repaired.res = { files: 0, images: 0, videos: 0, audio: 0 };
+            ['files', 'images', 'videos', 'audio'].forEach(k => {
+                if (typeof repaired.res[k] !== 'number' || !isFinite(repaired.res[k]) || repaired.res[k] < 0) repaired.res[k] = 0;
+            });
             
             // Fix arrays
             if (!Array.isArray(repaired.nodes)) repaired.nodes = [];
@@ -2792,13 +3075,14 @@
             );
             
             // Fix stats
-            if (!repaired.stats) repaired.stats = {};
+            if (!repaired.stats || typeof repaired.stats !== 'object') repaired.stats = {};
             const s = repaired.stats;
-            if (isNaN(s.totalMoney)) s.totalMoney = repaired.money;
-            if (isNaN(s.peakMoney)) s.peakMoney = repaired.money;
-            if (isNaN(s.nodesCreated)) s.nodesCreated = repaired.nodes.length;
-            if (isNaN(s.cablesPlaced)) s.cablesPlaced = repaired.conns.length;
-
+            if (typeof s.totalMoney !== 'number' || !isFinite(s.totalMoney)) s.totalMoney = repaired.money;
+            if (typeof s.peakMoney !== 'number' || !isFinite(s.peakMoney)) s.peakMoney = repaired.money;
+            if (typeof s.nodesCreated !== 'number' || !isFinite(s.nodesCreated)) s.nodesCreated = repaired.nodes.length;
+            if (typeof s.cablesPlaced !== 'number' || !isFinite(s.cablesPlaced)) s.cablesPlaced = repaired.conns.length;
+            if (typeof s.synergyBonus !== 'number' || !isFinite(s.synergyBonus)) s.synergyBonus = 0;
+            if (typeof s.prestigeCount !== 'number' || !isFinite(s.prestigeCount)) s.prestigeCount = repaired.prestige || 0;
             // Ensure drivers has all keys to avoid NaN in multipliers (e.g. game.drivers.download)
             const defaultDrivers = { network: 0, compression: 0, security: 0, mining: 0, research: 0, upload: 0, download: 0 };
             if (!repaired.drivers || typeof repaired.drivers !== 'object') {

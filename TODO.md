@@ -4,7 +4,7 @@
 > **Deployment:** Vercel  
 > **Build Tool:** Vite (dev only)  
 > **Repo:** GitHub  
-> **Current Version:** 13.1
+> **Current Version:** 13.3
 
 ---
 
@@ -13,6 +13,12 @@
 ### Features
 
 - [x] Add a fun but practical new node to gameplay — _Task 1_
+- [x] **Create a Comprehensive Game Tutorial** — _Task 17_
+  > - Built an interactive, step-by-step tutorial for new players.
+  > - Explained core mechanics seamlessly: placing nodes, collecting resources, cables, routers, and research.
+  > - Added a polished UI for tutorial tooltips and handled centered/targeted positioning.
+- [x] **Add Console Commands/Fixes Menu** — _Task 18_
+  > - Added a premium-styled menu in Settings for debugging and fixing stuck game states.
 
 ### Improvements
 
@@ -57,6 +63,16 @@
   > - Process Tailwind CSS locally instead of via CDN script to improve production loading speeds
 - [x] **Sync Package Versioning** — _Task 15_
   > - Update `package.json` version string from `10.0.0` to `13.0.0` to match the actual game timeline
+- [x] **Fix Game Money Cap**
+  > - Resolved an issue where the game stopped giving money at the 10 million cap.
+- [x] **Fix Game Initialization Issues**
+  > - Debugged and resolved JavaScript errors related to Firebase initialization that prevented the game from loading.
+- [x] **Audit Game Nodes & Fix Scaling**
+  > - Discovered that all "support" nodes (Cache, Analyzer, CDN, Quantum Core, Warehouse, etc.) were totally ignoring their level and only scaling based on whether they existed or not.
+  > - Upgraded node scaling logic in `gameLoop` so that their buffs increase with their upgrade level.
+  > - Standardized upgrade costs across `upgradeSelectedNode` and `batchUpgrade`.
+- [x] **Improve Save Repair System**
+  > - Enhanced `repairSaveData()` to specifically catch and replace `Infinity`, `NaN`, and negative values in resources, money, and stats.
 
 ---
 
@@ -84,10 +100,10 @@
   > - Change prestige reward to "Singularity Shards" based on total network value.
   > - Create a massive, permanent Skill Tree to spend Shards on game-breaking rules.
   > - Examples: "Wireless Protocol" (no cables needed), "Self-Aware Code" (random free upgrades), "Absolute Zero" (Router never overheats).
-- [ ] **Add Logic Controller Node for Automation**
-  > - Introduce a new "Logic Controller" node to automate late-game micro-management.
-  > - Allow players to write simple "If/Then" statements.
-  > - Examples: "If Heat > 80%, toggle Overclock off", "If Money > $500k, Auto-Buy Server Racks".
+- [x] **Add Logic Controller Node for Automation**
+  > - Introduced a new "Logic Controller" node ($100k, requires `tech_automation`) to automate late-game micro-management.
+  > - Players can set up to 4 If/Then rules per controller (e.g., "If Money > $500k, Auto-Buy Server Racks").
+  > - Rules are evaluated every second with a 2-second cooldown per rule.
 
 ### 📦 Maintenance
 

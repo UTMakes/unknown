@@ -101,25 +101,29 @@
             <!-- Latest Changes Panel - LEFT SIDE -->
             <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
                 <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v13.1</span></h2>
+                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v13.3</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
                         <li class="changelog-item">
+                            <span class="changelog-badge new">Balance</span>
+                            <span><strong>Faster Start:</strong> Base speed increased 75%, starter nodes cheaper, resource prices boosted</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge new">Balance</span>
+                            <span><strong>Smoother Curve:</strong> Router scaling softened (1.4x → 1.25x per level) for steadier progression</span>
+                        </li>
+                        <li class="changelog-item">
+                            <span class="changelog-badge fix">Cap</span>
+                            <span><strong>Late-Game Caps:</strong> Prestige, Quantum Core, and AI Processor now have diminishing returns</span>
+                        </li>
+                        <li class="changelog-item">
                             <span class="changelog-badge new">New</span>
-                            <span><strong>Ultra Low Perf:</strong> Disable costly rendering to improve framerates on old devices</span>
+                            <span><strong>Interactive Tutorial:</strong> Step-by-step guided tutorial for new players</span>
                         </li>
                         <li class="changelog-item">
-                            <span class="changelog-badge new">Perf</span>
-                            <span><strong>Throttled Updates:</strong> UI refresh rate scales down smartly when low perf mode is on</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">Perf</span>
-                            <span><strong>Visual Spam filter:</strong> Drastically reduce particles, animations, and flying text</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Clean</span>
-                            <span><strong>Codebase Optimization:</strong> Game logic continues to be cleaned up and refactored</span>
+                            <span class="changelog-badge fix">Fix</span>
+                            <span><strong>Node Scaling:</strong> Support nodes (Cache, CDN, Analyzer, etc.) now scale with upgrade level</span>
                         </li>
                     </ul>
                 </div>
@@ -127,7 +131,7 @@
             
             <div class="welcome-main">
                 <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v13.1</span></h2>
+                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v13.3</span></h2>
                     <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
                 </div>
                 <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
@@ -177,41 +181,41 @@
             
             <div class="welcome-sidebar">
                 <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v13.1</span></h2>
+                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v13.2</span></h2>
                 </div>
                 <div class="welcome-sidebar-body">
                     <ul class="feature-list">
                         <li class="feature-item">
-                            <div class="feature-icon new" style="background: linear-gradient(135deg, #00d4aa, #059669);"><i class="fa-solid fa-code"></i></div>
+                            <div class="feature-icon new" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-scale-balanced"></i></div>
                             <div class="feature-content">
-                                <h4>Coding Upgrade Tree!</h4>
-                                <p>9 upgrades across 3 tiers! Boost code speed, reduce costs, earn passive income from code!</p>
+                                <h4>Game Balance Overhaul!</h4>
+                                <p>Early game is 75% faster. Late game has soft caps on multiplier stacking. The whole curve feels smooth!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-robot"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-graduation-cap"></i></div>
                             <div class="feature-content">
-                                <h4>AI Autocoder!</h4>
-                                <p>Top-tier upgrade doubles code generation. Quantum Compiler makes compilers 5x faster!</p>
+                                <h4>Interactive Tutorial!</h4>
+                                <p>New players get a guided walkthrough of all core mechanics &mdash; placing nodes, cables, research, and more!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-brands fa-git-alt"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fa-solid fa-chart-line"></i></div>
                             <div class="feature-content">
-                                <h4>Passive Code Income!</h4>
-                                <p>Git VCS turns code bits into money. Open Source Network converts bits to research points!</p>
+                                <h4>Node Scaling Fixed!</h4>
+                                <p>Cache, CDN, Analyzer, Warehouse &amp; Quantum now properly scale with level. Upgrades finally matter!</p>
                             </div>
                         </li>
                         <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #60a5fa, #3b82f6);"><i class="fa-solid fa-desktop"></i></div>
+                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-wrench"></i></div>
                             <div class="feature-content">
-                                <h4>Desktop Download!</h4>
-                                <p>Grab the Windows .exe directly from the Settings panel. Play offline anytime!</p>
+                                <h4>Console Commands!</h4>
+                                <p>Built-in debug tools in Settings: Emergency Recovery, Save Repair, and Network Analysis.</p>
                             </div>
                         </li>
                     </ul>
                     <div class="version-tag">
-                        <i class="fa-solid fa-gauge-simple-high"></i> Version 13.1 - "Performance Update"
+                        <i class="fa-solid fa-scale-balanced"></i> Version 13.3 - "Balance Update"
                     </div>
                 </div>
             </div>
@@ -589,13 +593,30 @@
                         </span>
                     </a>
                 </div>
+
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-wrench" style="color: #f59e0b; margin-right: 6px;"></i> Console Commands / Fixes</h3>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">If your game is stuck or behaving weirdly, try these built-in fixes.</p>
+                    
+                    <button class="btn" style="width: 100%; margin-bottom: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;" onclick="if(confirm('Run emergency recovery? This will attempt to fix missing core nodes and recalculate all connections.')){Game.emergencyRecover();}">
+                        <i class="fa-solid fa-truck-medical"></i> Emergency Network Recovery
+                    </button>
+                    
+                    <button class="btn" style="width: 100%; margin-bottom: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;" onclick="if(confirm('Attempt to automatically repair corrupted save data?')){Game.repairSaveData(game);}">
+                        <i class="fa-solid fa-hammer"></i> Repair Save Data
+                    </button>
+                    
+                    <button class="btn" style="width: 100%; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); color: #a855f7;" onclick="Game.showNetworkAnalysis();">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> Show Network Analysis
+                    </button>
+                </div>
                 
                 <div class="settings-section">
                     <h3>Danger Zone</h3>
                     <button class="btn" onclick="Game.clearSaveAndReset();" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                        <i class="fa-solid fa-trash"></i> Clear Save & Reset
+                        <i class="fa-solid fa-trash"></i> Clear All Data &amp; Reset
                     </button>
-                    <p style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">This will permanently delete your progress</p>
+                    <p style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">This will permanently delete ALL progress (local + cloud save)</p>
                 </div>
             </div>
         </div>
@@ -787,6 +808,11 @@
                         <li><strong style="color:var(--code)">Download Driver:</strong> +10% download speed per level</li>
                     </ul>
                 </div>
+                <div class="help-section" style="text-align: center; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <button class="btn" onclick="if(window.Tutorial){window.Tutorial.restart();document.getElementById('helpModal').style.display='none';}" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;">
+                        <i class="fa-solid fa-rotate-right"></i> Restart Tutorial
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -795,8 +821,36 @@
         <div class="ctx-item" onclick="upgradeSelectedNode()">
             <span>Upgrade</span> <span style="color:#fbbf24" id="ctxCost">$0</span>
         </div>
+        <div class="ctx-item" id="ctxLogicRules" style="display:none" onclick="Game.openLogicControllerModal(selNodeId)">
+            <span><i class="fa-solid fa-microchip" style="color:#f472b6"></i> Configure Rules</span>
+        </div>
         <div class="ctx-item danger" onclick="deleteSelectedNode()">
             <span>Delete</span>
+        </div>
+    </div>
+
+    <!-- Logic Controller Modal -->
+    <div id="logicControllerModal" class="modal-overlay" style="display:none">
+        <div class="modal logic-modal">
+            <div class="modal-header">
+                <h2 style="color:#f472b6"><i class="fa-solid fa-microchip"></i> Logic Controller</h2>
+                <button class="btn" onclick="document.getElementById('logicControllerModal').style.display='none'">Close</button>
+            </div>
+            <div class="modal-body" style="padding: 16px;">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-info" style="color: #60a5fa;"></i>
+                    Set up to 4 automation rules. Rules are checked every second. Each rule needs a condition and an action.
+                </p>
+                <div id="logicRulesContainer"></div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button class="btn" onclick="Game.saveLogicRules()" style="flex: 1; background: linear-gradient(135deg, #f472b6, #ec4899); color: white;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Rules
+                    </button>
+                    <button class="btn" onclick="document.getElementById('logicControllerModal').style.display='none'" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                        Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1020,6 +1074,7 @@
         </div>
     </div>
 
+    <script defer src="js/tutorial.js"></script>
     <script defer src="js/game.js"></script>
 </body>
 </html>
