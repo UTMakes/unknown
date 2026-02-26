@@ -1,5 +1,9 @@
 # 📋 TODO — Upload Labs: Network Empire
 
+> ⚠️ **CRITICAL REMINDER FOR CODERS:** Always check the **Permanent Tasks** section at the bottom of this file. You MUST ensure permanent tasks (like version updates and Ultra Low Performance toggles) are completed if applicable to your current work.
+
+> 📏 **ALWAYS reread the Rules section** before starting any work. It contains versioning guidelines, permanent task policies, and other important conventions.
+
 > **Project:** Cyberpunk network management idle game  
 > **Deployment:** Vercel  
 > **Build Tool:** Vite (dev only)  
@@ -17,8 +21,25 @@
   > - Built an interactive, step-by-step tutorial for new players.
   > - Explained core mechanics seamlessly: placing nodes, collecting resources, cables, routers, and research.
   > - Added a polished UI for tutorial tooltips and handled centered/targeted positioning.
+- [x] **Improve Game Tutorial** — _Task 29_
+  > - Expand the existing tutorial to cover more advanced mechanics like node routing, traffic management, and specialization.
+  > - Added visual indicators, improved UI guidance and visual contrast for nodes during the tutorial.
+  > - Enhanced accessibility with tooltips for complex mechanics.
 - [x] **Add Console Commands/Fixes Menu** — _Task 18_
   > - Added a premium-styled menu in Settings for debugging and fixing stuck game states.
+- [x] **Revamp Prestige: The "Singularity" Skill Tree** — _Task 27_
+  > - Change prestige reward to "Singularity Shards" based on total network value.
+  > - Create a massive, permanent Skill Tree to spend Shards on game-breaking rules.
+  > - Examples: "Wireless Protocol" (no cables needed), "Self-Aware Code" (random free upgrades), "Absolute Zero" (Router never overheats).
+- [x] **Develop Node Depth & Meaningful Mechanics** — _Task 23_
+  > - **Traffic & Bottlenecks:** Added `bandwidth` property to all 25 node types. Nodes are now clamped to their bandwidth limit (scaled by level). Overloaded nodes show a pulsing amber border and ⚠️ icon. Load Balancers redistribute 30% of their bandwidth to connected nodes.
+  > - **Physical Footprints:** 5 high-tier nodes (Server Rack, Quantum Core, Data Warehouse, AI Processor, Crypto Farm) are now 2×1 wide (340px) with 4 connection ports instead of 2.
+  > - **Sub-Systems & Specialization:** Server Racks can be permanently "flashed" with firmware ($50k). Three options: Encrypted Database (+200% RP, virus immune), High-Freq Compute (+150% speed, +50% heat), Content Delivery Hub (+100% upload, acts as CDN).
+  > - **Placement Effects:** 8 adjacency rules apply when nodes are within 200px proximity (e.g., Overclock near Overclock = +20% heat penalty, Cache near Downloaders = +10% speed, Miners near Miners = -5% competition penalty).
+- [x] **Add Logic Controller Node for Automation** — _Task 28_
+  > - Introduced a new "Logic Controller" node ($100k, requires `tech_automation`) to automate late-game micro-management.
+  > - Players can set up to 4 If/Then rules per controller (e.g., "If Money > $500k, Auto-Buy Server Racks").
+  > - Rules are evaluated every second with a 2-second cooldown per rule.
 
 ### Improvements
 
@@ -38,8 +59,13 @@
   > - Added "Ultra Low Performance" mode for low-end devices
   > - Game loop UI updates are throttled appropriately
 - [x] **Keep everything up to date** — _Task 10 (Maintenance)_
-  > - Updated version 13.0 → 13.1
-  > - Updated welcome screen panels with v13.1 content
+  > - Updated version 13.3 → 14.0
+  > - Updated welcome screen panels with v14.0 content
+- [x] **Update Cloud & Local Saves for Node Depth (Task 23)** — _Task 32_
+  > - Extend save/load logic to persist new node data introduced by Task 23 (traffic stats, physical footprints, firmware specialization, adjacency state).
+  > - Ensure backward compatibility so existing saves migrate cleanly without data loss.
+  > - Update `repairSaveData()` to handle missing or malformed new fields gracefully.
+  > - Persist the Ultra Low Performance Mode (ULPM) toggle so the player's preference is remembered across sessions.
 
 ### Bug Fixes
 
@@ -63,15 +89,15 @@
   > - Process Tailwind CSS locally instead of via CDN script to improve production loading speeds
 - [x] **Sync Package Versioning** — _Task 15_
   > - Update `package.json` version string from `10.0.0` to `13.0.0` to match the actual game timeline
-- [x] **Fix Game Money Cap**
+- [x] **Fix Game Money Cap** — _Task 19_
   > - Resolved an issue where the game stopped giving money at the 10 million cap.
-- [x] **Fix Game Initialization Issues**
+- [x] **Fix Game Initialization Issues** — _Task 20_
   > - Debugged and resolved JavaScript errors related to Firebase initialization that prevented the game from loading.
-- [x] **Audit Game Nodes & Fix Scaling**
+- [x] **Audit Game Nodes & Fix Scaling** — _Task 21_
   > - Discovered that all "support" nodes (Cache, Analyzer, CDN, Quantum Core, Warehouse, etc.) were totally ignoring their level and only scaling based on whether they existed or not.
   > - Upgraded node scaling logic in `gameLoop` so that their buffs increase with their upgrade level.
   > - Standardized upgrade costs across `upgradeSelectedNode` and `batchUpgrade`.
-- [x] **Improve Save Repair System**
+- [x] **Improve Save Repair System** — _Task 22_
   > - Enhanced `repairSaveData()` to specifically catch and replace `Infinity`, `NaN`, and negative values in resources, money, and stats.
 
 ---
@@ -80,41 +106,43 @@
 
 ### 🚀 Upcoming Features & Improvements
 
-- [ ] **Implement "Dark Net" Layer** — _High Risk, High Reward_
+- [ ] **Revamp Research Tree UI** — _Task 30_
+
+  > - Redesign the Research Tree interface to be more visually engaging and less bland.
+  > - Improve navigation, readability, and the overall user experience when browsing upgrades.
+  > - Add satisfying animations, clearer progression paths, and better tooltips to make interacting with the tree feel rewarding.
+
+- [ ] **Implement "Dark Net" Layer** — _High Risk, High Reward_ — _Task 24_
   > - Add a toggle for a red/black "Dark Net" view.
   > - Introduce specialized nodes (Botnets, Zero-Day Miners) that generate high profits but increase a new "Threat Level" stat.
   > - Add risks: high Threat Level triggers "Traceroute Attacks" or "Server Raids" that disable nodes or steal money.
   > - Add RP research for "Spoofing" and "Encryption" to mitigate Threat generation.
-- [ ] **Add Corporate Factions & Contracts**
+- [ ] **Add Corporate Factions & Contracts** — _Task 25_
   > - Introduce Megacorporations (Omnicorp, NeoNet, CyberDyne) offering exclusive contracts.
   > - Each corp provides a unique global buff (e.g., free cables, firewalls produce RP).
   > - Gain Reputation by fulfilling corp-specific demands (e.g., "Upload 1M Video files").
   > - Max Reputation unlocks a unique, powerful end-game Node exclusive to that corp.
-- [ ] **Implement Server Rack Customization (RPG Equipment)**
+- [ ] **Implement Server Rack Customization (RPG Equipment)** — _Task 26_
   > - Add an equipment system for high-tier nodes (Server Rack, Quantum Core).
   > - Nodes get slots: CPU, RAM, Cooling, Storage.
   > - Players find "Hardware Scraps" from events/cleaning viruses.
   > - Craft scraps in the Lab into components of varying rarities (Common to Legendary).
   > - Examples: Legendary Liquid Cooler negates all heat on an overclocked node.
-- [ ] **Revamp Prestige: The "Singularity" Skill Tree**
-  > - Change prestige reward to "Singularity Shards" based on total network value.
-  > - Create a massive, permanent Skill Tree to spend Shards on game-breaking rules.
-  > - Examples: "Wireless Protocol" (no cables needed), "Self-Aware Code" (random free upgrades), "Absolute Zero" (Router never overheats).
-- [x] **Add Logic Controller Node for Automation**
-  > - Introduced a new "Logic Controller" node ($100k, requires `tech_automation`) to automate late-game micro-management.
-  > - Players can set up to 4 If/Then rules per controller (e.g., "If Money > $500k, Auto-Buy Server Racks").
-  > - Rules are evaluated every second with a 2-second cooldown per rule.
 
 ### 📦 Maintenance
 
-| Priority | Task                       |
-| -------- | -------------------------- |
-| 🟢 Low   | Keep everything up to date |
+| Priority | Task                                  |
+| -------- | ------------------------------------- |
+| 🟢 Low   | Keep everything up to date            |
+| 🟢 Low   | Update Ultra Low Performance features |
 
 - [ ] **Keep everything up to date** — _Task 10 (Maintenance)_ ⚠️ _Permanent task — never remove_
+  > - **Note:** Recheck the current game version before starting to ensure no other coder has updated it.
   > - Update the version number following the versioning rules
   > - Update the "Latest Changes" panel on the welcome screen
   > - Update the "What's New" panel on the welcome screen
+- [ ] **Ultra Low Performance Updates** — _Task 31 (Maintenance)_ ⚠️ _Permanent task — never remove_
+  > - Ensure new visual effects or complex UI animations are disabled when Ultra Low Performance is ON.
 
 ---
 
@@ -131,7 +159,9 @@
 
 ### Permanent Tasks
 
-> ⚠️ **Task 10 is a permanent, recurring task — never delete it.** After each update cycle, reset Task 10 to unchecked (`[ ]`) in the Pending section. It tracks: version number updates, "Latest Changes" panel, and "What's New" panel on the welcome screen. It must always remain active.
+> ⚠️ **Task 10 is a permanent, recurring task — never delete it.** After each update cycle, reset Task 10 to unchecked (`[ ]`) in the Pending section. It tracks: version number updates (always recheck current version before updating!), "Latest Changes" panel, and "What's New" panel on the welcome screen. It must always remain active.
+
+> ⚠️ **Task 31 is a permanent, recurring task — never delete it.** After adding new visual features, ensure they are toggled off or hidden when Ultra Low Performance mode is active.
 
 ---
 

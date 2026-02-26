@@ -1,4 +1,4 @@
-﻿        const GAME_VERSION = "13.3";
+﻿        const GAME_VERSION = "13.4";
 
         // --- CONFIGURATION ---
         
@@ -40,48 +40,68 @@
         ];
         
         const NODE_DEFS = {
-            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity." },
+            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity.", bandwidth: 500 },
             
             // Infra - Early game utility
-            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income." },
-            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster." },
-            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec" },
-            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection.", req: "tech_balance" },
-            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc" },
-            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo" },
+            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income.", bandwidth: 80 },
+            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster.", bandwidth: 200 },
+            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 150 },
+            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection. Redistributes excess bandwidth.", req: "tech_balance", bandwidth: 400 },
+            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc", bandwidth: 300 },
+            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo", bandwidth: 200 },
             
             // Downloaders - Tiered progression
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection." },
-            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img" },
-            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio" },
-            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid" },
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection.", bandwidth: 100 },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img", bandwidth: 150 },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio", bandwidth: 200 },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid", bandwidth: 300 },
             
             // Upload & Labs - Money and RP generation
-            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income." },
-            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP)." },
-            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack" },
-            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum" },
+            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income.", bandwidth: 150 },
+            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP).", bandwidth: 200 },
+            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack", bandwidth: 800, size: [2, 1] },
+            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum", bandwidth: 2000, size: [2, 1] },
             
             // Advanced - Late game specialization
-            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy" },
-            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress" },
-            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup" },
-            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze" },
-            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming" },
-            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn" },
-            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster" },
-            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse" },
-            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai" },
-            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm" },
+            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy", bandwidth: 250 },
+            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress", bandwidth: 300 },
+            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup", bandwidth: 350 },
+            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze", bandwidth: 300 },
+            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming", bandwidth: 600 },
+            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn", bandwidth: 1000 },
+            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster", bandwidth: 500 },
+            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse", bandwidth: 1200, size: [2, 1] },
+            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai", bandwidth: 1500, size: [2, 1] },
+            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm", bandwidth: 1000, size: [2, 1] },
             
             // CODING - Programming system
-            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development." },
-            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station" },
-            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler" },
+            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development.", bandwidth: 150 },
+            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station", bandwidth: 300 },
+            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler", bandwidth: 400 },
             
             // AUTOMATION
-            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation" }
+            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation", bandwidth: 200 }
         };
+
+        // FIRMWARE DEFINITIONS (for Sub-Systems & Specialization)
+        const FIRMWARE_DEFS = {
+            encrypted_db: { name: "Encrypted Database", icon: "fa-solid fa-lock", color: "#a855f7", desc: "+200% RP from connected Labs. Immune to viruses.", cost: 50000, rpMult: 3.0, virusImmune: true },
+            high_freq: { name: "High-Freq Compute", icon: "fa-solid fa-bolt", color: "#f97316", desc: "+150% mining/upload speed. +50% heat generation.", cost: 50000, speedMult: 2.5, heatMult: 1.5 },
+            cdn_hub: { name: "Content Delivery Hub", icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "+100% to connected uploaders. Acts as CDN.", cost: 50000, uploadMult: 2.0, actAsCDN: true }
+        };
+
+        // ADJACENCY RULES (proximity-based bonuses/penalties within 200px)
+        const ADJACENCY_RANGE = 200;
+        const ADJACENCY_RULES = [
+            { type1: 'overclock', type2: 'overclock', effect: 'heat_penalty', value: 0.20, desc: '+20% extra heat per nearby Overclock' },
+            { type1: 'cryo_cooler', type2: 'overclock', effect: 'heat_reduce', value: 0.25, desc: '-25% heat from nearby Overclock' },
+            { type1: 'cache', type2: 'dl_file', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
+            { type1: 'cache', type2: 'dl_img', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
+            { type1: 'cache', type2: 'dl_vid', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
+            { type1: 'cache', type2: 'dl_audio', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
+            { type1: 'firewall', type2: '*', effect: 'virus_resist', value: 0.05, desc: '+5% virus resistance for nearby nodes' },
+            { type1: 'miner', type2: 'miner', effect: 'efficiency_penalty', value: 0.05, desc: '-5% mining efficiency (competition)' }
+        ];
 
         const RESOURCES = {
             files: { size: 20, price: 6, rp: 3 },
@@ -248,6 +268,7 @@
             money: 2000,
             rp: 0,
             prestige: 0, 
+            singularity: { shards: 0, skills: {} },
             res: { files: 0, images: 0, videos: 0, audio: 0 },
             nodes: [],
             conns: [],
@@ -694,33 +715,140 @@
             }
         }
 
-        // ==================== PRESTIGE SYSTEM ====================
+        // ==================== SINGULARITY / PRESTIGE SYSTEM ====================
+        function getTotalNetworkValue() {
+            let tnv = game.money + (game.stats?.moneySpent || 0); // Include spent money so we don't punish spending
+            // But if spent money isn't accurate, fallback to node values.
+            // Actually, calculating from node value directly is safer against old saves:
+            let nodeTNV = game.money;
+            game.nodes.forEach(n => {
+                const def = NODE_DEFS[n.type];
+                if (def && def.cost) {
+                    let val = def.cost;
+                    for (let i = 1; i < n.level; i++) {
+                        val += def.cost * Math.pow(1.5, i);
+                    }
+                    nodeTNV += val;
+                }
+            });
+            return Math.max(tnv, nodeTNV); // Use whichever is higher
+        }
+
+        function getSingularityShards(tnv) {
+            if (tnv < 50000) return 0;
+            return Math.max(1, Math.floor(Math.cbrt(tnv / 50000)));
+        }
+
+        function getSkill(id) {
+            return game.singularity?.skills?.[id] || 0;
+        }
+
+        const SINGULARITY_SKILLS = [
+            { id: 'quantum', name: 'Quantum Burst', desc: '+100% global speed per level.', icon: 'fa-microchip', maxLevel: 999, cost: () => 1 },
+            { id: 'absolute_zero', name: 'Absolute Zero', desc: 'Router heat generation is reduced to 0. Overheating is impossible.', icon: 'fa-snowflake', maxLevel: 1, cost: () => 10 },
+            { id: 'golden', name: 'Golden Ticket', desc: 'All contract payouts (Money & RP) increased by +50% per level.', icon: 'fa-ticket', maxLevel: 10, cost: () => 2 },
+            { id: 'self_aware', name: 'Self-Aware Code', desc: '+1% chance per second to auto-upgrade a random active node.', icon: 'fa-brain', maxLevel: 5, cost: () => 3 },
+            { id: 'wireless', name: 'Wireless Protocol', desc: 'Nodes no longer require cables to function. Placed nodes are automatically active.', icon: 'fa-wifi', maxLevel: 1, cost: () => 15 }
+        ];
+
+        function openSingularityCore() {
+            document.getElementById('singularityModal').style.display = 'flex';
+            renderSingularityTree();
+        }
+
+        function renderSingularityTree() {
+            const container = document.getElementById('singularityTreeContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const shardsEl = document.getElementById('singularityShardCount');
+            if (shardsEl) shardsEl.innerText = `${fmt(game.singularity?.shards || 0)} Shards`;
+            
+            SINGULARITY_SKILLS.forEach(skill => {
+                const currentLevel = getSkill(skill.id);
+                const isMax = currentLevel >= skill.maxLevel;
+                const cost = skill.cost(currentLevel);
+                const canAfford = (game.singularity?.shards || 0) >= cost;
+                
+                const card = document.createElement('div');
+                card.className = `singularity-skill-card ${isMax ? 'maxed' : ''}`;
+                
+                card.innerHTML = `
+                    <i class="fa-solid ${skill.icon} singularity-skill-icon"></i>
+                    <div class="singularity-skill-name">${skill.name}</div>
+                    <div class="singularity-skill-level">Lvl ${currentLevel} ${isMax ? '(MAX)' : `/ ${skill.maxLevel}`}</div>
+                    <div class="singularity-skill-desc">${skill.desc}</div>
+                    <button class="singularity-btn" 
+                        onclick="buySingularitySkill('${skill.id}')"
+                        ${(isMax || !canAfford) ? 'disabled' : ''}>
+                        ${isMax ? 'MAXED' : `Buy (${cost} Shard${cost>1?'s':''})`}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function buySingularitySkill(id) {
+            const skill = SINGULARITY_SKILLS.find(s => s.id === id);
+            if (!skill) return;
+            
+            if (!game.singularity) game.singularity = { shards: 0, skills: {} };
+            
+            const currentLevel = getSkill(id);
+            if (currentLevel >= skill.maxLevel) return;
+            
+            const cost = skill.cost(currentLevel);
+            if (game.singularity.shards >= cost) {
+                game.singularity.shards -= cost;
+                game.singularity.skills[id] = currentLevel + 1;
+                
+                logEvent(`Singularity Upgraded: ${skill.name}`, 'good');
+                renderSingularityTree();
+                updatePrestigeUI();
+            }
+        }
+
         function updatePrestigeUI() {
-            const currentBonus = game.prestige * 50;
-            const nextBonus = (game.prestige + 1) * 50;
-            document.getElementById('currentPrestigeBonus').innerText = `+${currentBonus}%`;
-            document.getElementById('nextPrestigeBonus').innerText = `+${nextBonus}%`;
+            const currentBonus = getSkill('quantum') * 100; // was game.prestige * 50
+            const tnv = getTotalNetworkValue();
+            const shardsToGain = getSingularityShards(tnv);
+            
+            const currentBonusEl = document.getElementById('currentPrestigeBonus');
+            const nextBonusEl = document.getElementById('nextPrestigeBonus');
+            if (currentBonusEl) currentBonusEl.innerText = `${game.singularity?.shards || 0}`;
+            if (nextBonusEl) nextBonusEl.innerText = `+${shardsToGain}`;
             
             const nodeCount = game.nodes.length;
             const moneyReq = 50000;
             const canPrestige = nodeCount >= 20 && game.money >= moneyReq;
             
             const reqText = document.getElementById('prestigeRequirements');
-            reqText.innerHTML = `
-                <span style="color: ${nodeCount >= 20 ? '#10b981' : '#ef4444'}">${nodeCount}/20 nodes</span> | 
-                <span style="color: ${game.money >= moneyReq ? '#10b981' : '#ef4444'}">$${fmt(game.money)}/$50,000</span>
-            `;
+            if (reqText) {
+                reqText.innerHTML = `
+                    <div style="font-size: 16px; margin-bottom: 8px; color: #a855f7;">Total Network Value: $${fmt(tnv)}</div>
+                    <span style="color: ${nodeCount >= 20 ? '#10b981' : '#ef4444'}">${nodeCount}/20 nodes</span> | 
+                    <span style="color: ${game.money >= moneyReq ? '#10b981' : '#ef4444'}">$${fmt(game.money)}/$50,000</span>
+                `;
+            }
             
             const btn = document.getElementById('prestigeBtn');
-            btn.disabled = !canPrestige;
-            btn.style.opacity = canPrestige ? 1 : 0.5;
+            if (btn) {
+                btn.disabled = !canPrestige;
+                btn.style.opacity = canPrestige ? 1 : 0.5;
+            }
         }
 
         function performPrestige() {
             if (game.nodes.length < 20 || game.money < 50000) return;
             
+            const tnv = getTotalNetworkValue();
+            const shardsEarned = getSingularityShards(tnv);
+            
             game.prestige++;
             game.stats.prestigeCount++;
+            
+            if (!game.singularity) game.singularity = { shards: 0, skills: {} };
+            game.singularity.shards += shardsEarned;
             
             // Reset game state
             game.money = 5000; // Starting bonus
@@ -752,8 +880,8 @@
             renderWorld();
             
             document.getElementById('prestigeModal').style.display = 'none';
-            logEvent(`Data Center Migrated! +50% speed bonus (Total: +${game.prestige * 50}%)`, 'good');
-                showFloat(`MIGRATED! +50% Speed`, window.innerWidth/2, window.innerHeight/2, '#a855f7');
+            logEvent(`Entered the Singularity! Earned ${shardsEarned} Shards.`, 'good');
+            showFloat(`+${shardsEarned} Shards!`, window.innerWidth/2, window.innerHeight/2, '#a855f7');
             
             checkAchievements();
         }
@@ -882,7 +1010,9 @@
                     // Calculate net heat change
                     const netHeatChange = overclockHeatGen - coolingPower;
                     
-                    if (netHeatChange > 0) {
+                    if (getSkill('absolute_zero') > 0) {
+                        game.routerHeat = 0;
+                    } else if (netHeatChange > 0) {
                         game.routerHeat = Math.min(100, game.routerHeat + (netHeatChange * dt));
                     } else {
                         // Cooling can reduce heat faster than normal (up to -10 per second per cooler)
@@ -919,9 +1049,8 @@
             const driverMiningMult = 1 + (game.drivers.mining * DRIVERS.mining.effect * driverBoostMult);
             const driverResearchMult = 1 + (game.drivers.research * DRIVERS.research.effect * driverBoostMult);
 
-            // Prestige multiplier (soft cap: diminishing returns after 3 prestiges)
-            const rawPrestige = game.prestige * 0.5;
-            const prestigeMult = 1 + Math.min(rawPrestige, 3) + Math.sqrt(Math.max(0, rawPrestige - 3));
+            // Prestige multiplier (replaced by Quantum Computing Singularity Skill)
+            const prestigeMult = 1 + getSkill('quantum') * 1.0; // +100% speed per level
             
             // NODE SYNERGY BONUSES (New in v11)
             let synergyBoost = 1.0;
@@ -990,6 +1119,55 @@
             const eventMoneyMult = eventMultipliers.money;
             const eventRPMult = eventMultipliers.rp;
             const eventCodeMult = eventMultipliers.code;
+            
+            // ==================== ADJACENCY EFFECTS ====================
+            // Calculate proximity-based bonuses/penalties per node
+            const adjacencyEffects = new Map(); // nodeId -> { speedMult, heatMult, virusResist, efficiencyMult }
+            const activeNodeList = game.nodes.filter(n => activeNodes.has(n.id) && !n.infected);
+            
+            for (let i = 0; i < activeNodeList.length; i++) {
+                const n1 = activeNodeList[i];
+                if (!adjacencyEffects.has(n1.id)) {
+                    adjacencyEffects.set(n1.id, { speedMult: 1, heatMult: 1, virusResist: 0, efficiencyMult: 1 });
+                }
+                
+                for (let j = i + 1; j < activeNodeList.length; j++) {
+                    const n2 = activeNodeList[j];
+                    if (!adjacencyEffects.has(n2.id)) {
+                        adjacencyEffects.set(n2.id, { speedMult: 1, heatMult: 1, virusResist: 0, efficiencyMult: 1 });
+                    }
+                    
+                    const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+                    if (dist > ADJACENCY_RANGE) continue;
+                    
+                    // Check all adjacency rules
+                    ADJACENCY_RULES.forEach(rule => {
+                        const match1 = (rule.type1 === n1.type && (rule.type2 === n2.type || rule.type2 === '*'));
+                        const match2 = (rule.type1 === n2.type && (rule.type2 === n1.type || rule.type2 === '*'));
+                        
+                        if (match1) {
+                            const eff = adjacencyEffects.get(n2.id);
+                            switch (rule.effect) {
+                                case 'speed_bonus': eff.speedMult += rule.value; break;
+                                case 'heat_penalty': eff.heatMult += rule.value; break;
+                                case 'heat_reduce': eff.heatMult -= rule.value; break;
+                                case 'virus_resist': eff.virusResist += rule.value; break;
+                                case 'efficiency_penalty': eff.efficiencyMult -= rule.value; break;
+                            }
+                        }
+                        if (match2) {
+                            const eff = adjacencyEffects.get(n1.id);
+                            switch (rule.effect) {
+                                case 'speed_bonus': eff.speedMult += rule.value; break;
+                                case 'heat_penalty': eff.heatMult += rule.value; break;
+                                case 'heat_reduce': eff.heatMult -= rule.value; break;
+                                case 'virus_resist': eff.virusResist += rule.value; break;
+                                case 'efficiency_penalty': eff.efficiencyMult -= rule.value; break;
+                            }
+                        }
+                    });
+                }
+            }
             
             const baseSpeed = 35 * Math.pow(1.25, game.routerLevel - 1) * prestigeMult * fiberMult * quantumMult * neuralMult * efficiency * driverDownloadMult * eventSpeedMult * synergyBoost;
             
@@ -1097,8 +1275,47 @@
                 let isStreamingServer = node.type === 'streaming';
                 if (node.type === 'crypto_farm') boost *= 3;
                 
-                const effectiveSpeed = baseSpeed * boost * lvlMult * dt;
-
+                // Apply adjacency effects (proximity bonuses/penalties)
+                const adjEff = adjacencyEffects.get(node.id);
+                if (adjEff) {
+                    boost *= Math.max(0.1, adjEff.speedMult);
+                    boost *= Math.max(0.1, adjEff.efficiencyMult);
+                }
+                
+                // Apply firmware effects for Server Racks
+                let firmwareSpeedMult = 1;
+                let firmwareRPMult = 1;
+                let firmwareUploadMult = 1;
+                if (node.firmware && FIRMWARE_DEFS[node.firmware]) {
+                    const fw = FIRMWARE_DEFS[node.firmware];
+                    if (fw.speedMult) firmwareSpeedMult = fw.speedMult;
+                    if (fw.rpMult) firmwareRPMult = fw.rpMult;
+                    if (fw.uploadMult) firmwareUploadMult = fw.uploadMult;
+                }
+                
+                let rawSpeed = baseSpeed * boost * lvlMult * firmwareSpeedMult * dt;
+                
+                // ==================== BANDWIDTH CLAMPING ====================
+                // Each node has a max bandwidth from NODE_DEFS, scaled by level
+                const maxBandwidth = (def.bandwidth || 500) * Math.pow(1.3, node.level - 1) * dt;
+                
+                // Load Balancer bonus: connected balancers share their excess bandwidth
+                let balancerBandwidthBonus = 0;
+                game.conns.forEach(c => {
+                    const nid = c.from === node.id ? c.to : c.from;
+                    const n = nodeMap.get(nid);
+                    if (n && n.type === 'balancer' && activeNodes.has(nid) && !n.infected) {
+                        balancerBandwidthBonus += (NODE_DEFS.balancer.bandwidth * 0.3 * Math.pow(1.3, n.level - 1)) * dt;
+                    }
+                });
+                
+                const totalBandwidth = maxBandwidth + balancerBandwidthBonus;
+                const isBottlenecked = rawSpeed > totalBandwidth;
+                const effectiveSpeed = Math.min(rawSpeed, totalBandwidth);
+                
+                // Track bottleneck state for UI rendering
+                node._bottlenecked = isBottlenecked;
+                node._bandwidthUsage = totalBandwidth > 0 ? Math.min(1, rawSpeed / totalBandwidth) : 0;
                 if (def.type === 'download' || node.type === 'dl_audio') {
                     const resourceKey = def.out || node.type.replace('dl_', '');
                     let amt = effectiveSpeed / RESOURCES[resourceKey].size;
@@ -1375,6 +1592,18 @@
             // Process automation rules from Logic Controllers
             processAutomationRules();
             
+            // Singularity Skill: Self-Aware Code
+            const selfAwareLvl = getSkill('self_aware');
+            if (selfAwareLvl > 0 && Math.random() < 0.01 * selfAwareLvl) {
+                const activeList = game.nodes.filter(n => activeNodes.has(n.id) && !n.infected && n.type !== 'router');
+                if (activeList.length > 0) {
+                    const target = activeList[Math.floor(Math.random() * activeList.length)];
+                    target.level++;
+                    spawnParticles(target.x + 85, target.y + 35, '#a855f7', 8);
+                    logEvent(`Self-Aware Code upgraded ${NODE_DEFS[target.type].name}!`, 'good');
+                }
+            }
+            
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
             
@@ -1466,6 +1695,16 @@
             if (routers.length === 0) {
                 // No router - nothing can be active
                 activeNodes.clear();
+                return;
+            }
+            
+            // Singularity Skill: Wireless Protocol bypasses cables
+            if (getSkill('wireless') > 0) {
+                game.nodes.forEach(n => {
+                    newActive.add(n.id);
+                    n.hasPathToRouter = true;
+                });
+                activeNodes = newActive;
                 return;
             }
             
@@ -2019,6 +2258,13 @@
                 renderResearchTree();
                 setTab(currTab);
                 logEvent(`Researched: ${tech.name}`);
+                
+                // Trigger unlock animation on the newly owned card
+                const card = document.getElementById(`tech-${id}`);
+                if (card) {
+                    card.classList.add('just-unlocked');
+                    setTimeout(() => card.classList.remove('just-unlocked'), 1200);
+                }
             }
         }
         
@@ -2031,9 +2277,16 @@
         
         function prestige() {
             if (game.money < 10000000) return;
-            if (!confirm("Sell company? Resets money, nodes, tech. Drivers and code persist!")) return;
+            if (!confirm("Enter the Singularity? Resets money, nodes, tech. Drivers and code persist!")) return;
+            
+            const tnv = getTotalNetworkValue();
+            const shardsEarned = getSingularityShards(tnv);
             
             game.prestige++;
+            
+            if (!game.singularity) game.singularity = { shards: 0, skills: {} };
+            game.singularity.shards += shardsEarned;
+            
             game.money = 2000;
             game.rp = 0;
             game.res = { files: 0, images: 0, videos: 0, audio: 0 };
@@ -2043,21 +2296,29 @@
             game.routerHeat = 0;
             game.unlocked = [];
             game.nextId = 1;
-            activeContract = null;
+            game.activeContract = null;
             
-            init(); 
+            game.stats.totalMoney = 2000;
+            game.stats.moneySpent = 0;
+            game.stats.prestigeCount++;
+            
+            activeNodes.clear();
+            selectedNode = null;
+            
             renderWorld();
-            renderResearchTree();
-            setTab('infra');
-            logEvent(`Prestige Level ${game.prestige} Achieved!`);
+            spawnNode('router', 2500, 2500);
+            updatePrestigeUI();
+            logEvent(`Singularity Achieved! +${shardsEarned} Shards`);
+            checkAchievements();
+            closeAllModals();
         }
-
+        
         function openContracts() {
             const list = document.getElementById('contractList');
             list.innerHTML = '';
             
-            // Scale contracts based on prestige level for replayability
-            const prestigeScale = 1 + (game.prestigeLevel || 0) * 0.5;
+            // Scale contracts based on prestige level and Golden Ticket skill
+            const prestigeScale = 1 + (getSkill('quantum') * 0.5) + (getSkill('golden') * 0.5);
             const allContracts = [
                 // Tier 1: Starter contracts
                 { title: "Data Dump", desc: "Upload 50 MB Data", target: 50 * 1024 * 1024, time: 60, rewardM: Math.floor(5000 * prestigeScale), rewardR: Math.floor(500 * prestigeScale), tier: 1 },
@@ -2153,27 +2414,92 @@
                 if (n.type === 'router' && game.overheatMode) classes += ' overheating';
                 if (def.type === 'coding') classes += ' coding';
                 
+                // Physical Footprint: wide nodes
+                const isWide = def.size && def.size[0] === 2;
+                if (isWide) classes += ' node-wide';
+                
+                // Bottleneck indicator
+                if (n._bottlenecked) classes += ' bottlenecked';
+                
+                // Firmware styling
+                if (n.firmware) classes += ' firmware-' + n.firmware;
+                
                 el.className = classes;
                 el.id = `node-${n.id}`;
                 el.style.left = n.x + 'px';
                 el.style.top = n.y + 'px';
                 
-                const ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                               <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                // Wide nodes get 4 ports, normal get 2
+                let ports;
+                if (isWide) {
+                    ports = `<div class="port in port-tl" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                             <div class="port in port-bl" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                             <div class="port out port-tr" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                             <div class="port out port-br" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                } else {
+                    ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
+                             <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                }
                 
                 const cleanBtn = n.infected ? `<div class="clean-btn" onmousedown="cleanNode(game.nodes.find(x=>x.id===${n.id}), event)">CLEAN [-$500]</div>` : '';
+                
+                // Firmware badge
+                let firmwareBadge = '';
+                if (n.firmware && FIRMWARE_DEFS[n.firmware]) {
+                    const fw = FIRMWARE_DEFS[n.firmware];
+                    firmwareBadge = `<div class="firmware-badge" style="color:${fw.color}" title="${fw.name}: ${fw.desc}"><i class="${fw.icon}"></i></div>`;
+                }
+                
+                // Bandwidth usage bar
+                const bwUsage = n._bandwidthUsage || 0;
+                const bwColor = bwUsage > 0.9 ? '#ef4444' : bwUsage > 0.6 ? '#f59e0b' : '#10b981';
+                const bandwidthBar = `<div class="bandwidth-bar"><div class="bandwidth-fill" style="width:${Math.round(bwUsage * 100)}%;background:${bwColor}"></div></div>`;
+                
+                // Use firmware icon/color if flashed
+                const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
+                const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : def.color;
 
                 el.innerHTML = `
                     ${ports}
                     ${cleanBtn}
+                    ${firmwareBadge}
                     <div class="node-header">
-                        <div class="node-icon-box" style="color:${def.color}"><i class="${def.icon}"></i></div>
+                        <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
                         <div class="node-info">
                             <div class="node-title">${def.name}</div>
                             <div class="node-lvl">Level ${n.level}</div>
                         </div>
                     </div>
+                    ${bandwidthBar}
                 `;
+                
+                // Custom Tooltip Logic
+                el.onmouseover = (e) => {
+                    const tooltip = document.getElementById('gameTooltip') || createTooltipElement();
+                    let fwHtml = '';
+                    if (n.firmware && FIRMWARE_DEFS[n.firmware]) {
+                        fwHtml = `<div class="custom-tooltip-fw">Firmware: ${FIRMWARE_DEFS[n.firmware].name}</div>`;
+                    }
+                    tooltip.innerHTML = `
+                        <div class="custom-tooltip-title">
+                            ${def.name} <span class="custom-tooltip-lvl">Lv${n.level}</span>
+                        </div>
+                        <div class="custom-tooltip-desc">${def.desc}</div>
+                        ${fwHtml}
+                    `;
+                    tooltip.classList.add('visible');
+                    positionTooltip(e, tooltip);
+                };
+                
+                el.onmousemove = (e) => {
+                    const tooltip = document.getElementById('gameTooltip');
+                    if (tooltip) positionTooltip(e, tooltip);
+                };
+                
+                el.onmouseleave = () => {
+                    const tooltip = document.getElementById('gameTooltip');
+                    if (tooltip) tooltip.classList.remove('visible');
+                };
                 
                 el.onmousedown = (e) => {
                     if (e.target.classList.contains('port')) return;
@@ -2191,6 +2517,28 @@
             });
 
             renderCables();
+        }
+        
+        // Tooltip Helper Functions
+        function createTooltipElement() {
+            const el = document.createElement('div');
+            el.id = 'gameTooltip';
+            el.className = 'custom-tooltip';
+            document.body.appendChild(el);
+            return el;
+        }
+        
+        function positionTooltip(e, tooltip) {
+            // Position slightly offset from cursor
+            let x = e.clientX + 15;
+            let y = e.clientY + 15;
+            
+            // Keep on screen
+            if (x + 250 > window.innerWidth) x = e.clientX - 265;
+            if (y + tooltip.offsetHeight > window.innerHeight) y = window.innerHeight - tooltip.offsetHeight - 10;
+            
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
         }
 
         // Cable cache for efficient updates
@@ -2290,7 +2638,7 @@
             const world = document.getElementById('world');
             world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
             
-            const prestigeMult = 1 + (game.prestige * 0.5);
+            const prestigeMult = 1 + getSkill('quantum') * 1.0;
             const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
             const base = 20 * Math.pow(1.4, game.routerLevel - 1) * prestigeMult * driverDownloadMult; // Reduced from 25/1.5
             document.getElementById('globalDown').innerText = fmt(base * eff) + ' B/s';
@@ -2466,14 +2814,45 @@
             });
             
             const maxTier = Math.max(...Object.keys(tiers).map(Number));
+            const tierNames = { 1: 'Basics', 2: 'Expansion', 3: 'Specialization', 4: 'Infrastructure', 5: 'Enterprise', 6: 'Endgame' };
             
+            // Build tier navigation bar
+            let existingNav = document.getElementById('researchTierNav');
+            if (existingNav) existingNav.remove();
+            
+            const navBar = document.createElement('div');
+            navBar.className = 'research-tier-nav';
+            navBar.id = 'researchTierNav';
+            
+            for (let tier = 1; tier <= maxTier; tier++) {
+                const tierTechs = tiers[tier] || [];
+                const ownedCount = tierTechs.filter(t => game.unlocked.includes(t.id)).length;
+                const totalCount = tierTechs.length;
+                const allOwned = ownedCount === totalCount;
+                
+                const navBtn = document.createElement('button');
+                navBtn.className = `tier-nav-btn tier-nav-${tier} ${allOwned ? 'completed' : ''}`;
+                navBtn.innerHTML = `<span class="tier-nav-label">T${tier}</span><span class="tier-nav-progress">${ownedCount}/${totalCount}</span>`;
+                navBtn.title = `Tier ${tier}: ${tierNames[tier] || ''}`;
+                navBtn.onclick = () => {
+                    const tierEl = document.getElementById(`research-tier-${tier}`);
+                    if (tierEl) tierEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                };
+                navBar.appendChild(navBtn);
+            }
+            
+            const container = document.getElementById('researchTreeContainer');
+            container.insertBefore(navBar, container.firstChild);
+            
+            // Build tech cards per tier
             for (let tier = 1; tier <= maxTier; tier++) {
                 const tierCol = document.createElement('div');
                 tierCol.className = 'research-tier';
+                tierCol.id = `research-tier-${tier}`;
                 
                 const tierLabel = document.createElement('div');
                 tierLabel.className = `tier-label tier-${tier}`;
-                tierLabel.innerText = 'Tier ' + tier;
+                tierLabel.innerHTML = `<span class="tier-label-num">Tier ${tier}</span><span class="tier-label-name">${tierNames[tier] || ''}</span>`;
                 tierCol.appendChild(tierLabel);
                 
                 if (tiers[tier]) {
@@ -2486,14 +2865,21 @@
                         const card = document.createElement('div');
                         card.className = `tech-card ${owned ? 'owned' : ''} ${!prerequisitesMet ? 'locked' : ''} ${isAvailable ? 'available' : ''}`;
                         card.id = `tech-${tech.id}`;
+                        card.setAttribute('data-tier', tier);
                         card.onclick = () => { if (!owned && prerequisitesMet) unlockTech(tech.id); };
                         
                         const costClass = canAfford ? 'affordable' : '';
                         
+                        // Find what node this tech unlocks (for tooltip)
+                        const unlocksNode = Object.entries(NODE_DEFS).find(([k, v]) => v.req === tech.id);
+                        const unlocksText = unlocksNode ? `Unlocks: ${unlocksNode[1].name}` : '';
+                        
                         card.innerHTML = `
+                            <div class="tech-tier-accent tier-accent-${tier}"></div>
                             <div class="tech-icon"><i class="${tech.icon}"></i></div>
                             <div class="tech-name">${tech.name}</div>
                             <div class="tech-desc">${tech.desc}</div>
+                            ${unlocksText ? `<div class="tech-unlocks"><i class="fa-solid fa-lock-open"></i> ${unlocksText}</div>` : ''}
                             ${!owned ? `<div class="tech-cost ${costClass}"><i class="fa-solid fa-flask"></i> ${fmt(tech.cost)} RP</div>` : '<div class="tech-cost"><i class="fa-solid fa-check"></i> Owned</div>'}
                             ${!prerequisitesMet && tech.requires.length > 0 ? `<div class="tech-req">Requires: ${tech.requires.map(r => TECH_TREE.find(t => t.id === r)?.name).join(', ')}</div>` : ''}
                         `;
@@ -2512,7 +2898,10 @@
             const svg = document.getElementById('researchTreeSvg');
             svg.innerHTML = '';
             
-            const containerRect = document.getElementById('researchTreeContainer').getBoundingClientRect();
+            const container = document.getElementById('researchTreeContainer');
+            const containerRect = container.getBoundingClientRect();
+            const scrollLeft = container.scrollLeft;
+            const scrollTop = container.scrollTop;
             
             TECH_TREE.forEach(tech => {
                 if (tech.requires && tech.requires.length > 0) {
@@ -2520,22 +2909,26 @@
                     if (!targetEl) return;
                     
                     const targetRect = targetEl.getBoundingClientRect();
-                    const targetX = targetRect.left - containerRect.left + targetRect.width / 2;
-                    const targetY = targetRect.top - containerRect.top;
+                    const targetX = targetRect.left - containerRect.left + scrollLeft + targetRect.width / 2;
+                    const targetY = targetRect.top - containerRect.top + scrollTop;
                     
                     tech.requires.forEach(reqId => {
                         const sourceEl = document.getElementById(`tech-${reqId}`);
                         if (!sourceEl) return;
                         
                         const sourceRect = sourceEl.getBoundingClientRect();
-                        const sourceX = sourceRect.left - containerRect.left + sourceRect.width / 2;
-                        const sourceY = sourceRect.top - containerRect.top + sourceRect.height;
+                        const sourceX = sourceRect.left - containerRect.left + scrollLeft + sourceRect.width / 2;
+                        const sourceY = sourceRect.top - containerRect.top + scrollTop + sourceRect.height;
+                        
+                        const isUnlocked = game.unlocked.includes(tech.id) && game.unlocked.includes(reqId);
+                        const isPartial = !isUnlocked && game.unlocked.includes(reqId);
+                        
+                        // Cubic Bezier curve for smooth organic connectors
+                        const midY = (sourceY + targetY) / 2;
+                        const d = `M ${sourceX} ${sourceY} C ${sourceX} ${midY}, ${targetX} ${midY}, ${targetX} ${targetY}`;
                         
                         const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        const isUnlocked = game.unlocked.includes(tech.id) && game.unlocked.includes(reqId);
-                        line.className = `research-tree-line ${isUnlocked ? 'unlocked' : ''}`;
-                        
-                        const d = `M ${sourceX} ${sourceY} L ${targetX} ${targetY}`;
+                        line.setAttribute('class', `research-tree-line ${isUnlocked ? 'unlocked' : ''} ${isPartial ? 'partial' : ''}`);
                         line.setAttribute('d', d);
                         
                         svg.appendChild(line);
@@ -2718,6 +3111,69 @@
             // Show/hide Logic Controller button
             const logicBtn = document.getElementById('ctxLogicRules');
             if (logicBtn) logicBtn.style.display = node.type === 'logic_controller' ? 'block' : 'none';
+            
+            // Show/hide Firmware Flash button (only for Server Racks without firmware)
+            const fwBtn = document.getElementById('ctxFlashFirmware');
+            if (fwBtn) fwBtn.style.display = (node.type === 'rack' && !node.firmware) ? 'block' : 'none';
+        }
+        
+        // ==================== FIRMWARE FLASHING ====================
+        
+        let firmwareTargetNodeId = null;
+        
+        function openFirmwareModal(nodeId) {
+            const node = game.nodes.find(n => n.id === nodeId);
+            if (!node || node.type !== 'rack' || node.firmware) return;
+            
+            firmwareTargetNodeId = nodeId;
+            document.getElementById('contextMenu').style.display = 'none';
+            
+            const container = document.getElementById('firmwareOptions');
+            container.innerHTML = '';
+            
+            Object.entries(FIRMWARE_DEFS).forEach(([fwId, fw]) => {
+                const canAfford = game.money >= fw.cost;
+                const option = document.createElement('div');
+                option.className = 'firmware-option' + (canAfford ? '' : ' disabled');
+                option.style.opacity = canAfford ? '1' : '0.4';
+                option.innerHTML = `
+                    <div class="fw-icon" style="color:${fw.color}"><i class="${fw.icon}"></i></div>
+                    <div class="fw-name">${fw.name}</div>
+                    <div class="fw-desc">${fw.desc}</div>
+                    <div class="fw-cost">$${fmt(fw.cost)}</div>
+                `;
+                if (canAfford) {
+                    option.onclick = () => flashFirmware(fwId);
+                }
+                container.appendChild(option);
+            });
+            
+            document.getElementById('firmwareModal').style.display = 'flex';
+        }
+        
+        function flashFirmware(firmwareId) {
+            if (!firmwareTargetNodeId) return;
+            const node = game.nodes.find(n => n.id === firmwareTargetNodeId);
+            if (!node || node.type !== 'rack' || node.firmware) return;
+            
+            const fw = FIRMWARE_DEFS[firmwareId];
+            if (!fw || game.money < fw.cost) return;
+            
+            if (!confirm(`Flash "${fw.name}" firmware? This is PERMANENT and costs $${fmt(fw.cost)}.`)) return;
+            
+            game.money -= fw.cost;
+            game.stats.moneySpent += fw.cost;
+            node.firmware = firmwareId;
+            
+            // Make virus-immune firmware nodes immune
+            if (fw.virusImmune) node.infected = false;
+            
+            document.getElementById('firmwareModal').style.display = 'none';
+            firmwareTargetNodeId = null;
+            
+            spawnParticles(node.x + 90, node.y + 40, fw.color, 15);
+            showFloat(`Firmware: ${fw.name}`, window.innerWidth/2, window.innerHeight/2, fw.color);
+            renderWorld();
         }
         
         // ==================== LOGIC CONTROLLER AUTOMATION ====================
@@ -3064,8 +3520,14 @@
             repaired.nodes.forEach(n => {
                 if (typeof n.level !== 'number' || isNaN(n.level)) n.level = 1;
                 if (typeof n.infected !== 'boolean') n.infected = false;
+                if (n.firmware && (!FIRMWARE_DEFS || !FIRMWARE_DEFS[n.firmware])) delete n.firmware; // Validate firmware against DEFS, delete if invalid
                 if (isNaN(n.x)) n.x = 2500;
                 if (isNaN(n.y)) n.y = 2500;
+                
+                // Clean up derived/temporary state to prevent save bloat
+                Object.keys(n).forEach(key => {
+                    if (key.startsWith('_')) delete n[key];
+                });
             });
             
             // Fix connections - remove any that reference non-existent nodes
@@ -3094,6 +3556,15 @@
                     }
                 }
             }
+            
+            // Settings defaults
+            if (typeof repaired.ultraLowPerfEnabled !== 'boolean') repaired.ultraLowPerfEnabled = false;
+            if (typeof repaired.particlesEnabled !== 'boolean') repaired.particlesEnabled = true;
+            if (typeof repaired.animationsEnabled !== 'boolean') repaired.animationsEnabled = true;
+            if (typeof repaired.eventAlertsEnabled !== 'boolean') repaired.eventAlertsEnabled = true;
+            if (typeof repaired.autoSaveEnabled !== 'boolean') repaired.autoSaveEnabled = true;
+            if (typeof repaired.offlineEarningsEnabled !== 'boolean') repaired.offlineEarningsEnabled = true;
+            if (typeof repaired.notificationsEnabled !== 'boolean') repaired.notificationsEnabled = true;
             
             return repaired;
         }
@@ -3125,12 +3596,34 @@
                     game.money = Number(repairedGame.money) || 2000;
                     game.rp = Number(repairedGame.rp) || 0;
                     game.prestige = Number(repairedGame.prestige) || 0;
+                    
+                    // Migrate old prestige to singularity
+                    game.singularity = repairedGame.singularity || { shards: 0, skills: {} };
+                    if (game.prestige > 0 && typeof game.singularity.skills.quantum === 'undefined') {
+                        game.singularity.skills.quantum = game.prestige;
+                    }
+                    
                     game.routerLevel = Number(repairedGame.routerLevel) || 1;
                     game.routerHeat = Number(repairedGame.routerHeat) || 0;
                     game.overheatMode = Boolean(repairedGame.overheatMode);
                     game.nextId = Number(repairedGame.nextId) || 1;
                     game.playerName = repairedGame.playerName || '';
                     game.saveCreated = repairedGame.saveCreated || Date.now();
+                    
+                    // Settings / Toggles
+                    game.ultraLowPerfEnabled = repairedGame.ultraLowPerfEnabled !== false;
+                    game.particlesEnabled = repairedGame.particlesEnabled !== false;
+                    game.animationsEnabled = repairedGame.animationsEnabled !== false;
+                    game.eventAlertsEnabled = repairedGame.eventAlertsEnabled !== false;
+                    game.autoSaveEnabled = repairedGame.autoSaveEnabled !== false;
+                    game.offlineEarningsEnabled = repairedGame.offlineEarningsEnabled !== false;
+                    game.notificationsEnabled = repairedGame.notificationsEnabled !== false;
+                    
+                    // Apply display classes instantly
+                    document.body.classList.toggle('ultra-low-perf', game.ultraLowPerfEnabled);
+                    document.body.classList.toggle('reduce-motion', !game.animationsEnabled);
+                    const particlesContainer = document.getElementById('particlesContainer');
+                    if (particlesContainer) particlesContainer.style.display = game.particlesEnabled ? 'block' : 'none';
                     
                     // Resources - ensure all are numbers (use repaired game data)
                     game.res = {
@@ -3486,10 +3979,31 @@
                         game.money = Number(importedGame.money) || 2000;
                         game.rp = Number(importedGame.rp) || 0;
                         game.prestige = Number(importedGame.prestige) || 0;
+                        
+                        game.singularity = importedGame.singularity || { shards: 0, skills: {} };
+                        if (game.prestige > 0 && typeof game.singularity.skills.quantum === 'undefined') {
+                            game.singularity.skills.quantum = game.prestige;
+                        }
+                        
                         game.routerLevel = Number(importedGame.routerLevel) || 1;
                         game.routerHeat = Number(importedGame.routerHeat) || 0;
                         game.overheatMode = Boolean(importedGame.overheatMode);
                         game.nextId = Number(importedGame.nextId) || 1;
+                        
+                        // Settings / Toggles
+                        game.ultraLowPerfEnabled = importedGame.ultraLowPerfEnabled !== false;
+                        game.particlesEnabled = importedGame.particlesEnabled !== false;
+                        game.animationsEnabled = importedGame.animationsEnabled !== false;
+                        game.eventAlertsEnabled = importedGame.eventAlertsEnabled !== false;
+                        game.autoSaveEnabled = importedGame.autoSaveEnabled !== false;
+                        game.offlineEarningsEnabled = importedGame.offlineEarningsEnabled !== false;
+                        game.notificationsEnabled = importedGame.notificationsEnabled !== false;
+                        
+                        // Apply display classes instantly
+                        document.body.classList.toggle('ultra-low-perf', game.ultraLowPerfEnabled);
+                        document.body.classList.toggle('reduce-motion', !game.animationsEnabled);
+                        const particlesContainer = document.getElementById('particlesContainer');
+                        if (particlesContainer) particlesContainer.style.display = game.particlesEnabled ? 'block' : 'none';
                         
                         game.res = {
                             files: Number(importedGame.res?.files) || 0,

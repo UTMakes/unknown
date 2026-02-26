@@ -1,1080 +1,2366 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Upload Labs: Network Empire - A cyberpunk network management idle game. Build your data empire, research technologies, and optimize your network!">
-    <meta name="theme-color" content="#0a0e14">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Upload Labs: Network Empire - A cyberpunk network management idle game. Build your data empire, research technologies, and optimize your network!"
+    />
+    <meta name="theme-color" content="#0a0e14" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
     <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Upload Labs: Network Empire">
-    <meta property="og:description" content="A cyberpunk network management idle game. Build your data empire!">
-    <meta property="og:site_name" content="Upload Labs">
-    
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Upload Labs: Network Empire" />
+    <meta
+      property="og:description"
+      content="A cyberpunk network management idle game. Build your data empire!"
+    />
+    <meta property="og:site_name" content="Upload Labs" />
+
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Upload Labs: Network Empire">
-    <meta name="twitter:description" content="A cyberpunk network management idle game. Build your data empire!">
-    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Upload Labs: Network Empire" />
+    <meta
+      name="twitter:description"
+      content="A cyberpunk network management idle game. Build your data empire!"
+    />
+
     <title>Upload Labs: Network Empire</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E">
-    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌐%3C/text%3E%3C/svg%3E"
+    />
+
     <!-- Firebase SDK -->
     <script type="module" src="js/firebase-init.js"></script>
-    
+
     <!-- Vercel Speed Insights -->
     <script>
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+      window.si =
+        window.si ||
+        function () {
+          (window.siq = window.siq || []).push(arguments);
+        };
     </script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
-    
+
     <!-- Vercel Web Analytics -->
     <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      window.va =
+        window.va ||
+        function () {
+          (window.vaq = window.vaq || []).push(arguments);
+        };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
-    
-    <!-- Tailwind CSS (Local Build via Vite) -->
-    
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="styles.css">
 
-</head>
-<body>
+    <!-- Tailwind CSS (Local Build via Vite) -->
+
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <!-- Animated Background -->
     <div class="bg-grid"></div>
     <div class="particles" id="particlesContainer"></div>
 
     <div class="zoom-controls">
-        <button class="zoom-btn" onclick="Game.zoomIn()" title="Zoom In (+)"><i class="fa-solid fa-plus"></i></button>
-        <div class="zoom-level" id="zoomLevel">100%</div>
-        <button class="zoom-btn" onclick="Game.zoomOut()" title="Zoom Out (-)"><i class="fa-solid fa-minus"></i></button>
-        <button class="zoom-btn" onclick="Game.resetZoom()" title="Reset Zoom (0)"><i class="fa-solid fa-compress"></i></button>
-        <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0;"></div>
-        <button class="zoom-btn zoom-btn-settings" onclick="document.getElementById('settingsModal').style.display='flex'" title="Settings">
-            <i class="fa-solid fa-gear"></i>
-        </button>
+      <button class="zoom-btn" onclick="Game.zoomIn()" title="Zoom In (+)">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <div class="zoom-level" id="zoomLevel">100%</div>
+      <button class="zoom-btn" onclick="Game.zoomOut()" title="Zoom Out (-)">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <button
+        class="zoom-btn"
+        onclick="Game.resetZoom()"
+        title="Reset Zoom (0)"
+      >
+        <i class="fa-solid fa-compress"></i>
+      </button>
+      <div
+        style="
+          width: 100%;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.1);
+          margin: 4px 0;
+        "
+      ></div>
+      <button
+        class="zoom-btn zoom-btn-settings"
+        onclick="
+          document.getElementById('settingsModal').style.display = 'flex'
+        "
+        title="Settings"
+      >
+        <i class="fa-solid fa-gear"></i>
+      </button>
     </div>
 
     <div class="event-log" id="eventLog"></div>
-    
+
     <!-- Cloud Save Status -->
     <div class="cloud-save-status" id="cloudSaveStatus">
-        <i class="fa-solid fa-cloud"></i>
-        <span id="cloudSaveText">Offline</span>
+      <i class="fa-solid fa-cloud"></i>
+      <span id="cloudSaveText">Offline</span>
     </div>
-    
+
     <!-- Achievement Popup -->
     <div class="achievement-popup" id="achievementPopup">
-        <div class="achievement-badge"><i class="fa-solid fa-trophy"></i></div>
-        <i class="fa-solid fa-medal"></i>
-        <div style="display: inline-block; vertical-align: middle;">
-            <h4>Achievement Unlocked!</h4>
-            <p id="achievementText">Description here</p>
-        </div>
+      <div class="achievement-badge"><i class="fa-solid fa-trophy"></i></div>
+      <i class="fa-solid fa-medal"></i>
+      <div style="display: inline-block; vertical-align: middle">
+        <h4>Achievement Unlocked!</h4>
+        <p id="achievementText">Description here</p>
+      </div>
     </div>
-    
+
     <!-- Event Notification -->
-    <div class="event-notification" id="eventNotification" style="transform: translateX(-50%) translateY(-1000px); display: none;">
-        <h3 id="eventTitle">Event Title</h3>
-        <p id="eventDesc">Event description goes here</p>
-        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="eventEffect">Effect: +100 Money</div>
+    <div
+      class="event-notification"
+      id="eventNotification"
+      style="transform: translateX(-50%) translateY(-1000px); display: none"
+    >
+      <h3 id="eventTitle">Event Title</h3>
+      <p id="eventDesc">Event description goes here</p>
+      <div
+        style="margin-top: 10px; font-size: 12px; color: var(--text-muted)"
+        id="eventEffect"
+      >
+        Effect: +100 Money
+      </div>
     </div>
-    
+
     <!-- Combo Indicator -->
     <div class="combo-indicator" id="comboIndicator">COMBO x2!</div>
 
     <!-- Welcome Modal -->
-    <div id="welcomeModal" class="modal-overlay" style="display: flex;">
-        <div class="welcome-container">
-            <!-- Latest Changes Panel - LEFT SIDE -->
-            <div class="welcome-sidebar" style="flex: 0.85; order: -1;">
-                <div class="welcome-sidebar-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));">
-                    <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v13.3</span></h2>
-                </div>
-                <div class="welcome-sidebar-body">
-                    <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">Balance</span>
-                            <span><strong>Faster Start:</strong> Base speed increased 75%, starter nodes cheaper, resource prices boosted</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">Balance</span>
-                            <span><strong>Smoother Curve:</strong> Router scaling softened (1.4x → 1.25x per level) for steadier progression</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Cap</span>
-                            <span><strong>Late-Game Caps:</strong> Prestige, Quantum Core, and AI Processor now have diminishing returns</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge new">New</span>
-                            <span><strong>Interactive Tutorial:</strong> Step-by-step guided tutorial for new players</span>
-                        </li>
-                        <li class="changelog-item">
-                            <span class="changelog-badge fix">Fix</span>
-                            <span><strong>Node Scaling:</strong> Support nodes (Cache, CDN, Analyzer, etc.) now scale with upgrade level</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="welcome-main">
-                <div class="modal-header">
-                    <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v13.3</span></h2>
-                    <button class="btn" onclick="document.getElementById('welcomeModal').style.display='none'">Start Playing</button>
-                </div>
-                <div class="modal-body" style="max-height: 65vh; overflow-y: auto; flex: 1;">
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
-                        <ul class="instructions-list">
-                            <li>Start with your <strong>Router</strong> - it's your network core</li>
-                            <li>Buy nodes from the toolbar at the bottom (5 tabs now!)</li>
-                            <li>Connect nodes by dragging between <span style="color:#10b981">green</span> and <span style="color:#3b82f6">blue</span> ports</li>
-                            <li>Nodes must be connected to the Router to work!</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
-                        <ul class="instructions-list">
-                            <li><strong>Downloaders</strong> (blue) collect files/images/videos/audio</li>
-                            <li><strong>Uploaders</strong> (teal) sell data for money</li>
-                            <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
-                            <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
-                            <li><strong>Overclock</strong> doubles speed but generates heat!</li>
-                            <li><strong>Coder Nodes</strong> (cyan) produce code bits for drivers</li>
-                            <li>Check the <strong>Advanced</strong> tab for powerful late-game nodes</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
-                        <ul class="instructions-list">
-                            <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
-                            <li><span class="key">0</span> to reset zoom to 100%</li>
-                            <li><span class="key">Drag</span> empty space to pan the view</li>
-                            <li><span class="key">Right-click</span> a node to open upgrade/delete menu</li>
-                            <li><span class="key">Drag</span> from green port to blue port to connect nodes ($10 per cable)</li>
-                            <li><span class="key">X</span> to toggle cable delete mode (click cables to delete, $5 refund)</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-code"></i> NEW: Coding System</h3>
-                        <ul class="instructions-list">
-                            <li><strong>Coder Nodes</strong> generate code bits over time</li>
-                            <li>Convert 100 code bits → 1 Optimization Code</li>
-                            <li>Use optimization code to create <strong>Drivers</strong></li>
-                            <li>Drivers provide permanent global bonuses!</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="welcome-sidebar">
-                <div class="welcome-sidebar-header">
-                    <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v13.2</span></h2>
-                </div>
-                <div class="welcome-sidebar-body">
-                    <ul class="feature-list">
-                        <li class="feature-item">
-                            <div class="feature-icon new" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-scale-balanced"></i></div>
-                            <div class="feature-content">
-                                <h4>Game Balance Overhaul!</h4>
-                                <p>Early game is 75% faster. Late game has soft caps on multiplier stacking. The whole curve feels smooth!</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-graduation-cap"></i></div>
-                            <div class="feature-content">
-                                <h4>Interactive Tutorial!</h4>
-                                <p>New players get a guided walkthrough of all core mechanics &mdash; placing nodes, cables, research, and more!</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fa-solid fa-chart-line"></i></div>
-                            <div class="feature-content">
-                                <h4>Node Scaling Fixed!</h4>
-                                <p>Cache, CDN, Analyzer, Warehouse &amp; Quantum now properly scale with level. Upgrades finally matter!</p>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <div class="feature-icon" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-wrench"></i></div>
-                            <div class="feature-content">
-                                <h4>Console Commands!</h4>
-                                <p>Built-in debug tools in Settings: Emergency Recovery, Save Repair, and Network Analysis.</p>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="version-tag">
-                        <i class="fa-solid fa-scale-balanced"></i> Version 13.3 - "Balance Update"
-                    </div>
-                </div>
-            </div>
+    <div id="welcomeModal" class="modal-overlay" style="display: flex">
+      <div class="welcome-container">
+        <!-- Latest Changes Panel - LEFT SIDE -->
+        <div class="welcome-sidebar" style="flex: 0.85; order: -1">
+          <div
+            class="welcome-sidebar-header"
+            style="
+              background: linear-gradient(
+                135deg,
+                rgba(245, 158, 11, 0.15),
+                rgba(217, 119, 6, 0.1)
+              );
+            "
+          >
+            <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v14.0</span></h2>
+          </div>
+          <div class="welcome-sidebar-body">
+            <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
+              <li class="changelog-item">
+                <span class="changelog-badge new">New</span>
+                <span><strong>Singularity Skill Tree:</strong> Prestige revamp, earn Shards based on Network Value!</span>
+              </li>
+              <li class="changelog-item">
+                <span class="changelog-badge new">New</span>
+                <span><strong>Deep Node Mechanics:</strong> Traffic, bottlenecks, larger nodes, and placement rules.</span>
+              </li>
+              <li class="changelog-item">
+                <span class="changelog-badge new">New</span>
+                <span><strong>Logic Controller:</strong> Automate your expanding network with If/Then rules.</span>
+              </li>
+              <li class="changelog-item">
+                <span class="changelog-badge fix">Fix</span>
+                <span><strong>Save System Updates:</strong> Enhanced repair logic and Ultra Low Performance persistence.</span>
+              </li>
+            </ul>
+          </div>
         </div>
+
+        <div class="welcome-main">
+          <div class="modal-header">
+            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.0</span></h2>
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('welcomeModal').style.display = 'none'
+              "
+            >
+              Start Playing
+            </button>
+          </div>
+          <div
+            class="modal-body"
+            style="max-height: 65vh; overflow-y: auto; flex: 1"
+          >
+            <div class="help-section">
+              <h3><i class="fa-solid fa-gamepad"></i> Getting Started</h3>
+              <ul class="instructions-list">
+                <li>
+                  Start with your <strong>Router</strong> - it's your network
+                  core
+                </li>
+                <li>Buy nodes from the toolbar at the bottom (5 tabs now!)</li>
+                <li>
+                  Connect nodes by dragging between
+                  <span style="color: #10b981">green</span> and
+                  <span style="color: #3b82f6">blue</span> ports
+                </li>
+                <li>Nodes must be connected to the Router to work!</li>
+              </ul>
+            </div>
+            <div class="help-section">
+              <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+              <ul class="instructions-list">
+                <li>
+                  <strong>Downloaders</strong> (blue) collect
+                  files/images/videos/audio
+                </li>
+                <li><strong>Uploaders</strong> (teal) sell data for money</li>
+                <li>
+                  <strong>Labs</strong> (purple) convert files to Research
+                  Points (RP)
+                </li>
+                <li>
+                  <strong>Firewalls</strong> protect nearby nodes from viruses
+                </li>
+                <li>
+                  <strong>Overclock</strong> doubles speed but generates heat!
+                </li>
+                <li>
+                  <strong>Coder Nodes</strong> (cyan) produce code bits for
+                  drivers
+                </li>
+                <li>
+                  Check the <strong>Advanced</strong> tab for powerful late-game
+                  nodes
+                </li>
+              </ul>
+            </div>
+            <div class="help-section">
+              <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+              <ul class="instructions-list">
+                <li>
+                  <span class="key">Scroll</span> or
+                  <span class="key">+/-</span> to zoom in/out
+                </li>
+                <li><span class="key">0</span> to reset zoom to 100%</li>
+                <li>
+                  <span class="key">Drag</span> empty space to pan the view
+                </li>
+                <li>
+                  <span class="key">Right-click</span> a node to open
+                  upgrade/delete menu
+                </li>
+                <li>
+                  <span class="key">Drag</span> from green port to blue port to
+                  connect nodes ($10 per cable)
+                </li>
+                <li>
+                  <span class="key">X</span> to toggle cable delete mode (click
+                  cables to delete, $5 refund)
+                </li>
+              </ul>
+            </div>
+            <div class="help-section">
+              <h3><i class="fa-solid fa-code"></i> NEW: Coding System</h3>
+              <ul class="instructions-list">
+                <li>
+                  <strong>Coder Nodes</strong> generate code bits over time
+                </li>
+                <li>Convert 100 code bits → 1 Optimization Code</li>
+                <li>
+                  Use optimization code to create <strong>Drivers</strong>
+                </li>
+                <li>Drivers provide permanent global bonuses!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="welcome-sidebar">
+          <div class="welcome-sidebar-header">
+            <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v14.0</span></h2>
+          </div>
+          <div class="welcome-sidebar-body">
+            <ul class="feature-list">
+              <li class="feature-item">
+                <div class="feature-icon new" style="background: linear-gradient(135deg, #a855f7, #6b21a8);"><i class="fa-solid fa-bahai"></i></div>
+                <div class="feature-content">
+                  <h4>Singularity Skill Tree!</h4>
+                  <p>Prestige for Singularity Shards and unlock powerful game-breaking persistent perks!</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-network-wired"></i></div>
+                <div class="feature-content">
+                  <h4>Deep Node Mechanics!</h4>
+                  <p>Manage node bandwidth, placement effects, and specialized firmware configurations.</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fa-solid fa-microchip"></i></div>
+                <div class="feature-content">
+                  <h4>Logic Controller Node!</h4>
+                  <p>Automate your empire with up to 4 If/Then rules to auto-buy nodes or upgrades.</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-floppy-disk"></i></div>
+                <div class="feature-content">
+                  <h4>Save Remastered!</h4>
+                  <p>Robust backward compatibility for new node data and persistent Ultra Low Performance setting!</p>
+                </div>
+              </li>
+            </ul>
+            <div class="version-tag">
+              <i class="fa-solid fa-flask"></i> Version 14.0 - "The Singularity Update"
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="researchModal" class="modal-overlay">
-        <div class="modal" style="width: 900px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#fff"><i class="fa-solid fa-flask"></i> Research & Development Tree</h2>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <span style="color:#a78bfa; font-weight:bold;">RP: <span id="modalRpDisplay">0</span></span>
-                    <button class="btn" onclick="document.getElementById('researchModal').style.display='none'">Close</button>
-                </div>
-            </div>
-            <div class="modal-body" style="padding: 0;">
-                <div class="research-tree-container" id="researchTreeContainer">
-                    <svg class="research-tree-svg" id="researchTreeSvg"></svg>
-                    <div class="research-tree-grid" id="researchTreeGrid"></div>
-                </div>
-            </div>
+      <div class="modal" style="width: 900px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #fff">
+            <i class="fa-solid fa-flask"></i> Research & Development Tree
+          </h2>
+          <div style="display: flex; gap: 15px; align-items: center">
+            <span style="color: #a78bfa; font-weight: bold"
+              >RP: <span id="modalRpDisplay">0</span></span
+            >
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('researchModal').style.display = 'none'
+              "
+            >
+              Close
+            </button>
+          </div>
         </div>
+        <div class="modal-body" style="padding: 0">
+          <div class="research-tree-container" id="researchTreeContainer">
+            <svg class="research-tree-svg" id="researchTreeSvg"></svg>
+            <div class="research-tree-grid" id="researchTreeGrid"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Code/Drivers Modal -->
     <div id="codeModal" class="modal-overlay">
-        <div class="modal" style="width: 800px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:var(--code)"><i class="fa-solid fa-terminal"></i> Code Studio</h2>
-                <button class="btn" onclick="document.getElementById('codeModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body code-modal-body">
-                <div class="code-section">
-                    <h3><i class="fa-solid fa-cube"></i> Resources</h3>
-                    <div class="code-stats">
-                        <div class="code-stat">
-                            <div class="code-stat-label">Code Bits</div>
-                            <div class="code-stat-value" id="codeBitsDisplay">0</div>
-                        </div>
-                        <div class="code-stat">
-                            <div class="code-stat-label">Optimization Code</div>
-                            <div class="code-stat-value" id="optCodeDisplay">0</div>
-                        </div>
-                    </div>
-                    <div class="code-actions">
-                        <button class="code-btn" id="convertBitsBtn" onclick="convertCodeBits()">
-                            <span><i class="fa-solid fa-right-left"></i> 100 Bits → 1 Opt. Code</span>
-                            <span class="code-btn-cost">Cost: 100 bits</span>
-                        </button>
-                    </div>
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;"><i class="fa-solid fa-bolt"></i> Installed Drivers:</div>
-                        <div class="driver-list" id="installedDriversList">
-                            <span style="font-size: 10px; color: #64748b;">No drivers installed</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="code-section">
-                    <h3><i class="fa-solid fa-microchip"></i> Compile Drivers</h3>
-                    <div class="driver-grid" id="driverGrid">
-                        <!-- Generated by JS -->
-                    </div>
-                </div>
-                
-                <div class="code-section coding-upgrade-section">
-                    <h3><i class="fa-solid fa-code"></i> Coding Upgrades</h3>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Spend Code Bits to permanently upgrade your coding infrastructure. Complete all upgrades in a tier to unlock the next!</p>
-                    <div id="codingUpgradeTree">
-                        <!-- Generated by JS -->
-                    </div>
-                </div>
-            </div>
+      <div class="modal" style="width: 800px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: var(--code)">
+            <i class="fa-solid fa-terminal"></i> Code Studio
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('codeModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body code-modal-body">
+          <div class="code-section">
+            <h3><i class="fa-solid fa-cube"></i> Resources</h3>
+            <div class="code-stats">
+              <div class="code-stat">
+                <div class="code-stat-label">Code Bits</div>
+                <div class="code-stat-value" id="codeBitsDisplay">0</div>
+              </div>
+              <div class="code-stat">
+                <div class="code-stat-label">Optimization Code</div>
+                <div class="code-stat-value" id="optCodeDisplay">0</div>
+              </div>
+            </div>
+            <div class="code-actions">
+              <button
+                class="code-btn"
+                id="convertBitsBtn"
+                onclick="convertCodeBits()"
+              >
+                <span
+                  ><i class="fa-solid fa-right-left"></i> 100 Bits → 1 Opt.
+                  Code</span
+                >
+                <span class="code-btn-cost">Cost: 100 bits</span>
+              </button>
+            </div>
+            <div
+              style="
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
+              <div
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  margin-bottom: 8px;
+                "
+              >
+                <i class="fa-solid fa-bolt"></i> Installed Drivers:
+              </div>
+              <div class="driver-list" id="installedDriversList">
+                <span style="font-size: 10px; color: #64748b"
+                  >No drivers installed</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="code-section">
+            <h3><i class="fa-solid fa-microchip"></i> Compile Drivers</h3>
+            <div class="driver-grid" id="driverGrid">
+              <!-- Generated by JS -->
+            </div>
+          </div>
+
+          <div class="code-section coding-upgrade-section">
+            <h3><i class="fa-solid fa-code"></i> Coding Upgrades</h3>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+              "
+            >
+              Spend Code Bits to permanently upgrade your coding infrastructure.
+              Complete all upgrades in a tier to unlock the next!
+            </p>
+            <div id="codingUpgradeTree">
+              <!-- Generated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="contractModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 style="color:#fff">📜 Available Contracts</h2>
-                <button class="btn" onclick="document.getElementById('contractModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body" id="contractList"></div>
+      <div class="modal">
+        <div class="modal-header">
+          <h2 style="color: #fff">📜 Available Contracts</h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('contractModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body" id="contractList"></div>
+      </div>
     </div>
 
     <!-- Achievements Modal -->
     <div id="achievementsModal" class="modal-overlay">
-        <div class="modal" style="width: 700px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#fbbf24"><i class="fa-solid fa-trophy"></i> Achievements</h2>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <span style="color:#fbbf24; font-weight:bold;"><span id="achievementCount">0</span> / <span id="achievementTotal">0</span></span>
-                    <button class="btn" onclick="document.getElementById('achievementsModal').style.display='none'">Close</button>
-                </div>
-            </div>
-            <div class="modal-body" id="achievementsList" style="max-height: 60vh; overflow-y: auto;">
-                <!-- Generated by JS -->
-            </div>
+      <div class="modal" style="width: 700px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #fbbf24">
+            <i class="fa-solid fa-trophy"></i> Achievements
+          </h2>
+          <div style="display: flex; gap: 15px; align-items: center">
+            <span style="color: #fbbf24; font-weight: bold"
+              ><span id="achievementCount">0</span> /
+              <span id="achievementTotal">0</span></span
+            >
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('achievementsModal').style.display =
+                  'none'
+              "
+            >
+              Close
+            </button>
+          </div>
         </div>
+        <div
+          class="modal-body"
+          id="achievementsList"
+          style="max-height: 60vh; overflow-y: auto"
+        >
+          <!-- Generated by JS -->
+        </div>
+      </div>
     </div>
 
     <!-- Statistics Modal -->
     <div id="statsModal" class="modal-overlay">
-        <div class="modal" style="width: 700px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#06b6d4"><i class="fa-solid fa-chart-line"></i> Statistics</h2>
-                <button class="btn" onclick="document.getElementById('statsModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-coins"></i> Financial</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Total Money Earned</div>
-                            <div class="stat-value-large" id="statTotalMoney">$0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Highest Money</div>
-                            <div class="stat-value-large" id="statPeakMoney">$0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Money Spent</div>
-                            <div class="stat-value-large" id="statMoneySpent">$0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Contracts Completed</div>
-                            <div class="stat-value-large" id="statContracts">0</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-network-wired"></i> Network</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Nodes Created</div>
-                            <div class="stat-value-large" id="statNodesCreated">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Nodes Deleted</div>
-                            <div class="stat-value-large" id="statNodesDeleted">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Cables Placed</div>
-                            <div class="stat-value-large" id="statCablesPlaced">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Total Upgrades</div>
-                            <div class="stat-value-large" id="statUpgrades">0</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-box"></i> Resources</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Files Downloaded</div>
-                            <div class="stat-value-large" id="statFilesDownloaded">0</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Total Research</div>
-                            <div class="stat-value-large" id="statTotalRP">0 RP</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Play Time</div>
-                            <div class="stat-value-large" id="statPlayTime">0h 0m</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Viruses Cleaned</div>
-                            <div class="stat-value-large" id="statViruses">0</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-heart-pulse"></i> Network Health</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Efficiency</div>
-                            <div class="stat-value-large" id="statNetworkEfficiency">—</div>
-                        </div>
-                    </div>
-                    <div id="statNetworkIssues" style="font-size: 12px; color: var(--text-muted); margin-top: 8px;"></div>
-                </div>
-            </div>
+      <div class="modal" style="width: 700px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #06b6d4">
+            <i class="fa-solid fa-chart-line"></i> Statistics
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('statsModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <div class="help-section">
+            <h3><i class="fa-solid fa-coins"></i> Financial</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Total Money Earned</div>
+                <div class="stat-value-large" id="statTotalMoney">$0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Highest Money</div>
+                <div class="stat-value-large" id="statPeakMoney">$0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Money Spent</div>
+                <div class="stat-value-large" id="statMoneySpent">$0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Contracts Completed</div>
+                <div class="stat-value-large" id="statContracts">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-network-wired"></i> Network</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Nodes Created</div>
+                <div class="stat-value-large" id="statNodesCreated">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Nodes Deleted</div>
+                <div class="stat-value-large" id="statNodesDeleted">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Cables Placed</div>
+                <div class="stat-value-large" id="statCablesPlaced">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Total Upgrades</div>
+                <div class="stat-value-large" id="statUpgrades">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-box"></i> Resources</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Files Downloaded</div>
+                <div class="stat-value-large" id="statFilesDownloaded">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Total Research</div>
+                <div class="stat-value-large" id="statTotalRP">0 RP</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Play Time</div>
+                <div class="stat-value-large" id="statPlayTime">0h 0m</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Viruses Cleaned</div>
+                <div class="stat-value-large" id="statViruses">0</div>
+              </div>
+            </div>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-heart-pulse"></i> Network Health</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Efficiency</div>
+                <div class="stat-value-large" id="statNetworkEfficiency">—</div>
+              </div>
+            </div>
+            <div
+              id="statNetworkIssues"
+              style="font-size: 12px; color: var(--text-muted); margin-top: 8px"
+            ></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Prestige Modal -->
     <div id="prestigeModal" class="modal-overlay">
-        <div class="modal" style="width: 600px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#a855f7"><i class="fa-solid fa-rotate"></i> Data Center Migration</h2>
-                <button class="btn" onclick="document.getElementById('prestigeModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div class="help-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1)); border-radius: 12px; border: 1px solid rgba(124, 58, 237, 0.3);">
-                    <i class="fa-solid fa-server" style="font-size: 48px; color: #a855f7; margin-bottom: 15px;"></i>
-                    <h3 style="color: #a855f7; margin-bottom: 10px;">Migrate to New Data Center</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Reset your progress for permanent bonuses. Your network will be rebuilt stronger than ever!</p>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
-                        <div class="stat-item">
-                            <div class="stat-label">Current Bonus</div>
-                            <div class="stat-value-large" style="color: #a855f7;" id="currentPrestigeBonus">+0%</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Next Bonus</div>
-                            <div class="stat-value-large" style="color: #10b981;" id="nextPrestigeBonus">+50%</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Requirements:</div>
-                        <div id="prestigeRequirements" style="font-size: 14px;">Own at least 20 nodes and $50,000</div>
-                    </div>
-                    
-                    <button class="btn prestige-btn" id="prestigeBtn" onclick="performPrestige()" style="width: 100%; padding: 15px; font-size: 16px;">
-                        <i class="fa-solid fa-rotate"></i> Migrate Now
-                    </button>
-                </div>
-                
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-gift"></i> Prestige Rewards</h3>
-                    <ul class="instructions-list">
-                        <li><strong>+50% Speed Bonus</strong> per migration (stacking)</li>
-                        <li><strong>Keep:</strong> All Research unlocks</li>
-                        <li><strong>Keep:</strong> All Drivers</li>
-                        <li><strong>Keep:</strong> Achievement progress</li>
-                        <li><strong>Reset:</strong> Money, Nodes, Resources</li>
-                        <li><strong>Bonus:</strong> Start with $5,000 (instead of $2,000)</li>
-                    </ul>
-                </div>
-            </div>
+      <div class="modal" style="width: 600px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #a855f7; text-shadow: 0 0 10px rgba(168, 85, 247, 0.5)">
+            <i class="fa-solid fa-bahai"></i> Enter the Singularity
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('prestigeModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <div
+            class="help-section"
+            style="
+              text-align: center;
+              padding: 20px;
+              background: linear-gradient(
+                135deg,
+                rgba(124, 58, 237, 0.1),
+                rgba(219, 39, 119, 0.1)
+              );
+              border-radius: 12px;
+              border: 1px solid rgba(124, 58, 237, 0.3);
+            "
+          >
+            <i
+              class="fa-solid fa-bahai"
+              style="font-size: 48px; color: #a855f7; margin-bottom: 15px; filter: drop-shadow(0 0 10px #a855f7)"
+            ></i>
+            <h3 style="color: #a855f7; margin-bottom: 10px; text-shadow: 0 0 5px rgba(168, 85, 247, 0.5)">
+              The Singularity Awaits
+            </h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px">
+              Reset your network to generate <strong>Singularity Shards</strong> based on your Total Network Value.
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+              "
+            >
+              <div class="stat-item">
+                <div class="stat-label">Current Shards</div>
+                <div
+                  class="stat-value-large"
+                  style="color: #a855f7; text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);"
+                  id="currentPrestigeBonus"
+                >
+                  0
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Shards to Gain</div>
+                <div
+                  class="stat-value-large"
+                  style="color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);"
+                  id="nextPrestigeBonus"
+                >
+                  +0
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: rgba(0, 0, 0, 0.3);
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+              "
+            >
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--text-muted);
+                  margin-bottom: 8px;
+                "
+              >
+                Requirements:
+              </div>
+              <div id="prestigeRequirements" style="font-size: 14px">
+                Own at least 20 nodes and $50,000
+              </div>
+            </div>
+
+            <button
+              class="btn prestige-btn"
+              id="prestigeBtn"
+              onclick="prestige()"
+              style="width: 100%; padding: 15px; font-size: 16px; background: linear-gradient(135deg, #a855f7, #6b21a8); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); border: 1px solid #c084fc; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"
+            >
+              <i class="fa-solid fa-bahai"></i> Ascend Now
+            </button>
+          </div>
+
+          <div class="help-section">
+            <h3><i class="fa-solid fa-gift"></i> Prestige Rewards</h3>
+            <ul class="instructions-list">
+              <li>
+                <strong>Earn Shards</strong> based on Total Network Value
+              </li>
+              <li><strong>Spend Shards</strong> in the Singularity Core</li>
+              <li><strong>Keep:</strong> All Research unlocks</li>
+              <li><strong>Keep:</strong> All Drivers and Code</li>
+              <li><strong>Reset:</strong> Money, Nodes, Resources</li>
+              <li><strong>Bonus:</strong> Start with $2,000</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Singularity Core Modal -->
+    <div id="singularityModal" class="modal-overlay">
+      <div class="modal" style="width: 800px; max-width: 95%; background: var(--panel-bg); border: 1px solid #a855f7; box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(168, 85, 247, 0.3);">
+          <h2 style="color: #c084fc; text-shadow: 0 0 10px rgba(168, 85, 247, 0.5)">
+            <i class="fa-solid fa-atom"></i> Singularity Core
+          </h2>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div style="background: rgba(168, 85, 247, 0.15); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.3);">
+              <i class="fa-solid fa-bahai" style="color: #c084fc"></i>
+              <span id="singularityShardCount" style="color: #fff; font-weight: bold; margin-left: 5px;">0 Shards</span>
+            </div>
+            <button class="btn" onclick="document.getElementById('singularityModal').style.display = 'none'">Close</button>
+          </div>
+        </div>
+        <div class="modal-body singularity-modal-body" style="background: #05080c; position: relative; overflow: hidden; padding: 20px;">
+          <!-- decorative background -->
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at center, rgba(168, 85, 247, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+          
+          <div id="singularityTreeContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; position: relative; z-index: 1;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Daily Rewards Modal -->
     <div id="dailyRewardModal" class="modal-overlay">
-        <div class="modal" style="width: 500px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#fbbf24"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</h2>
-                <button class="btn" onclick="document.getElementById('dailyRewardModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 48px; margin-bottom: 10px; color: #fbbf24;"><i class="fa-solid fa-gift"></i></div>
-                    <h3 style="color: #fbbf24; margin-bottom: 5px;">Login Streak: <span id="streakDisplay">0</span> Days</h3>
-                    <p style="color: var(--text-muted); font-size: 12px;">Come back every day for bigger rewards!</p>
-                </div>
-                
-                <div id="dailyRewardsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                    <!-- Generated by JS -->
-                </div>
-                
-                <button class="btn" id="claimDailyBtn" style="width: 100%; padding: 15px; font-size: 16px; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; font-weight: bold;" onclick="claimDailyReward()">
-                    <i class="fa-solid fa-gift"></i> Claim Today's Reward
-                </button>
-                <p id="dailyRewardStatus" style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--text-muted);"></p>
-            </div>
+      <div class="modal" style="width: 500px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #fbbf24">
+            <i class="fa-solid fa-calendar-check"></i> Daily Rewards
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('dailyRewardModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <div style="text-align: center; margin-bottom: 20px">
+            <div style="font-size: 48px; margin-bottom: 10px; color: #fbbf24">
+              <i class="fa-solid fa-gift"></i>
+            </div>
+            <h3 style="color: #fbbf24; margin-bottom: 5px">
+              Login Streak: <span id="streakDisplay">0</span> Days
+            </h3>
+            <p style="color: var(--text-muted); font-size: 12px">
+              Come back every day for bigger rewards!
+            </p>
+          </div>
+
+          <div
+            id="dailyRewardsGrid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 10px;
+              margin-bottom: 20px;
+            "
+          >
+            <!-- Generated by JS -->
+          </div>
+
+          <button
+            class="btn"
+            id="claimDailyBtn"
+            style="
+              width: 100%;
+              padding: 15px;
+              font-size: 16px;
+              background: linear-gradient(135deg, #fbbf24, #f59e0b);
+              color: white;
+              font-weight: bold;
+            "
+            onclick="claimDailyReward()"
+          >
+            <i class="fa-solid fa-gift"></i> Claim Today's Reward
+          </button>
+          <p
+            id="dailyRewardStatus"
+            style="
+              text-align: center;
+              margin-top: 10px;
+              font-size: 12px;
+              color: var(--text-muted);
+            "
+          ></p>
+        </div>
+      </div>
     </div>
 
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal-overlay">
-        <div class="modal" style="width: 450px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#9ca3af"><i class="fa-solid fa-gear"></i> Settings</h2>
-                <button class="btn" onclick="document.getElementById('settingsModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-section">
-                    <h3>Game Options</h3>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-floppy-disk" style="color: #3b82f6; margin-right: 8px;"></i> Auto-Save</div>
-                            <div class="setting-item-desc">Automatically save every minute</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="autoSaveToggle" checked onchange="toggleSetting('autoSaveEnabled', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-clock" style="color: #8b5cf6; margin-right: 8px;"></i> Offline Earnings</div>
-                            <div class="setting-item-desc">Earn 50% while away (up to 12h)</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="offlineEarningsToggle" checked onchange="toggleSetting('offlineEarningsEnabled', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-bell" style="color: #f59e0b; margin-right: 8px;"></i> Notifications</div>
-                            <div class="setting-item-desc">Show achievement popups</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="notificationsToggle" checked onchange="toggleSetting('notificationsEnabled', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Display Options</h3>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-eye" style="color: #06b6d4; margin-right: 8px;"></i> Particle Effects</div>
-                            <div class="setting-item-desc">Show floating background particles</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="particlesToggle" checked onchange="toggleSetting('particlesEnabled', this.checked); document.getElementById('particlesContainer').style.display = this.checked ? 'block' : 'none';">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-wand-magic-sparkles" style="color: #a855f7; margin-right: 8px;"></i> Animations</div>
-                            <div class="setting-item-desc">Enable UI animations and transitions</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="animationsToggle" checked onchange="toggleSetting('animationsEnabled', this.checked); document.body.classList.toggle('reduce-motion', !this.checked);">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-volume-high" style="color: #10b981; margin-right: 8px;"></i> Event Alerts</div>
-                            <div class="setting-item-desc">Show random event notifications</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="eventAlertsToggle" checked onchange="toggleSetting('eventAlertsEnabled', this.checked);">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="setting-item">
-                        <div>
-                            <div class="setting-item-label"><i class="fa-solid fa-gauge-simple" style="color: #ef4444; margin-right: 8px;"></i> Ultra Low Perf</div>
-                            <div class="setting-item-desc">Disables expensive effects for low-end devices</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="ultraLowPerfToggle" onchange="toggleSetting('ultraLowPerfEnabled', this.checked); document.body.classList.toggle('ultra-low-perf', this.checked);">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Save Management</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" onclick="exportSave(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                            <i class="fa-solid fa-download"></i> Export Save
-                        </button>
-                        <button class="btn" onclick="document.getElementById('importFile').click(); document.getElementById('settingsModal').style.display='none';" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;">
-                            <i class="fa-solid fa-upload"></i> Import Save
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-desktop" style="color: #00d4ff; margin-right: 6px;"></i> Desktop App</h3>
-                    <a href="https://github.com/UTMakes/unknown/releases/download/V1.1/UnknownUL.zip" class="desktop-download-btn">
-                        <i class="fa-solid fa-download"></i>
-                        <span>
-                            <strong>Download Desktop Version</strong>
-                            <small>Windows .zip — Play offline!</small>
-                        </span>
-                    </a>
-                </div>
-
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-wrench" style="color: #f59e0b; margin-right: 6px;"></i> Console Commands / Fixes</h3>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">If your game is stuck or behaving weirdly, try these built-in fixes.</p>
-                    
-                    <button class="btn" style="width: 100%; margin-bottom: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;" onclick="if(confirm('Run emergency recovery? This will attempt to fix missing core nodes and recalculate all connections.')){Game.emergencyRecover();}">
-                        <i class="fa-solid fa-truck-medical"></i> Emergency Network Recovery
-                    </button>
-                    
-                    <button class="btn" style="width: 100%; margin-bottom: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981;" onclick="if(confirm('Attempt to automatically repair corrupted save data?')){Game.repairSaveData(game);}">
-                        <i class="fa-solid fa-hammer"></i> Repair Save Data
-                    </button>
-                    
-                    <button class="btn" style="width: 100%; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); color: #a855f7;" onclick="Game.showNetworkAnalysis();">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i> Show Network Analysis
-                    </button>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Danger Zone</h3>
-                    <button class="btn" onclick="Game.clearSaveAndReset();" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                        <i class="fa-solid fa-trash"></i> Clear All Data &amp; Reset
-                    </button>
-                    <p style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">This will permanently delete ALL progress (local + cloud save)</p>
-                </div>
-            </div>
+      <div class="modal" style="width: 450px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #9ca3af">
+            <i class="fa-solid fa-gear"></i> Settings
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('settingsModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <div class="settings-section">
+            <h3>Game Options</h3>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-floppy-disk"
+                    style="color: #3b82f6; margin-right: 8px"
+                  ></i>
+                  Auto-Save
+                </div>
+                <div class="setting-item-desc">
+                  Automatically save every minute
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="autoSaveToggle"
+                  checked
+                  onchange="toggleSetting('autoSaveEnabled', this.checked)"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-clock"
+                    style="color: #8b5cf6; margin-right: 8px"
+                  ></i>
+                  Offline Earnings
+                </div>
+                <div class="setting-item-desc">
+                  Earn 50% while away (up to 12h)
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="offlineEarningsToggle"
+                  checked
+                  onchange="
+                    toggleSetting('offlineEarningsEnabled', this.checked)
+                  "
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-bell"
+                    style="color: #f59e0b; margin-right: 8px"
+                  ></i>
+                  Notifications
+                </div>
+                <div class="setting-item-desc">Show achievement popups</div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="notificationsToggle"
+                  checked
+                  onchange="toggleSetting('notificationsEnabled', this.checked)"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Display Options</h3>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-eye"
+                    style="color: #06b6d4; margin-right: 8px"
+                  ></i>
+                  Particle Effects
+                </div>
+                <div class="setting-item-desc">
+                  Show floating background particles
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="particlesToggle"
+                  checked
+                  onchange="
+                    toggleSetting('particlesEnabled', this.checked);
+                    document.getElementById(
+                      'particlesContainer',
+                    ).style.display = this.checked ? 'block' : 'none';
+                  "
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-wand-magic-sparkles"
+                    style="color: #a855f7; margin-right: 8px"
+                  ></i>
+                  Animations
+                </div>
+                <div class="setting-item-desc">
+                  Enable UI animations and transitions
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="animationsToggle"
+                  checked
+                  onchange="
+                    toggleSetting('animationsEnabled', this.checked);
+                    document.body.classList.toggle(
+                      'reduce-motion',
+                      !this.checked,
+                    );
+                  "
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-volume-high"
+                    style="color: #10b981; margin-right: 8px"
+                  ></i>
+                  Event Alerts
+                </div>
+                <div class="setting-item-desc">
+                  Show random event notifications
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="eventAlertsToggle"
+                  checked
+                  onchange="toggleSetting('eventAlertsEnabled', this.checked)"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div>
+                <div class="setting-item-label">
+                  <i
+                    class="fa-solid fa-gauge-simple"
+                    style="color: #ef4444; margin-right: 8px"
+                  ></i>
+                  Ultra Low Perf
+                </div>
+                <div class="setting-item-desc">
+                  Disables expensive effects for low-end devices
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="ultraLowPerfToggle"
+                  onchange="
+                    toggleSetting('ultraLowPerfEnabled', this.checked);
+                    document.body.classList.toggle(
+                      'ultra-low-perf',
+                      this.checked,
+                    );
+                  "
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>Save Management</h3>
+            <div style="display: flex; gap: 10px">
+              <button
+                class="btn"
+                onclick="
+                  exportSave();
+                  document.getElementById('settingsModal').style.display =
+                    'none';
+                "
+                style="
+                  flex: 1;
+                  background: linear-gradient(135deg, #10b981, #059669);
+                  color: white;
+                "
+              >
+                <i class="fa-solid fa-download"></i> Export Save
+              </button>
+              <button
+                class="btn"
+                onclick="
+                  document.getElementById('importFile').click();
+                  document.getElementById('settingsModal').style.display =
+                    'none';
+                "
+                style="
+                  flex: 1;
+                  background: linear-gradient(135deg, #3b82f6, #2563eb);
+                  color: white;
+                "
+              >
+                <i class="fa-solid fa-upload"></i> Import Save
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>
+              <i
+                class="fa-solid fa-desktop"
+                style="color: #00d4ff; margin-right: 6px"
+              ></i>
+              Desktop App
+            </h3>
+            <a
+              href="https://github.com/UTMakes/unknown/releases/download/V1.1/UnknownUL.zip"
+              class="desktop-download-btn"
+            >
+              <i class="fa-solid fa-download"></i>
+              <span>
+                <strong>Download Desktop Version</strong>
+                <small>Windows .zip — Play offline!</small>
+              </span>
+            </a>
+          </div>
+
+          <div class="settings-section">
+            <h3>
+              <i
+                class="fa-solid fa-wrench"
+                style="color: #f59e0b; margin-right: 6px"
+              ></i>
+              Console Commands / Fixes
+            </h3>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-bottom: 10px;
+              "
+            >
+              If your game is stuck or behaving weirdly, try these built-in
+              fixes.
+            </p>
+
+            <button
+              class="btn"
+              style="
+                width: 100%;
+                margin-bottom: 8px;
+                background: rgba(59, 130, 246, 0.1);
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                color: #60a5fa;
+              "
+              onclick="
+                if (
+                  confirm(
+                    'Run emergency recovery? This will attempt to fix missing core nodes and recalculate all connections.',
+                  )
+                ) {
+                  Game.emergencyRecover();
+                }
+              "
+            >
+              <i class="fa-solid fa-truck-medical"></i> Emergency Network
+              Recovery
+            </button>
+
+            <button
+              class="btn"
+              style="
+                width: 100%;
+                margin-bottom: 8px;
+                background: rgba(16, 185, 129, 0.1);
+                border: 1px solid rgba(16, 185, 129, 0.3);
+                color: #10b981;
+              "
+              onclick="
+                if (
+                  confirm(
+                    'Attempt to automatically repair corrupted save data?',
+                  )
+                ) {
+                  Game.repairSaveData(game);
+                }
+              "
+            >
+              <i class="fa-solid fa-hammer"></i> Repair Save Data
+            </button>
+
+            <button
+              class="btn"
+              style="
+                width: 100%;
+                background: rgba(139, 92, 246, 0.1);
+                border: 1px solid rgba(139, 92, 246, 0.3);
+                color: #a855f7;
+              "
+              onclick="Game.showNetworkAnalysis()"
+            >
+              <i class="fa-solid fa-magnifying-glass-chart"></i> Show Network
+              Analysis
+            </button>
+          </div>
+
+          <div class="settings-section">
+            <h3>Danger Zone</h3>
+            <button
+              class="btn"
+              onclick="Game.clearSaveAndReset()"
+              style="
+                width: 100%;
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white;
+              "
+            >
+              <i class="fa-solid fa-trash"></i> Clear All Data &amp; Reset
+            </button>
+            <p
+              style="
+                font-size: 10px;
+                color: var(--text-muted);
+                text-align: center;
+                margin-top: 8px;
+              "
+            >
+              This will permanently delete ALL progress (local + cloud save)
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Offline Earnings Modal -->
     <div id="offlineEarningsModal" class="modal-overlay">
-        <div class="modal" style="width: 450px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#10b981"><i class="fa-solid fa-clock"></i> Welcome Back!</h2>
-            </div>
-            <div class="modal-body" style="text-align: center;">
-                <div style="font-size: 64px; margin-bottom: 15px;">💤</div>
-                <h3 style="color: #fff; margin-bottom: 10px;">You were away for</h3>
-                <p id="offlineTime" style="font-size: 24px; color: #10b981; font-weight: bold; margin-bottom: 20px;">0 hours</p>
-                
-                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">While you were away, your network earned:</p>
-                    <div style="display: flex; justify-content: space-around;">
-                        <div>
-                            <div style="font-size: 24px; color: #fbbf24; font-weight: bold;">+<span id="offlineMoney">$0</span></div>
-                            <div style="font-size: 11px; color: var(--text-muted);">Money</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 24px; color: #8b5cf6; font-weight: bold;">+<span id="offlineRP">0</span></div>
-                            <div style="font-size: 11px; color: var(--text-muted);">Research</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;" onclick="document.getElementById('offlineEarningsModal').style.display='none'">
-                    <i class="fa-solid fa-check"></i> Collect & Continue
-                </button>
-            </div>
+      <div class="modal" style="width: 450px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #10b981">
+            <i class="fa-solid fa-clock"></i> Welcome Back!
+          </h2>
         </div>
+        <div class="modal-body" style="text-align: center">
+          <div style="font-size: 64px; margin-bottom: 15px">💤</div>
+          <h3 style="color: #fff; margin-bottom: 10px">You were away for</h3>
+          <p
+            id="offlineTime"
+            style="
+              font-size: 24px;
+              color: #10b981;
+              font-weight: bold;
+              margin-bottom: 20px;
+            "
+          >
+            0 hours
+          </p>
+
+          <div
+            style="
+              background: rgba(16, 185, 129, 0.1);
+              border: 1px solid rgba(16, 185, 129, 0.3);
+              border-radius: 12px;
+              padding: 20px;
+              margin-bottom: 20px;
+            "
+          >
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 12px;
+                margin-bottom: 10px;
+              "
+            >
+              While you were away, your network earned:
+            </p>
+            <div style="display: flex; justify-content: space-around">
+              <div>
+                <div style="font-size: 24px; color: #fbbf24; font-weight: bold">
+                  +<span id="offlineMoney">$0</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted)">
+                  Money
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 24px; color: #8b5cf6; font-weight: bold">
+                  +<span id="offlineRP">0</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted)">
+                  Research
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary"
+            style="width: 100%; padding: 15px; font-size: 16px"
+            onclick="
+              document.getElementById('offlineEarningsModal').style.display =
+                'none'
+            "
+          >
+            <i class="fa-solid fa-check"></i> Collect & Continue
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Account Modal -->
     <div id="accountModal" class="modal-overlay">
-        <div class="modal" style="width: 450px; max-width: 95%;">
-            <div class="modal-header">
-                <h2 style="color:#3b82f6"><i class="fa-solid fa-user"></i> Account</h2>
-                <button class="btn" onclick="document.getElementById('accountModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <!-- Logged Out View -->
-                <div id="accountLoggedOut">
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
-                        <form onsubmit="event.preventDefault(); loginUser();" autocomplete="on">
-                            <div style="margin-bottom: 15px;">
-                                <input type="email" id="loginEmail" class="form-input" placeholder="Email" autocomplete="email">
-                                <input type="password" id="loginPassword" class="form-input" placeholder="Password" autocomplete="current-password">
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="width: 100%;">
-                                <i class="fa-solid fa-sign-in-alt"></i> Login
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <div style="text-align: center; margin: 20px 0; color: var(--text-muted);">— OR —</div>
-                    
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
-                        <form onsubmit="event.preventDefault(); registerUser();" autocomplete="on">
-                            <div style="margin-bottom: 15px;">
-                                <input type="text" id="registerDisplayName" class="form-input" placeholder="Display Name" autocomplete="name">
-                                <input type="email" id="registerEmail" class="form-input" placeholder="Email" autocomplete="email">
-                                <input type="password" id="registerPassword" class="form-input" placeholder="Password (min 6 chars)" autocomplete="new-password">
-                            </div>
-                            <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                                <i class="fa-solid fa-user-plus"></i> Create Account
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-                <!-- Logged In View -->
-                <div id="accountLoggedIn" style="display: none;">
-                    <div class="help-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                        <i class="fa-solid fa-circle-check" style="font-size: 48px; color: #10b981; margin-bottom: 15px;"></i>
-                        <h3 style="color: #3b82f6; margin-bottom: 10px;">Logged In</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 5px;">Welcome back,</p>
-                        <p id="accountDisplayName" style="font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 15px;">Player</p>
-                        <p id="accountEmail" style="font-size: 12px; color: var(--text-muted);">email@example.com</p>
-                    </div>
-                    
-                    <div class="help-section">
-                        <h3><i class="fa-solid fa-cloud"></i> Cloud Save Status</h3>
-                        <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Your progress is automatically saved to the cloud every 5 minutes.</p>
-                        <button class="btn sync-btn" style="width: 100%; margin-bottom: 10px;" onclick="syncToCloud()">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Save Now
-                        </button>
-                        <button class="btn" style="width: 100%;" onclick="loadFromCloud()">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> Load from Cloud
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;" onclick="logoutUser()">
-                            <i class="fa-solid fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="accountError" style="display: none; margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 6px; color: #ef4444; font-size: 12px;"></div>
-            </div>
+      <div class="modal" style="width: 450px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #3b82f6">
+            <i class="fa-solid fa-user"></i> Account
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('accountModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <!-- Logged Out View -->
+          <div id="accountLoggedOut">
+            <div class="help-section">
+              <h3><i class="fa-solid fa-right-to-bracket"></i> Login</h3>
+              <form
+                onsubmit="
+                  event.preventDefault();
+                  loginUser();
+                "
+                autocomplete="on"
+              >
+                <div style="margin-bottom: 15px">
+                  <input
+                    type="email"
+                    id="loginEmail"
+                    class="form-input"
+                    placeholder="Email"
+                    autocomplete="email"
+                  />
+                  <input
+                    type="password"
+                    id="loginPassword"
+                    class="form-input"
+                    placeholder="Password"
+                    autocomplete="current-password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  style="width: 100%"
+                >
+                  <i class="fa-solid fa-sign-in-alt"></i> Login
+                </button>
+              </form>
+            </div>
+
+            <div
+              style="
+                text-align: center;
+                margin: 20px 0;
+                color: var(--text-muted);
+              "
+            >
+              — OR —
+            </div>
+
+            <div class="help-section">
+              <h3><i class="fa-solid fa-user-plus"></i> Create Account</h3>
+              <form
+                onsubmit="
+                  event.preventDefault();
+                  registerUser();
+                "
+                autocomplete="on"
+              >
+                <div style="margin-bottom: 15px">
+                  <input
+                    type="text"
+                    id="registerDisplayName"
+                    class="form-input"
+                    placeholder="Display Name"
+                    autocomplete="name"
+                  />
+                  <input
+                    type="email"
+                    id="registerEmail"
+                    class="form-input"
+                    placeholder="Email"
+                    autocomplete="email"
+                  />
+                  <input
+                    type="password"
+                    id="registerPassword"
+                    class="form-input"
+                    placeholder="Password (min 6 chars)"
+                    autocomplete="new-password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn"
+                  style="
+                    width: 100%;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                  "
+                >
+                  <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Logged In View -->
+          <div id="accountLoggedIn" style="display: none">
+            <div
+              class="help-section"
+              style="
+                text-align: center;
+                padding: 20px;
+                background: linear-gradient(
+                  135deg,
+                  rgba(59, 130, 246, 0.1),
+                  rgba(37, 99, 235, 0.05)
+                );
+                border-radius: 12px;
+                border: 1px solid rgba(59, 130, 246, 0.3);
+              "
+            >
+              <i
+                class="fa-solid fa-circle-check"
+                style="font-size: 48px; color: #10b981; margin-bottom: 15px"
+              ></i>
+              <h3 style="color: #3b82f6; margin-bottom: 10px">Logged In</h3>
+              <p style="color: var(--text-muted); margin-bottom: 5px">
+                Welcome back,
+              </p>
+              <p
+                id="accountDisplayName"
+                style="
+                  font-size: 18px;
+                  font-weight: bold;
+                  color: #fff;
+                  margin-bottom: 15px;
+                "
+              >
+                Player
+              </p>
+              <p
+                id="accountEmail"
+                style="font-size: 12px; color: var(--text-muted)"
+              >
+                email@example.com
+              </p>
+            </div>
+
+            <div class="help-section">
+              <h3><i class="fa-solid fa-cloud"></i> Cloud Save Status</h3>
+              <p
+                style="
+                  color: var(--text-muted);
+                  font-size: 12px;
+                  margin-bottom: 10px;
+                "
+              >
+                Your progress is automatically saved to the cloud every 5
+                minutes.
+              </p>
+              <button
+                class="btn sync-btn"
+                style="width: 100%; margin-bottom: 10px"
+                onclick="syncToCloud()"
+              >
+                <i class="fa-solid fa-cloud-arrow-up"></i> Save Now
+              </button>
+              <button class="btn" style="width: 100%" onclick="loadFromCloud()">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Load from Cloud
+              </button>
+            </div>
+
+            <div style="margin-top: 20px">
+              <button
+                class="btn"
+                style="
+                  width: 100%;
+                  background: linear-gradient(135deg, #ef4444, #dc2626);
+                  color: white;
+                "
+                onclick="logoutUser()"
+              >
+                <i class="fa-solid fa-sign-out-alt"></i> Logout
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="accountError"
+            style="
+              display: none;
+              margin-top: 15px;
+              padding: 10px;
+              background: rgba(239, 68, 68, 0.1);
+              border: 1px solid #ef4444;
+              border-radius: 6px;
+              color: #ef4444;
+              font-size: 12px;
+            "
+          ></div>
+        </div>
+      </div>
     </div>
 
     <div id="helpModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 style="color:#fff"><i class="fa-solid fa-circle-question"></i> Help & Instructions</h2>
-                <button class="btn" onclick="document.getElementById('helpModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body">
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
-                    <ul class="instructions-list">
-                        <li><strong>Downloaders</strong> (blue) collect files/images/videos/audio</li>
-                        <li><strong>Uploaders</strong> (teal) sell data for money</li>
-                        <li><strong>Labs</strong> (purple) convert files to Research Points (RP)</li>
-                        <li><strong>Firewalls</strong> protect nearby nodes from viruses</li>
-                        <li><strong>Overclock</strong> doubles speed but generates heat!</li>
-                        <li><strong>Coder Nodes</strong> (cyan) produce code bits for drivers</li>
-                        <li>Check the <strong>Research Tree</strong> for permanent upgrades!</li>
-                    </ul>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
-                    <ul class="instructions-list">
-                        <li><span class="key">Scroll</span> or <span class="key">+/-</span> to zoom in/out</li>
-                        <li><span class="key">0</span> to reset zoom to 100%</li>
-                        <li><span class="key">Drag</span> empty space to pan the view</li>
-                        <li><span class="key">Right-click</span> a node to upgrade/delete</li>
-                        <li><span class="key">Drag</span> from green port to blue port to connect ($10/cable)</li>
-                        <li><span class="key">X</span> to toggle cable delete mode ($5 refund per cable)</li>
-                        <li><span class="key">?</span> to open this help modal</li>
-                        <li><span class="key">R</span> to open Research Tree</li>
-                        <li><span class="key">C</span> to open Code Studio</li>
-                        <li><span class="key">A</span> to open Achievements</li>
-                        <li><span class="key">S</span> to open Statistics</li>
-                        <li><span class="key">P</span> to open Prestige/Migration</li>
-                        <li><span class="key">L</span> to open Account/Login</li>
-                        <li><span class="key">ESC</span> to close all modals</li>
-                    </ul>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-user"></i> Account System</h3>
-                    <ul class="instructions-list">
-                        <li><strong>Create an account</strong> to save your progress to the cloud</li>
-                        <li><strong>Login</strong> on any device to access your saves</li>
-                        <li><strong>Auto-save</strong> every 5 minutes when logged in</li>
-                        <li><strong>Manual save/load</strong> available in Account panel</li>
-                        <li>Your save is linked to your email address</li>
-                    </ul>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-code"></i> Coding System</h3>
-                    <div class="help-grid">
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-terminal"></i> Coder Node</div>
-                            <div class="help-item-desc">Generates code bits based on coding speed. Connect to Router!</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-cube"></i> Code Bits</div>
-                            <div class="help-item-desc">Basic resource. 100 bits = 1 Optimization Code.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-file-code"></i> Optimization Code</div>
-                            <div class="help-item-desc">Refined code used to compile drivers.</div>
-                        </div>
-                        <div class="help-item">
-                            <div class="help-item-title" style="color:var(--code);"><i class="fa-solid fa-microchip"></i> Drivers</div>
-                            <div class="help-item-desc">Permanent global upgrades. Stackable and level up!</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="help-section">
-                    <h3><i class="fa-solid fa-microchip"></i> Driver Types</h3>
-                    <ul class="instructions-list">
-                        <li><strong style="color:var(--code)">Network Driver:</strong> +10% connection speed per level</li>
-                        <li><strong style="color:var(--code)">Compression Driver:</strong> +5% file compression per level</li>
-                        <li><strong style="color:var(--code)">Security Driver:</strong> -10% virus chance per level</li>
-                        <li><strong style="color:var(--code)">Mining Driver:</strong> +15% crypto mining per level</li>
-                        <li><strong style="color:var(--code)">Research Driver:</strong> +10% RP generation per level</li>
-                        <li><strong style="color:var(--code)">Upload Driver:</strong> +10% upload speed per level</li>
-                        <li><strong style="color:var(--code)">Download Driver:</strong> +10% download speed per level</li>
-                    </ul>
-                </div>
-                <div class="help-section" style="text-align: center; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <button class="btn" onclick="if(window.Tutorial){window.Tutorial.restart();document.getElementById('helpModal').style.display='none';}" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.15)); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;">
-                        <i class="fa-solid fa-rotate-right"></i> Restart Tutorial
-                    </button>
-                </div>
-            </div>
+      <div class="modal">
+        <div class="modal-header">
+          <h2 style="color: #fff">
+            <i class="fa-solid fa-circle-question"></i> Help & Instructions
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('helpModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body">
+          <div class="help-section">
+            <h3><i class="fa-solid fa-lightbulb"></i> Quick Tips</h3>
+            <ul class="instructions-list">
+              <li>
+                <strong>Downloaders</strong> (blue) collect
+                files/images/videos/audio
+              </li>
+              <li><strong>Uploaders</strong> (teal) sell data for money</li>
+              <li>
+                <strong>Labs</strong> (purple) convert files to Research Points
+                (RP)
+              </li>
+              <li>
+                <strong>Firewalls</strong> protect nearby nodes from viruses
+              </li>
+              <li>
+                <strong>Overclock</strong> doubles speed but generates heat!
+              </li>
+              <li>
+                <strong>Coder Nodes</strong> (cyan) produce code bits for
+                drivers
+              </li>
+              <li>
+                Check the <strong>Research Tree</strong> for permanent upgrades!
+              </li>
+            </ul>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-keyboard"></i> Controls</h3>
+            <ul class="instructions-list">
+              <li>
+                <span class="key">Scroll</span> or
+                <span class="key">+/-</span> to zoom in/out
+              </li>
+              <li><span class="key">0</span> to reset zoom to 100%</li>
+              <li><span class="key">Drag</span> empty space to pan the view</li>
+              <li>
+                <span class="key">Right-click</span> a node to upgrade/delete
+              </li>
+              <li>
+                <span class="key">Drag</span> from green port to blue port to
+                connect ($10/cable)
+              </li>
+              <li>
+                <span class="key">X</span> to toggle cable delete mode ($5
+                refund per cable)
+              </li>
+              <li><span class="key">?</span> to open this help modal</li>
+              <li><span class="key">R</span> to open Research Tree</li>
+              <li><span class="key">C</span> to open Code Studio</li>
+              <li><span class="key">A</span> to open Achievements</li>
+              <li><span class="key">S</span> to open Statistics</li>
+              <li><span class="key">P</span> to open Prestige/Migration</li>
+              <li><span class="key">L</span> to open Account/Login</li>
+              <li><span class="key">ESC</span> to close all modals</li>
+            </ul>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-user"></i> Account System</h3>
+            <ul class="instructions-list">
+              <li>
+                <strong>Create an account</strong> to save your progress to the
+                cloud
+              </li>
+              <li><strong>Login</strong> on any device to access your saves</li>
+              <li><strong>Auto-save</strong> every 5 minutes when logged in</li>
+              <li>
+                <strong>Manual save/load</strong> available in Account panel
+              </li>
+              <li>Your save is linked to your email address</li>
+            </ul>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-code"></i> Coding System</h3>
+            <div class="help-grid">
+              <div class="help-item">
+                <div class="help-item-title" style="color: var(--code)">
+                  <i class="fa-solid fa-terminal"></i> Coder Node
+                </div>
+                <div class="help-item-desc">
+                  Generates code bits based on coding speed. Connect to Router!
+                </div>
+              </div>
+              <div class="help-item">
+                <div class="help-item-title" style="color: var(--code)">
+                  <i class="fa-solid fa-cube"></i> Code Bits
+                </div>
+                <div class="help-item-desc">
+                  Basic resource. 100 bits = 1 Optimization Code.
+                </div>
+              </div>
+              <div class="help-item">
+                <div class="help-item-title" style="color: var(--code)">
+                  <i class="fa-solid fa-file-code"></i> Optimization Code
+                </div>
+                <div class="help-item-desc">
+                  Refined code used to compile drivers.
+                </div>
+              </div>
+              <div class="help-item">
+                <div class="help-item-title" style="color: var(--code)">
+                  <i class="fa-solid fa-microchip"></i> Drivers
+                </div>
+                <div class="help-item-desc">
+                  Permanent global upgrades. Stackable and level up!
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="help-section">
+            <h3><i class="fa-solid fa-microchip"></i> Driver Types</h3>
+            <ul class="instructions-list">
+              <li>
+                <strong style="color: var(--code)">Network Driver:</strong> +10%
+                connection speed per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Compression Driver:</strong>
+                +5% file compression per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Security Driver:</strong>
+                -10% virus chance per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Mining Driver:</strong> +15%
+                crypto mining per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Research Driver:</strong>
+                +10% RP generation per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Upload Driver:</strong> +10%
+                upload speed per level
+              </li>
+              <li>
+                <strong style="color: var(--code)">Download Driver:</strong>
+                +10% download speed per level
+              </li>
+            </ul>
+          </div>
+          <div
+            class="help-section"
+            style="
+              text-align: center;
+              padding-top: 15px;
+              border-top: 1px solid rgba(255, 255, 255, 0.05);
+            "
+          >
+            <button
+              class="btn"
+              onclick="
+                if (window.Tutorial) {
+                  window.Tutorial.restart();
+                  document.getElementById('helpModal').style.display = 'none';
+                }
+              "
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(59, 130, 246, 0.2),
+                  rgba(139, 92, 246, 0.15)
+                );
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                color: #60a5fa;
+              "
+            >
+              <i class="fa-solid fa-rotate-right"></i> Restart Tutorial
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="contextMenu">
-        <div class="ctx-item" onclick="upgradeSelectedNode()">
-            <span>Upgrade</span> <span style="color:#fbbf24" id="ctxCost">$0</span>
-        </div>
-        <div class="ctx-item" id="ctxLogicRules" style="display:none" onclick="Game.openLogicControllerModal(selNodeId)">
-            <span><i class="fa-solid fa-microchip" style="color:#f472b6"></i> Configure Rules</span>
-        </div>
-        <div class="ctx-item danger" onclick="deleteSelectedNode()">
-            <span>Delete</span>
-        </div>
+      <div class="ctx-item" onclick="upgradeSelectedNode()">
+        <span>Upgrade</span> <span style="color: #fbbf24" id="ctxCost">$0</span>
+      </div>
+      <div
+        class="ctx-item"
+        id="ctxLogicRules"
+        style="display: none"
+        onclick="Game.openLogicControllerModal(selNodeId)"
+      >
+        <span
+          ><i class="fa-solid fa-microchip" style="color: #f472b6"></i>
+          Configure Rules</span
+        >
+      </div>
+      <div
+        class="ctx-item"
+        id="ctxFlashFirmware"
+        style="display: none"
+        onclick="openFirmwareModal(selNodeId)"
+      >
+        <span
+          ><i class="fa-solid fa-microchip" style="color: #f97316"></i> Flash
+          Firmware</span
+        >
+      </div>
+      <div class="ctx-item danger" onclick="deleteSelectedNode()">
+        <span>Delete</span>
+      </div>
     </div>
 
     <!-- Logic Controller Modal -->
-    <div id="logicControllerModal" class="modal-overlay" style="display:none">
-        <div class="modal logic-modal">
-            <div class="modal-header">
-                <h2 style="color:#f472b6"><i class="fa-solid fa-microchip"></i> Logic Controller</h2>
-                <button class="btn" onclick="document.getElementById('logicControllerModal').style.display='none'">Close</button>
-            </div>
-            <div class="modal-body" style="padding: 16px;">
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
-                    <i class="fa-solid fa-circle-info" style="color: #60a5fa;"></i>
-                    Set up to 4 automation rules. Rules are checked every second. Each rule needs a condition and an action.
-                </p>
-                <div id="logicRulesContainer"></div>
-                <div style="display: flex; gap: 10px; margin-top: 16px;">
-                    <button class="btn" onclick="Game.saveLogicRules()" style="flex: 1; background: linear-gradient(135deg, #f472b6, #ec4899); color: white;">
-                        <i class="fa-solid fa-floppy-disk"></i> Save Rules
-                    </button>
-                    <button class="btn" onclick="document.getElementById('logicControllerModal').style.display='none'" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
-                        Cancel
-                    </button>
-                </div>
-            </div>
+    <div id="logicControllerModal" class="modal-overlay" style="display: none">
+      <div class="modal logic-modal">
+        <div class="modal-header">
+          <h2 style="color: #f472b6">
+            <i class="fa-solid fa-microchip"></i> Logic Controller
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('logicControllerModal').style.display =
+                'none'
+            "
+          >
+            Close
+          </button>
         </div>
+        <div class="modal-body" style="padding: 16px">
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            <i class="fa-solid fa-circle-info" style="color: #60a5fa"></i>
+            Set up to 4 automation rules. Rules are checked every second. Each
+            rule needs a condition and an action.
+          </p>
+          <div id="logicRulesContainer"></div>
+          <div style="display: flex; gap: 10px; margin-top: 16px">
+            <button
+              class="btn"
+              onclick="Game.saveLogicRules()"
+              style="
+                flex: 1;
+                background: linear-gradient(135deg, #f472b6, #ec4899);
+                color: white;
+              "
+            >
+              <i class="fa-solid fa-floppy-disk"></i> Save Rules
+            </button>
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('logicControllerModal').style.display =
+                  'none'
+              "
+              style="
+                flex: 1;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firmware Selection Modal -->
+    <div id="firmwareModal" class="modal-overlay" style="display: none">
+      <div class="modal" style="width: 650px; max-width: 95%">
+        <div class="modal-header">
+          <h2 style="color: #f97316">
+            <i class="fa-solid fa-microchip"></i> Flash Firmware
+          </h2>
+          <button
+            class="btn"
+            onclick="
+              document.getElementById('firmwareModal').style.display = 'none'
+            "
+          >
+            Close
+          </button>
+        </div>
+        <div class="modal-body" style="padding: 16px">
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            <i
+              class="fa-solid fa-triangle-exclamation"
+              style="color: #f59e0b"
+            ></i>
+            <strong>Warning:</strong> Flashing firmware is
+            <strong>permanent</strong> and cannot be undone. Choose wisely!
+          </p>
+          <div class="firmware-grid" id="firmwareOptions">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Game -->
     <div class="game-container">
-        <div class="header">
-            <div class="header-title">
-                <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400">v13.0</span>
+      <div class="header">
+        <div class="header-title">
+          <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS
+          <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400"
+            >v13.0</span
+          >
+        </div>
+        <div class="header-stats">
+          <div
+            class="stat-box money group cursor-pointer hover:scale-105 transition-transform"
+            onclick="addMoney(event)"
+          >
+            <i class="fa-solid fa-coins stat-icon text-emerald-400"></i>
+            <div
+              class="stat-value text-emerald-400 font-mono"
+              id="moneyDisplay"
+            >
+              $0
             </div>
-            <div class="header-stats">
-                <div class="stat-box money group cursor-pointer hover:scale-105 transition-transform" onclick="addMoney(event)">
-                    <i class="fa-solid fa-coins stat-icon text-emerald-400"></i>
-                    <div class="stat-value text-emerald-400 font-mono" id="moneyDisplay">$0</div>
-                    <div class="stat-rate text-emerald-500/70 font-mono text-xs" id="moneyRate">+$0/s</div>
-                </div>
-                <div class="stat-box research group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('researchModal').style.display='flex'">
-                    <i class="fa-solid fa-flask stat-icon text-purple-400"></i>
-                    <div class="stat-value text-purple-400 font-mono" id="rpDisplay">0 RP</div>
-                    <div class="stat-rate text-purple-500/70 font-mono text-xs" id="rpRate">+0/s</div>
-                </div>
-                <div class="stat-box code group cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('codeModal').style.display='flex'">
-                    <i class="fa-solid fa-terminal stat-icon text-cyan-400"></i>
-                    <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">0</div>
-                    <div class="stat-rate text-cyan-500/70 font-mono text-xs">Code Bits</div>
-                </div>
+            <div
+              class="stat-rate text-emerald-500/70 font-mono text-xs"
+              id="moneyRate"
+            >
+              +$0/s
             </div>
+          </div>
+          <div
+            class="stat-box research group cursor-pointer hover:scale-105 transition-transform"
+            onclick="
+              document.getElementById('researchModal').style.display = 'flex'
+            "
+          >
+            <i class="fa-solid fa-flask stat-icon text-purple-400"></i>
+            <div class="stat-value text-purple-400 font-mono" id="rpDisplay">
+              0 RP
+            </div>
+            <div
+              class="stat-rate text-purple-500/70 font-mono text-xs"
+              id="rpRate"
+            >
+              +0/s
+            </div>
+          </div>
+          <div
+            class="stat-box code group cursor-pointer hover:scale-105 transition-transform"
+            onclick="
+              document.getElementById('codeModal').style.display = 'flex'
+            "
+          >
+            <i class="fa-solid fa-terminal stat-icon text-cyan-400"></i>
+            <div class="stat-value text-cyan-400 font-mono" id="codeDisplay">
+              0
+            </div>
+            <div class="stat-rate text-cyan-500/70 font-mono text-xs">
+              Code Bits
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <!-- System Controls Panel -->
+        <div
+          class="panel"
+          style="
+            background: linear-gradient(
+              135deg,
+              rgba(30, 41, 59, 0.9),
+              rgba(15, 23, 42, 0.95)
+            );
+            border-color: rgba(71, 85, 105, 0.5);
+          "
+        >
+          <div
+            class="panel-title"
+            style="display: flex; align-items: center; gap: 8px"
+          >
+            <i class="fa-solid fa-gamepad" style="color: #22d3ee"></i>
+            <span style="font-weight: 600; letter-spacing: 0.025em"
+              >System Controls</span
+            >
+          </div>
+          <div class="action-row">
+            <button
+              class="btn btn-research"
+              onclick="
+                document.getElementById('researchModal').style.display = 'flex'
+              "
+            >
+              <i class="fa-solid fa-flask"></i> Research
+            </button>
+            <button
+              class="btn btn-code"
+              onclick="
+                document.getElementById('codeModal').style.display = 'flex'
+              "
+            >
+              <i class="fa-solid fa-terminal"></i> Code
+            </button>
+            <button class="btn btn-contract" onclick="openContracts()">
+              <i class="fa-solid fa-file-contract"></i> Contracts
+            </button>
+          </div>
+          <div class="action-row">
+            <button
+              class="btn"
+              id="cableDeleteBtn"
+              onclick="toggleCableDeleteMode()"
+              style="
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                color: white;
+              "
+            >
+              <i class="fa-solid fa-scissors"></i>
+              <span id="cableDeleteText">Delete Cables</span>
+            </button>
+            <button
+              class="btn"
+              onclick="deleteAllCables()"
+              style="
+                background: rgba(239, 68, 68, 0.2);
+                color: #ef4444;
+                border: 1px solid #ef4444;
+              "
+            >
+              <i class="fa-solid fa-trash"></i> Clear All
+            </button>
+          </div>
+          <div class="action-row">
+            <button
+              class="btn btn-help"
+              onclick="
+                document.getElementById('helpModal').style.display = 'flex'
+              "
+            >
+              <i class="fa-solid fa-question"></i> Help
+            </button>
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('achievementsModal').style.display =
+                  'flex'
+              "
+            >
+              <i class="fa-solid fa-trophy" style="color: #fbbf24"></i>
+              Achievements
+            </button>
+            <button
+              class="btn"
+              onclick="
+                document.getElementById('statsModal').style.display = 'flex'
+              "
+            >
+              <i class="fa-solid fa-chart-line" style="color: #22d3ee"></i>
+              Stats
+            </button>
+          </div>
+          <div id="prestigeSection" style="display: none; padding-top: 4px;">
+            <div class="action-row">
+              <button
+                class="btn prestige-btn"
+                title="Earn Shards (Ascend)"
+                onclick="document.getElementById('prestigeModal').style.display = 'flex'"
+                style="width: 100%; border: 1px solid #c084fc; box-shadow: 0 0 10px rgba(168,85,247,0.2);"
+              >
+                <i class="fa-solid fa-bahai"></i> Ascend Network
+              </button>
+            </div>
+            <div class="action-row">
+              <button
+                class="btn"
+                style="width: 100%; background: linear-gradient(135deg, rgba(88, 28, 135, 0.4), rgba(168, 85, 247, 0.2)); border: 1px solid #a855f7; color: #e9d5ff; box-shadow: 0 0 10px rgba(168,85,247,0.4);"
+                title="Spend Shards"
+                onclick="openSingularityCore()"
+              >
+                <i class="fa-solid fa-atom"></i> Singularity Core
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="sidebar">
-            <!-- System Controls Panel -->
-            <div class="panel" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border-color: rgba(71, 85, 105, 0.5);">
-                <div class="panel-title" style="display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-gamepad" style="color: #22d3ee;"></i> 
-                    <span style="font-weight: 600; letter-spacing: 0.025em;">System Controls</span>
-                </div>
-                <div class="action-row">
-                    <button class="btn btn-research" onclick="document.getElementById('researchModal').style.display='flex'">
-                        <i class="fa-solid fa-flask"></i> Research
-                    </button>
-                    <button class="btn btn-code" onclick="document.getElementById('codeModal').style.display='flex'">
-                        <i class="fa-solid fa-terminal"></i> Code
-                    </button>
-                    <button class="btn btn-contract" onclick="openContracts()">
-                        <i class="fa-solid fa-file-contract"></i> Contracts
-                    </button>
-                </div>
-                <div class="action-row">
-                    <button class="btn" id="cableDeleteBtn" onclick="toggleCableDeleteMode()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
-                        <i class="fa-solid fa-scissors"></i> <span id="cableDeleteText">Delete Cables</span>
-                    </button>
-                    <button class="btn" onclick="deleteAllCables()" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
-                        <i class="fa-solid fa-trash"></i> Clear All
-                    </button>
-                </div>
-                <div class="action-row">
-                    <button class="btn btn-help" onclick="document.getElementById('helpModal').style.display='flex'">
-                        <i class="fa-solid fa-question"></i> Help
-                    </button>
-                    <button class="btn" onclick="document.getElementById('achievementsModal').style.display='flex'">
-                        <i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> Achievements
-                    </button>
-                    <button class="btn" onclick="document.getElementById('statsModal').style.display='flex'">
-                        <i class="fa-solid fa-chart-line" style="color: #22d3ee;"></i> Stats
-                    </button>
-                </div>
-                <div class="action-row">
-                    <button class="btn prestige-btn" onclick="document.getElementById('prestigeModal').style.display='flex'">
-                        <i class="fa-solid fa-rotate"></i> Migrate
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Account Panel -->
-            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-color: rgba(59, 130, 246, 0.3);">
-                <div class="panel-title" style="color: #3b82f6;"><i class="fa-solid fa-user"></i> Account</div>
-                <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;" id="accountPanelText">
-                    Login to save your progress to the cloud!
-                </div>
-                <div class="action-row">
-                    <button class="btn sync-btn" style="flex: 1;" onclick="document.getElementById('accountModal').style.display='flex'">
-                        <i class="fa-solid fa-user" id="accountIcon"></i> <span id="accountBtnText">Login / Register</span>
-                    </button>
-                </div>
-                <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="accountStatus">
-                    Not logged in
-                </div>
-            </div>
-                
-                <!-- Daily Rewards Panel -->
-            <div class="panel" style="margin-top: 10px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05)); border-color: rgba(251, 191, 36, 0.3);">
-                <div class="panel-title" style="color: #fbbf24;"><i class="fa-solid fa-calendar-check"></i> Daily Rewards</div>
-                <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-                    Streak: <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold;">0</span> days
-                </div>
-                <div class="action-row">
-                    <button class="btn" style="flex: 1; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white;" onclick="document.getElementById('dailyRewardModal').style.display='flex'; updateDailyRewardsUI();">
-                        <i class="fa-solid fa-gift"></i> Claim Reward
-                    </button>
-                </div>
-                <div style="font-size: 9px; color: var(--text-muted); margin-top: 5px; text-align: center;" id="dailyRewardStatus">
-                    Check in daily for bonuses!
-                    </div>
-                </div>
-                
-            <div class="contract-widget" id="activeContractWidget">
-                    <div style="font-size:12px; font-weight:bold; color:#fff; margin-bottom:5px;">
-                        Active Contract <span class="contract-timer" id="contractTimer">00:00</span>
-                    </div>
-                    <div style="font-size:11px; color:#d1d5db;" id="contractDesc">Upload 500 Files</div>
-                    <div class="storage-track" style="margin-top:5px;"><div class="storage-fill" id="contractBar" style="background:#fbbf24"></div></div>
-                </div>
-                
-            <!-- Active Event Widget -->
-            <div class="contract-widget" id="activeEventWidget" style="display:none; border-color: var(--accent-color);">
-                <div style="font-size:12px; font-weight:bold; color:var(--accent-color); margin-bottom:5px;">
-                    <i class="fa-solid fa-bolt"></i> <span id="eventName">Event Name</span>
-                    <span class="contract-timer" id="eventTimer">00:00</span>
-                </div>
-                <div style="font-size:11px; color:#d1d5db;" id="eventDesc">Event description</div>
-            </div>
-
-            <!-- Code Panel -->
-            <div class="panel code-panel">
-                <div class="panel-title"><i class="fa-solid fa-code"></i> Code Studio</div>
-                <div class="code-stats">
-                    <div class="code-stat">
-                        <div class="code-stat-label">Bits</div>
-                        <div class="code-stat-value" id="sidebarCodeBits">0</div>
-                    </div>
-                    <div class="code-stat">
-                        <div class="code-stat-label">Opt. Code</div>
-                        <div class="code-stat-value" id="sidebarOptCode">0</div>
-                    </div>
-                </div>
-                <div class="code-actions">
-                    <button class="code-btn" id="sidebarConvertBtn" onclick="convertCodeBits()">
-                        <span>100 Bits → Opt Code</span>
-                    </button>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 5px;">Installed Drivers:</div>
-                    <div class="driver-list" id="sidebarDrivers">
-                        <span style="font-size: 9px; color: #64748b;">None</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">
-                    <span>Global Network</span>
-                    <span id="routerLvl" style="color:#f59e0b">LVL 1</span>
-                </div>
-                
-                <div class="heat-container">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#a0aec0; margin-bottom:2px;">
-                        <span>Router Heat</span>
-                        <span id="heatText">0°C</span>
-                    </div>
-                    <div class="heat-track">
-                        <div class="heat-fill" id="heatBar"></div>
-                    </div>
-                    <div style="font-size:10px; color:#a0aec0; margin-top:3px;" id="heatStatus">Status: Normal</div>
-                </div>
-
-                <div style="font-size:12px; margin-top:10px; display:flex; justify-content:space-between;">
-                    <span style="color:#8b92a8">Down Speed</span>
-                    <span style="color:#3b82f6; font-weight:bold;" id="globalDown">0 B/s</span>
-                </div>
-                <div style="font-size:12px; margin-bottom:10px; display:flex; justify-content:space-between;">
-                    <span style="color:#8b92a8">Up Speed</span>
-                    <span style="color:#10b981; font-weight:bold;" id="globalUp">0 B/s</span>
-                </div>
-                <div style="font-size:11px; color:#db2777; margin-bottom:5px; text-align:right;" id="prestigeBonusDisplay">
-                    Data Center Bonus: 0%
-                </div>
-                <div style="font-size:11px; color:#10b981; margin-bottom:10px; text-align:right;" id="synergyBonusDisplay">
-                    Node Synergy: +0%
-                </div>
-                <button class="btn btn-primary" style="width:100%" id="btnUpgradeRouter" onclick="upgradeRouter()">
-                    <i class="fa-solid fa-arrow-up"></i> Upgrade Router
-                </button>
-                <div class="router-cost" id="routerUpgradeCost">
-                    Next Level: <span class="cost-value" id="routerCostValue">$500</span>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">Storage</div>
-                <div class="storage-bar-container">
-                    <div class="storage-label"><span>Files</span><span id="txtFiles">0</span></div>
-                    <div class="storage-track"><div class="storage-fill" id="barFiles" style="background:#3b82f6"></div></div>
-                </div>
-                <div class="storage-bar-container">
-                    <div class="storage-label"><span>Images</span><span id="txtImages">0</span></div>
-                    <div class="storage-track"><div class="storage-fill" id="barImages" style="background:#a855f7"></div></div>
-                </div>
-                <div class="storage-bar-container">
-                    <div class="storage-label"><span>Videos</span><span id="txtVideos">0</span></div>
-                    <div class="storage-track"><div class="storage-fill" id="barVideos" style="background:#ec4899"></div></div>
-                </div>
-            </div>
+        <!-- Account Panel -->
+        <div
+          class="panel"
+          style="
+            margin-top: 10px;
+            background: linear-gradient(
+              135deg,
+              rgba(59, 130, 246, 0.1),
+              rgba(37, 99, 235, 0.05)
+            );
+            border-color: rgba(59, 130, 246, 0.3);
+          "
+        >
+          <div class="panel-title" style="color: #3b82f6">
+            <i class="fa-solid fa-user"></i> Account
+          </div>
+          <div
+            style="
+              font-size: 10px;
+              color: var(--text-muted);
+              margin-bottom: 8px;
+            "
+            id="accountPanelText"
+          >
+            Login to save your progress to the cloud!
+          </div>
+          <div class="action-row">
+            <button
+              class="btn sync-btn"
+              style="flex: 1"
+              onclick="
+                document.getElementById('accountModal').style.display = 'flex'
+              "
+            >
+              <i class="fa-solid fa-user" id="accountIcon"></i>
+              <span id="accountBtnText">Login / Register</span>
+            </button>
+          </div>
+          <div
+            style="
+              font-size: 9px;
+              color: var(--text-muted);
+              margin-top: 5px;
+              text-align: center;
+            "
+            id="accountStatus"
+          >
+            Not logged in
+          </div>
         </div>
 
-        <div class="canvas-viewport" id="viewport">
-            <div class="world" id="world">
-                <div class="grid-bg"></div>
-                <svg class="connections-layer" id="cables"></svg>
-                <div id="nodes"></div>
-            </div>
+        <!-- Daily Rewards Panel -->
+        <div
+          class="panel"
+          style="
+            margin-top: 10px;
+            background: linear-gradient(
+              135deg,
+              rgba(251, 191, 36, 0.1),
+              rgba(245, 158, 11, 0.05)
+            );
+            border-color: rgba(251, 191, 36, 0.3);
+          "
+        >
+          <div class="panel-title" style="color: #fbbf24">
+            <i class="fa-solid fa-calendar-check"></i> Daily Rewards
+          </div>
+          <div
+            style="
+              font-size: 10px;
+              color: var(--text-muted);
+              margin-bottom: 8px;
+            "
+          >
+            Streak:
+            <span id="sidebarStreak" style="color: #fbbf24; font-weight: bold"
+              >0</span
+            >
+            days
+          </div>
+          <div class="action-row">
+            <button
+              class="btn"
+              style="
+                flex: 1;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: white;
+              "
+              onclick="
+                document.getElementById('dailyRewardModal').style.display =
+                  'flex';
+                updateDailyRewardsUI();
+              "
+            >
+              <i class="fa-solid fa-gift"></i> Claim Reward
+            </button>
+          </div>
+          <div
+            style="
+              font-size: 9px;
+              color: var(--text-muted);
+              margin-top: 5px;
+              text-align: center;
+            "
+            id="dailyRewardStatus"
+          >
+            Check in daily for bonuses!
+          </div>
         </div>
 
-        <div class="toolbar">
-            <div class="tabs">
-                <div class="tab active" data-tab="infra" onclick="setTab('infra', this)">Infrastructure</div>
-                <div class="tab" data-tab="download" onclick="setTab('download', this)">Download</div>
-                <div class="tab" data-tab="upload" onclick="setTab('upload', this)">Upload & Security</div>
-                <div class="tab" data-tab="advanced" onclick="setTab('advanced', this)">Advanced</div>
-                <div class="tab" data-tab="coding" onclick="setTab('coding', this)">Coding</div>
-            </div>
-            <div class="items-tray" id="tray"></div>
+        <div class="contract-widget" id="activeContractWidget">
+          <div
+            style="
+              font-size: 12px;
+              font-weight: bold;
+              color: #fff;
+              margin-bottom: 5px;
+            "
+          >
+            Active Contract
+            <span class="contract-timer" id="contractTimer">00:00</span>
+          </div>
+          <div style="font-size: 11px; color: #d1d5db" id="contractDesc">
+            Upload 500 Files
+          </div>
+          <div class="storage-track" style="margin-top: 5px">
+            <div
+              class="storage-fill"
+              id="contractBar"
+              style="background: #fbbf24"
+            ></div>
+          </div>
         </div>
+
+        <!-- Active Event Widget -->
+        <div
+          class="contract-widget"
+          id="activeEventWidget"
+          style="display: none; border-color: var(--accent-color)"
+        >
+          <div
+            style="
+              font-size: 12px;
+              font-weight: bold;
+              color: var(--accent-color);
+              margin-bottom: 5px;
+            "
+          >
+            <i class="fa-solid fa-bolt"></i>
+            <span id="eventName">Event Name</span>
+            <span class="contract-timer" id="eventTimer">00:00</span>
+          </div>
+          <div style="font-size: 11px; color: #d1d5db" id="eventDesc">
+            Event description
+          </div>
+        </div>
+
+        <!-- Code Panel -->
+        <div class="panel code-panel">
+          <div class="panel-title">
+            <i class="fa-solid fa-code"></i> Code Studio
+          </div>
+          <div class="code-stats">
+            <div class="code-stat">
+              <div class="code-stat-label">Bits</div>
+              <div class="code-stat-value" id="sidebarCodeBits">0</div>
+            </div>
+            <div class="code-stat">
+              <div class="code-stat-label">Opt. Code</div>
+              <div class="code-stat-value" id="sidebarOptCode">0</div>
+            </div>
+          </div>
+          <div class="code-actions">
+            <button
+              class="code-btn"
+              id="sidebarConvertBtn"
+              onclick="convertCodeBits()"
+            >
+              <span>100 Bits → Opt Code</span>
+            </button>
+          </div>
+          <div style="margin-top: 10px">
+            <div
+              style="
+                font-size: 10px;
+                color: var(--text-muted);
+                margin-bottom: 5px;
+              "
+            >
+              Installed Drivers:
+            </div>
+            <div class="driver-list" id="sidebarDrivers">
+              <span style="font-size: 9px; color: #64748b">None</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            <span>Global Network</span>
+            <span id="routerLvl" style="color: #f59e0b">LVL 1</span>
+          </div>
+
+          <div class="heat-container">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-size: 10px;
+                color: #a0aec0;
+                margin-bottom: 2px;
+              "
+            >
+              <span>Router Heat</span>
+              <span id="heatText">0°C</span>
+            </div>
+            <div class="heat-track">
+              <div class="heat-fill" id="heatBar"></div>
+            </div>
+            <div
+              style="font-size: 10px; color: #a0aec0; margin-top: 3px"
+              id="heatStatus"
+            >
+              Status: Normal
+            </div>
+          </div>
+
+          <div
+            style="
+              font-size: 12px;
+              margin-top: 10px;
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <span style="color: #8b92a8">Down Speed</span>
+            <span style="color: #3b82f6; font-weight: bold" id="globalDown"
+              >0 B/s</span
+            >
+          </div>
+          <div
+            style="
+              font-size: 12px;
+              margin-bottom: 10px;
+              display: flex;
+              justify-content: space-between;
+            "
+          >
+            <span style="color: #8b92a8">Up Speed</span>
+            <span style="color: #10b981; font-weight: bold" id="globalUp"
+              >0 B/s</span
+            >
+          </div>
+          <div
+            style="
+              font-size: 11px;
+              color: #db2777;
+              margin-bottom: 5px;
+              text-align: right;
+            "
+            id="prestigeBonusDisplay"
+          >
+            Data Center Bonus: 0%
+          </div>
+          <div
+            style="
+              font-size: 11px;
+              color: #10b981;
+              margin-bottom: 10px;
+              text-align: right;
+            "
+            id="synergyBonusDisplay"
+          >
+            Node Synergy: +0%
+          </div>
+          <button
+            class="btn btn-primary"
+            style="width: 100%"
+            id="btnUpgradeRouter"
+            onclick="upgradeRouter()"
+          >
+            <i class="fa-solid fa-arrow-up"></i> Upgrade Router
+          </button>
+          <div class="router-cost" id="routerUpgradeCost">
+            Next Level:
+            <span class="cost-value" id="routerCostValue">$500</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Storage</div>
+          <div class="storage-bar-container">
+            <div class="storage-label">
+              <span>Files</span><span id="txtFiles">0</span>
+            </div>
+            <div class="storage-track">
+              <div
+                class="storage-fill"
+                id="barFiles"
+                style="background: #3b82f6"
+              ></div>
+            </div>
+          </div>
+          <div class="storage-bar-container">
+            <div class="storage-label">
+              <span>Images</span><span id="txtImages">0</span>
+            </div>
+            <div class="storage-track">
+              <div
+                class="storage-fill"
+                id="barImages"
+                style="background: #a855f7"
+              ></div>
+            </div>
+          </div>
+          <div class="storage-bar-container">
+            <div class="storage-label">
+              <span>Videos</span><span id="txtVideos">0</span>
+            </div>
+            <div class="storage-track">
+              <div
+                class="storage-fill"
+                id="barVideos"
+                style="background: #ec4899"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-viewport" id="viewport">
+        <div class="world" id="world">
+          <div class="grid-bg"></div>
+          <svg class="connections-layer" id="cables"></svg>
+          <div id="nodes"></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="tabs">
+          <div
+            class="tab active"
+            data-tab="infra"
+            onclick="setTab('infra', this)"
+          >
+            Infrastructure
+          </div>
+          <div
+            class="tab"
+            data-tab="download"
+            onclick="setTab('download', this)"
+          >
+            Download
+          </div>
+          <div class="tab" data-tab="upload" onclick="setTab('upload', this)">
+            Upload & Security
+          </div>
+          <div
+            class="tab"
+            data-tab="advanced"
+            onclick="setTab('advanced', this)"
+          >
+            Advanced
+          </div>
+          <div class="tab" data-tab="coding" onclick="setTab('coding', this)">
+            Coding
+          </div>
+        </div>
+        <div class="items-tray" id="tray"></div>
+      </div>
     </div>
 
     <script defer src="js/tutorial.js"></script>
     <script defer src="js/game.js"></script>
-</body>
+  </body>
 </html>

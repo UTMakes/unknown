@@ -82,6 +82,34 @@ const TUTORIAL_STEPS = [
         icon: 'fa-solid fa-link'
     },
     {
+        id: 'earn_money',
+        title: 'Money is Flowing!',
+        message: "Your network is earning <strong style='color:#fbbf24'>money</strong>! Watch it grow in the top bar. As your downloaders collect files and your uploader sells them, you'll earn money to expand your empire.",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-coins'
+    },
+    {
+        id: 'buy_lab',
+        title: 'Build a Research Lab',
+        message: "Now let's unlock new technologies! Buy a <strong style='color:#8b5cf6'>Research Lab</strong> from the <strong>Upload & Security</strong> tab. Labs convert files into <strong style='color:#a78bfa'>Research Points (RP)</strong>.",
+        target: () => document.querySelector('.shop-item'),
+        position: 'top',
+        action: 'node_created',
+        actionValue: 'lab',
+        icon: 'fa-solid fa-flask'
+    },
+    {
+        id: 'connect_lab',
+        title: 'Connect the Lab',
+        message: "Connect your <strong style='color:#8b5cf6'>Research Lab</strong> to the Router with a cable. Labs need a file source — they'll use files collected by your downloaders to generate RP!",
+        target: null,
+        position: 'center',
+        action: 'cable_created',
+        icon: 'fa-solid fa-link'
+    },
+    {
         id: 'research_intro',
         title: 'Research & Development',
         message: "Earning <strong style='color:#a78bfa'>Research Points (RP)</strong> lets you unlock new node types. Click the <strong>Research</strong> button in the sidebar to explore the tech tree!",
@@ -91,9 +119,27 @@ const TUTORIAL_STEPS = [
         icon: 'fa-solid fa-flask'
     },
     {
+        id: 'coding_intro',
+        title: 'The Coding System',
+        message: "Later on, you'll unlock <strong style='color:#00d4aa'>Coder Nodes</strong> that generate code bits. Convert bits into <strong>Optimization Code</strong>, then compile <strong>Drivers</strong> for permanent global bonuses! Press <strong>C</strong> to open the Code Studio anytime.",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-terminal'
+    },
+    {
+        id: 'advanced_mechanics',
+        title: 'Advanced Network Strategy',
+        message: "As your network grows, strategy matters!\n\u2022 <strong style='color:#06b6d4'>Traffic & Bottlenecks:</strong> Nodes have bandwidth limits — plan your routing carefully!\n\u2022 <strong style='color:#f59e0b'>Placement:</strong> Some nodes occupy larger spaces. Adjacency bonuses and penalties reward smart layouts.\n\u2022 <strong style='color:#a855f7'>Firmware:</strong> Flash nodes with specialized firmware to create unique, powerful variants.\n\nThink of your network like a server room — optimize everything!",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-sitemap'
+    },
+    {
         id: 'complete',
         title: 'You\'re Ready!',
-        message: "That's the basics! Here are some tips:\n\u2022 <strong>Labs</strong> convert files to Research Points\n\u2022 <strong>Firewalls</strong> protect from viruses\n\u2022 <strong>Coder Nodes</strong> generate code for Drivers\n\u2022 <strong>Right-click</strong> nodes to upgrade or delete them\n\u2022 Press <strong>?</strong> anytime for the full help guide\n\nGo build your data empire! \uD83D\uDE80",
+        message: "That's the basics! Here are some pro tips:\n\u2022 <strong style='color:#8b5cf6'>Labs</strong> convert files \u2192 Research Points (RP)\n\u2022 <strong style='color:#ef4444'>Firewalls</strong> protect nodes from virus infections\n\u2022 <strong style='color:#f59e0b'>Overclock Units</strong> double speed but create heat!\n\u2022 <strong style='color:#00d4aa'>Coder Nodes</strong> \u2192 Code Bits \u2192 Drivers (permanent boosts)\n\u2022 <strong>Right-click</strong> nodes to upgrade or delete them\n\u2022 Press <strong>R</strong> for Research, <strong>C</strong> for Coding, <strong>?</strong> for Help\n\nGo build your data empire! \uD83D\uDE80",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -236,7 +282,7 @@ class TutorialManager {
         this.tooltip.style.pointerEvents = 'auto';
 
         if (targetEl && step.position !== 'center') {
-            // Show highlight around target
+            // Show highlight around target — spotlight cutout effect
             const rect = targetEl.getBoundingClientRect();
             const padding = 8;
 
@@ -245,6 +291,9 @@ class TutorialManager {
             this.highlight.style.top = (rect.top - padding) + 'px';
             this.highlight.style.width = (rect.width + padding * 2) + 'px';
             this.highlight.style.height = (rect.height + padding * 2) + 'px';
+
+            // Spotlight mode: overlay becomes transparent, highlight shadow does the dimming
+            this.overlay.classList.add('spotlight');
 
             // Position tooltip relative to target
             this.tooltip.classList.remove('pos-center', 'pos-top', 'pos-right', 'pos-bottom', 'pos-left');
@@ -304,6 +353,7 @@ class TutorialManager {
         } else {
             // Center tooltip, no highlight — block game interaction
             this.highlight.style.display = 'none';
+            this.overlay.classList.remove('spotlight');
             this.tooltip.classList.remove('pos-top', 'pos-right', 'pos-bottom', 'pos-left');
             this.tooltip.classList.add('pos-center');
             this.tooltip.style.left = '50%';
