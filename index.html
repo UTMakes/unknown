@@ -200,7 +200,7 @@
 
         <div class="welcome-main">
           <div class="modal-header">
-            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.0</span></h2>
+            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.1</span></h2>
             <button
               class="btn"
               onclick="
@@ -228,6 +228,15 @@
                   <span style="color: #3b82f6">blue</span> ports
                 </li>
                 <li>Nodes must be connected to the Router to work!</li>
+                <li>
+                  <strong>Flow Tiers:</strong> Data flows from <span style="color:#60a5fa">Source (T1)</span>
+                  <i class="fa-solid fa-arrow-right" style="font-size:8px"></i>
+                  <span style="color:#a78bfa">Bridge (T2)</span>
+                  <i class="fa-solid fa-arrow-right" style="font-size:8px"></i>
+                  <span style="color:#10b981">Process (T3)</span>
+                  <i class="fa-solid fa-arrow-right" style="font-size:8px"></i>
+                  <span style="color:#f59e0b">Hub (T4)</span>
+                </li>
               </ul>
             </div>
             <div class="help-section">
@@ -301,7 +310,7 @@
 
         <div class="welcome-sidebar">
           <div class="welcome-sidebar-header">
-            <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v14.0</span></h2>
+            <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v14.1</span></h2>
           </div>
           <div class="welcome-sidebar-body">
             <ul class="feature-list">
@@ -333,9 +342,16 @@
                   <p>Robust backward compatibility for new node data and persistent Ultra Low Performance setting!</p>
                 </div>
               </li>
+              <li class="feature-item">
+                <div class="feature-icon new" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-layer-group"></i></div>
+                <div class="feature-content">
+                  <h4>Node Flow Polish!</h4>
+                  <p>Flow Tiers now show descriptive names (Source/Bridge/Process/Hub). Improved error messages for invalid connections. Shop shows flow tier info. Bug fixes for Node Glossary.</p>
+                </div>
+              </li>
             </ul>
             <div class="version-tag">
-              <i class="fa-solid fa-flask"></i> Version 14.0 - "The Singularity Update"
+              <i class="fa-solid fa-flask"></i> Version 14.1 - "Node Polish Update"
             </div>
           </div>
         </div>
@@ -1871,7 +1887,7 @@
         <div class="header-title">
           <i class="fa-solid fa-server text-cyan-400"></i> UPLOAD LABS
           <span class="version-badge bg-gradient-to-r from-blue-500 to-cyan-400"
-            >v13.0</span
+            >v14.1</span
           >
         </div>
         <div class="header-stats">

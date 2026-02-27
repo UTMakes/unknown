@@ -1,4 +1,4 @@
-﻿        const GAME_VERSION = "13.4";
+﻿fixconst GAME_VERSION = "14.1";
 
         // --- CONFIGURATION ---
         
@@ -39,23 +39,27 @@
             { id: 'first_prestige', name: 'Migration', desc: 'Prestige for the first time', check: () => (game.prestigeLevel || 0) >= 1, reward: { money: 100000 } },
         ];
         
+        // Flow Tier Names: T1=Source, T2=Bridge, T3=Process, T4=Hub
+        const FLOW_TIER_NAMES = { 1: 'Source', 2: 'Bridge', 3: 'Process', 4: 'Hub' };
+        const FLOW_TIER_ICONS = { 1: 'fa-solid fa-download', 2: 'fa-solid fa-right-left', 3: 'fa-solid fa-microchip', 4: 'fa-solid fa-globe' };
+
         const NODE_DEFS = {
             router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity.", bandwidth: 1000, ports: ['in', 'out'], flowLevel: 4 },
-            
+
             // Infra - Early game utility
             miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income.", bandwidth: 200, ports: ['out'], flowLevel: 1 },
             cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster.", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 300, ports: ['in', 'out'], flowLevel: 1 },
+            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
             balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection. Redistributes excess bandwidth.", req: "tech_balance", bandwidth: 600, ports: ['in', 'out'], flowLevel: 2 },
             overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc", bandwidth: 500, ports: ['in', 'out'], flowLevel: 2 },
             cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-            
+
             // Downloaders - Tiered progression
             dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection.", bandwidth: 300, ports: ['out'], flowLevel: 1 },
             dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img", bandwidth: 400, ports: ['out'], flowLevel: 1 },
             dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio", bandwidth: 500, ports: ['out'], flowLevel: 1 },
             dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid", bandwidth: 600, ports: ['out'], flowLevel: 1 },
-            
+
             // Upload & Labs - Money and RP generation
             uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income.", bandwidth: 400, ports: ['in'], flowLevel: 3 },
             lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP).", bandwidth: 400, ports: ['in'], flowLevel: 3 },
@@ -63,7 +67,7 @@
             quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
             master_router: { name: "Master Router", type: "special", cost: 250000, icon: "fa-solid fa-network-wired", color: "#3b82f6", desc: "Double-click to open a private sub-network. Great for organization.", req: "tech_cluster", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 4 },
             subnet_core: { name: "Subnet Core", type: "core", cost: 0, icon: "fa-solid fa-circle-nodes", color: "#3b82f6", desc: "Core connection to the main network.", bandwidth: 2000, ports: ['out'], flowLevel: 4 },
-            
+
             // Advanced - Late game specialization
             proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy", bandwidth: 250, ports: ['in', 'out'], flowLevel: 2 },
             compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
@@ -75,12 +79,12 @@
             warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse", bandwidth: 1200, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
             ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai", bandwidth: 1500, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
             crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm", bandwidth: 1000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-            
+
             // CODING - Programming system
             coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development.", bandwidth: 150, ports: ['out'], flowLevel: 1 },
             dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station", bandwidth: 300, ports: ['out'], flowLevel: 1 },
             compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-            
+
             // AUTOMATION
             logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation", bandwidth: 200, ports: ['in', 'out'], flowLevel: 2 }
         };
@@ -2597,37 +2601,29 @@
                 const bandwidthBar = `<div class="bandwidth-bar"><div class="bandwidth-fill" style="width:${Math.round(bwUsage * 100)}%;background:${bwColor}"></div></div>`;
                 
                 // Use firmware icon/color if flashed
-        const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
-        const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : '#fff';
-        
-        el.innerHTML = `
-            ${firmwareBadge}
-            <div class="node-header">
-                <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
-                <div style="flex:1; min-width: 0;">
-                    <div class="node-title">${def.name}</div>
-                    <div class="node-lvl">LVL ${n.level}</div>
-                </div>
-            </div>
-            <div class="node-body">
-                <div class="node-stat-row">
-                    <span>Flow:</span>
-                    <span class="flow-badge tier-${def.flowLevel}">T${def.flowLevel}</span>
-                </div>
-                ${ports}
-            </div>
-            ${cleanBtn}
-            ${bandwidthBar}
-        `;
-        
-        el.onmousedown = (e) => {
-            if (e.target.classList.contains('port')) return;
-            dragStart(n, e);
-        };
-        el.oncontextmenu = (e) => {
-            e.preventDefault();
-            showContext(n, e);
-        };
+                const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
+                const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : '#fff';
+                const tierName = FLOW_TIER_NAMES[def.flowLevel] || 'T' + def.flowLevel;
+                
+                el.innerHTML = `
+                    ${firmwareBadge}
+                    <div class="node-header">
+                        <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
+                        <div style="flex:1; min-width: 0;">
+                            <div class="node-title">${def.name}</div>
+                            <div class="node-lvl">LVL ${n.level}</div>
+                        </div>
+                    </div>
+                    <div class="node-body">
+                        <div class="node-stat-row">
+                            <span>Flow:</span>
+                            <span class="flow-badge tier-${def.flowLevel}"><i class="${FLOW_TIER_ICONS[def.flowLevel] || ''}"></i> T${def.flowLevel} ${tierName}</span>
+                        </div>
+                        ${ports}
+                    </div>
+                    ${cleanBtn}
+                    ${bandwidthBar}
+                `;
                 
                 // Custom Tooltip Logic
                 el.onmouseover = (e) => {
@@ -2638,12 +2634,18 @@
                     }
                     const bwPct = Math.round((n._bandwidthUsage || 0) * 100);
                     const bwCol = bwPct > 90 ? '#ef4444' : bwPct > 60 ? '#f59e0b' : '#10b981';
-                    const bwLabel = n._bottlenecked ? '⚠️ BOTTLENECK' : `${bwPct}%`;
+                    const bwLabel = n._bottlenecked ? '\u26A0\uFE0F BOTTLENECK' : `${bwPct}%`;
+                    const ttTierName = FLOW_TIER_NAMES[def.flowLevel] || '';
+                    const ttTierIcon = FLOW_TIER_ICONS[def.flowLevel] || '';
                     
                     let extraActionText = '';
                     if (n.type === 'master_router') {
                         extraActionText = '<div style="margin-top:8px; color:#3b82f6; font-weight:bold; text-align:center;"><i class="fa-solid fa-mouse-pointer"></i> Double-Click to Enter Subnet</div>';
                     }
+                    
+                    // Flow tier color mapping
+                    const tierColors = { 1: '#60a5fa', 2: '#a78bfa', 3: '#10b981', 4: '#f59e0b' };
+                    const ttTierColor = tierColors[def.flowLevel] || '#94a3b8';
                     
                     tooltip.innerHTML = `
                         <div class="custom-tooltip-title">
@@ -2652,6 +2654,10 @@
                         <div class="custom-tooltip-desc">${def.desc}</div>
                         ${extraActionText}
                         <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08)">
+                            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px">
+                                <span style="color:#94a3b8"><i class="${ttTierIcon}" style="margin-right:3px"></i> Flow Tier</span>
+                                <span class="flow-badge tier-${def.flowLevel}" style="font-size:10px">T${def.flowLevel} ${ttTierName}</span>
+                            </div>
                             <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
                                 <span style="color:#94a3b8">Bandwidth</span>
                                 <span style="color:${bwCol};font-weight:600">${bwLabel}</span>
@@ -2781,7 +2787,12 @@
                 const x2 = freshN2.x;
                 const y2 = freshN2.y + 35;
                 
-                const pathStr = `M ${x1} ${y1} C ${x1 + 80} ${y1}, ${x2 - 80} ${y2}, ${x2} ${y2}`;
+                // Create more natural cable curves
+                const dx = Math.abs(x2 - x1);
+                const dy = Math.abs(y2 - y1);
+                const curveStrength = Math.max(60, Math.min(150, dx * 0.6));
+                
+                const pathStr = `M ${x1} ${y1} C ${x1 + curveStrength} ${y1}, ${x2 - curveStrength} ${y2}, ${x2} ${y2}`;
                 bgLine.setAttribute("d", pathStr);
                 dashLine.setAttribute("d", pathStr);
             });
@@ -3188,10 +3199,12 @@
                 if (locked) el.classList.add('disabled');
                 
                 el.onclick = () => { if (!locked) buyNode(k); };
+                const shopTierName = FLOW_TIER_NAMES[def.flowLevel] || '';
                 el.innerHTML = `
                     <div class="item-cost">$${fmt(def.cost)}</div>
                     <div class="item-icon"><i class="${def.icon}" style="color:${def.color}"></i></div>
                     <div class="item-name">${def.name}</div>
+                    <div class="item-flow-tier"><span class="flow-badge tier-${def.flowLevel}">T${def.flowLevel} ${shopTierName}</span></div>
                     <div class="item-desc">${locked ? "LOCKED (Research)" : def.desc}</div>
                 `;
                 tray.appendChild(el);
@@ -3305,6 +3318,61 @@
                 }
             }
             
+            // Node Glossary — Task 42 (function was missing, added in Task 37 polish)
+            function openNodeGlossary() {
+                const container = document.getElementById('glossaryContainer');
+                if (!container) return;
+                container.innerHTML = '';
+                
+                Object.keys(NODE_DEFS).forEach(k => {
+                    const def = NODE_DEFS[k];
+                    if (def.type === 'core' && k !== 'router') return; // Skip subnet_core
+                    
+                    const tierName = FLOW_TIER_NAMES[def.flowLevel] || '';
+                    const tierIcon = FLOW_TIER_ICONS[def.flowLevel] || '';
+                    const isWide = def.size && def.size[0] === 2;
+                    const inPorts = (def.ports || []).filter(p => p === 'in').length;
+                    const outPorts = (def.ports || []).filter(p => p === 'out').length;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'glossary-card';
+                    card.innerHTML = `
+                        <div class="glossary-header">
+                            <div class="glossary-icon" style="color:${def.color}; border-color: ${def.color}33">
+                                <i class="${def.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="glossary-name">${def.name}</div>
+                                <div class="glossary-tier-label"><i class="${tierIcon}"></i> Flow T${def.flowLevel} \u2014 ${tierName}</div>
+                            </div>
+                        </div>
+                        <div class="glossary-desc">${def.desc}</div>
+                        <div class="glossary-stats">
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Cost</span>
+                                <span style="color:#fbbf24">$${fmt(def.cost)}</span>
+                            </div>
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Bandwidth</span>
+                                <span style="color:#06b6d4">${fmt(def.bandwidth || 0)} B/s</span>
+                            </div>
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Size</span>
+                                <span style="color:#e2e8f0">${isWide ? '2\u00D71 (Wide)' : '1\u00D71'}</span>
+                            </div>
+                            ${def.req ? `<div class="glossary-stat"><span style="color:#94a3b8">Requires</span><span style="color:#f472b6">${def.req}</span></div>` : ''}
+                        </div>
+                        <div class="glossary-ports">
+                            ${inPorts > 0 ? `<span class="port-info in">${inPorts} IN</span>` : ''}
+                            ${outPorts > 0 ? `<span class="port-info out">${outPorts} OUT</span>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+                
+                document.getElementById('nodeGlossaryModal').style.display = 'flex';
+            }
+            
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 if (e.key === '+' || e.key === '=') zoomIn();
@@ -3369,8 +3437,12 @@
                 const targetDef = NODE_DEFS[targetNode.type];
 
                 // Task 37: Enforce Upstream / Downstream Flow
-                if (sourceDef.flowLevel >= targetDef.flowLevel) {
-                    showFloat("Invalid Flow: Must go Upstream", window.innerWidth/2, window.innerHeight/2, 'red');
+                // Same-tier Bridge (T2) nodes can connect to each other for utility chaining
+                const sameTierAllowed = sourceDef.flowLevel === 2 && targetDef.flowLevel === 2;
+                if (!sameTierAllowed && sourceDef.flowLevel >= targetDef.flowLevel) {
+                    const srcTierName = FLOW_TIER_NAMES[sourceDef.flowLevel] || 'T' + sourceDef.flowLevel;
+                    const tgtTierName = FLOW_TIER_NAMES[targetDef.flowLevel] || 'T' + targetDef.flowLevel;
+                    showFloat(`Invalid Flow: ${srcTierName} (T${sourceDef.flowLevel}) \u2192 ${tgtTierName} (T${targetDef.flowLevel})`, window.innerWidth/2, window.innerHeight/2, 'red');
                     document.body.classList.add('invalid-shake');
                     setTimeout(() => document.body.classList.remove('invalid-shake'), 500);
                     port.active = false;

@@ -141,10 +141,16 @@
 
 - [x] **Directional Flow & Network Hierarchy (Upstream/Downstream)** — _Task 37_
 
-  > - **Implemented:** Defined 4-tier hierarchy (Source -> Bridge -> Storage -> Hub).
-  > - **Logic:** Connections now enforce upward flow.
-  > - **Feedback:** Added "Invalid Flow" alerts and screen shake.
-  > - **Clarification:** Added flow tier badges (T1-T4) to all nodes for visual mapping.
+  > - **Implemented:** Defined 4-tier hierarchy (Source -> Bridge -> Process -> Hub).
+  > - **Logic:** Connections now enforce upward flow (T1→T2→T3→T4).
+  > - **Feedback:** Added "Invalid Flow" alerts with descriptive tier info and screen shake.
+  > - **Clarification:** Added flow tier badges (T1-T4) to all nodes with descriptive names.
+  > - **Polished:** Updated tier names (Source/Bridge/Process/Hub), added tier icons to badges.
+  > - **Fixed:** Same-tier Bridge (T2) connections now allowed for utility chaining.
+  > - **Added:** Flow tier info to tooltips, shop items, and Node Glossary.
+  > - **Fixed:** Missing `openNodeGlossary` function (Task 42).
+  > - **Fixed:** Firewall flowLevel corrected from T1 to T2 (has in/out ports).
+  > - **Added:** `.node-body` CSS styling for better layout.
 
 - [ ] **Interactive "Infection" & Quarantine Events** — _Task 38_
 
