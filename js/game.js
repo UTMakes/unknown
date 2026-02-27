@@ -40,47 +40,49 @@
         ];
         
         const NODE_DEFS = {
-            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity.", bandwidth: 500 },
+            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity.", bandwidth: 1000, ports: ['in', 'out'], flowLevel: 4 },
             
             // Infra - Early game utility
-            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income.", bandwidth: 80 },
-            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster.", bandwidth: 200 },
-            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 150 },
-            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection. Redistributes excess bandwidth.", req: "tech_balance", bandwidth: 400 },
-            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc", bandwidth: 300 },
-            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo", bandwidth: 200 },
+            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income.", bandwidth: 200, ports: ['out'], flowLevel: 1 },
+            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster.", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
+            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 300, ports: ['in', 'out'], flowLevel: 1 },
+            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection. Redistributes excess bandwidth.", req: "tech_balance", bandwidth: 600, ports: ['in', 'out'], flowLevel: 2 },
+            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc", bandwidth: 500, ports: ['in', 'out'], flowLevel: 2 },
+            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
             
             // Downloaders - Tiered progression
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection.", bandwidth: 100 },
-            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img", bandwidth: 150 },
-            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio", bandwidth: 200 },
-            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid", bandwidth: 300 },
+            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection.", bandwidth: 300, ports: ['out'], flowLevel: 1 },
+            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img", bandwidth: 400, ports: ['out'], flowLevel: 1 },
+            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio", bandwidth: 500, ports: ['out'], flowLevel: 1 },
+            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid", bandwidth: 600, ports: ['out'], flowLevel: 1 },
             
             // Upload & Labs - Money and RP generation
-            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income.", bandwidth: 150 },
-            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP).", bandwidth: 200 },
-            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack", bandwidth: 800, size: [2, 1] },
-            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum", bandwidth: 2000, size: [2, 1] },
+            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income.", bandwidth: 400, ports: ['in'], flowLevel: 3 },
+            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP).", bandwidth: 400, ports: ['in'], flowLevel: 3 },
+            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack", bandwidth: 800, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
+            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
+            master_router: { name: "Master Router", type: "special", cost: 250000, icon: "fa-solid fa-network-wired", color: "#3b82f6", desc: "Double-click to open a private sub-network. Great for organization.", req: "tech_cluster", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 4 },
+            subnet_core: { name: "Subnet Core", type: "core", cost: 0, icon: "fa-solid fa-circle-nodes", color: "#3b82f6", desc: "Core connection to the main network.", bandwidth: 2000, ports: ['out'], flowLevel: 4 },
             
             // Advanced - Late game specialization
-            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy", bandwidth: 250 },
-            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress", bandwidth: 300 },
-            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup", bandwidth: 350 },
-            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze", bandwidth: 300 },
-            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming", bandwidth: 600 },
-            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn", bandwidth: 1000 },
-            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster", bandwidth: 500 },
-            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse", bandwidth: 1200, size: [2, 1] },
-            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai", bandwidth: 1500, size: [2, 1] },
-            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm", bandwidth: 1000, size: [2, 1] },
+            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy", bandwidth: 250, ports: ['in', 'out'], flowLevel: 2 },
+            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
+            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup", bandwidth: 350, ports: ['in'], flowLevel: 3 },
+            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
+            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming", bandwidth: 600, ports: ['in', 'out'], flowLevel: 3 },
+            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn", bandwidth: 1000, ports: ['in', 'out'], flowLevel: 3 },
+            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster", bandwidth: 500, ports: ['in', 'out'], flowLevel: 2 },
+            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse", bandwidth: 1200, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
+            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai", bandwidth: 1500, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
+            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm", bandwidth: 1000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
             
             // CODING - Programming system
-            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development.", bandwidth: 150 },
-            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station", bandwidth: 300 },
-            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler", bandwidth: 400 },
+            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development.", bandwidth: 150, ports: ['out'], flowLevel: 1 },
+            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station", bandwidth: 300, ports: ['out'], flowLevel: 1 },
+            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
             
             // AUTOMATION
-            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation", bandwidth: 200 }
+            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation", bandwidth: 200, ports: ['in', 'out'], flowLevel: 2 }
         };
 
         // FIRMWARE DEFINITIONS (for Sub-Systems & Specialization)
@@ -272,6 +274,7 @@
             res: { files: 0, images: 0, videos: 0, audio: 0 },
             nodes: [],
             conns: [],
+            currentSubnet: null, // null for main grid, node ID string for a subnet
             routerLevel: 1,
             routerHeat: 0,
             overheatMode: false,
@@ -379,8 +382,20 @@
         let activeContract = null; 
         
         // --- ZOOM FUNCTIONS ---
+        // Cached DOM refs for zoom performance (initialized on first use)
+        let _worldEl = null;
+        let _zoomLevelEl = null;
+        function getWorldEl() { return _worldEl || (_worldEl = document.getElementById('world')); }
+        function getZoomLevelEl() { return _zoomLevelEl || (_zoomLevelEl = document.getElementById('zoomLevel')); }
+        
+        // Debounced zoom display — avoids formatting + DOM write on every micro-event
+        let _zoomDisplayRAF = 0;
         function updateZoomDisplay() {
-            document.getElementById('zoomLevel').innerText = Math.round(view.scale * 100) + '%';
+            if (_zoomDisplayRAF) return;
+            _zoomDisplayRAF = requestAnimationFrame(() => {
+                getZoomLevelEl().innerText = Math.round(view.scale * 100) + '%';
+                _zoomDisplayRAF = 0;
+            });
         }
         
         function zoomIn() {
@@ -397,13 +412,39 @@
         
         function resetZoom() {
             view.scale = 1;
+            
+            // Center viewport on the player's nodes
+            if (game.nodes.length > 0) {
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                game.nodes.forEach(n => {
+                    const w = (NODE_DEFS[n.type]?.size?.[0] || 1) * 170;
+                    const h = 70;
+                    if (n.x < minX) minX = n.x;
+                    if (n.y < minY) minY = n.y;
+                    if (n.x + w > maxX) maxX = n.x + w;
+                    if (n.y + h > maxY) maxY = n.y + h;
+                });
+                const centerX = (minX + maxX) / 2;
+                const centerY = (minY + maxY) / 2;
+                view.x = window.innerWidth / 2 - centerX * view.scale;
+                view.y = window.innerHeight / 2 - centerY * view.scale;
+            } else {
+                view.x = window.innerWidth / 2;
+                view.y = window.innerHeight / 2;
+            }
+            
             updateWorldTransform();
             updateZoomDisplay();
         }
         
+        // RAF-batched world transform — coalesces rapid zoom/pan into one paint
+        let _transformRAF = 0;
         function updateWorldTransform() {
-            const world = document.getElementById('world');
-            world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+            if (_transformRAF) cancelAnimationFrame(_transformRAF);
+            _transformRAF = requestAnimationFrame(() => {
+                getWorldEl().style.transform = `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`;
+                _transformRAF = 0;
+            });
         }
 
         // Toggle setting
@@ -862,6 +903,7 @@
             game.activeContract = null;
             game.codeBits = 0;
             game.optimizationCode = 0;
+            game.currentSubnet = null;
             
             // Reset stats that should be reset
             game.stats.nodesCreated = 0;
@@ -1718,6 +1760,17 @@
             // BFS to find all connected nodes
             while (q.length > 0) {
                 const curr = q.shift();
+                
+                // If current node is a master router, its subnet core is also considered connected
+                const currNode = game.nodes.find(n => n.id === curr);
+                if (currNode && currNode.type === 'master_router') {
+                    const coreNode = game.nodes.find(n => n.subnetId === curr && n.type === 'subnet_core');
+                    if (coreNode && !newActive.has(coreNode.id)) {
+                        newActive.add(coreNode.id);
+                        q.push(coreNode.id);
+                    }
+                }
+                
                 game.conns.forEach(c => {
                     const other = c.from === curr ? c.to : (c.to === curr ? c.from : null);
                     if (other && !newActive.has(other)) {
@@ -1742,16 +1795,28 @@
                     }
                 });
                 
-                // Update cable visuals
+                        
+                // Update cable visuals based on the current subnet view
                 document.querySelectorAll('.cable-group').forEach(c => {
                     if (!c.dataset.ends) return;
                     const [id1, id2] = c.dataset.ends.split(',').map(Number);
-                    if (newActive.has(id1) && newActive.has(id2)) {
-                        c.classList.remove('disconnected');
-                        c.classList.add('active');
+                    
+                    const node1 = game.nodes.find(n => n.id === id1);
+                    const node2 = game.nodes.find(n => n.id === id2);
+                    
+                    // Cable is only visible/active if both ends are in the CURRENT subnet view
+                    if (node1 && node2 && node1.subnetId === game.currentSubnet && node2.subnetId === game.currentSubnet) {
+                        c.style.display = 'block';
+                        if (newActive.has(id1) && newActive.has(id2)) {
+                            c.classList.remove('disconnected');
+                            c.classList.add('active');
+                        } else {
+                            c.classList.add('disconnected');
+                            c.classList.remove('active');
+                        }
                     } else {
-                        c.classList.add('disconnected');
-                        c.classList.remove('active');
+                        // Hide cables not in current view
+                        c.style.display = 'none';
                     }
                 });
             }
@@ -2040,7 +2105,11 @@
             } else if (modalId === 'statsModal') {
                 renderStatistics();
             }
+            
+            // Tutorial callback
+            if (window._tutorialOnModalOpened) window._tutorialOnModalOpened(modalId);
         }
+
         
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
@@ -2072,17 +2141,33 @@
         // --- ACTIONS ---
 
         function spawnNode(type, x, y) {
-            game.nodes.push({ id: game.nextId++, type, x, y, level: 1, infected: false });
+            const newNodeId = game.nextId++;
+            game.nodes.push({ id: newNodeId, type, x, y, level: 1, infected: false, subnetId: game.currentSubnet || null });
             game.stats.nodesCreated++;
             checkAchievements();
             addCombo();
             spawnParticles(x + 90, y + 40, NODE_DEFS[type]?.color || '#3b82f6', 8);
             renderWorld();
+            
+            // If spawning a master router, immediately spawn its subnet core inside it
+            if (type === 'master_router') {
+                const prevSubnet = game.currentSubnet;
+                game.currentSubnet = newNodeId;
+                // Spawn a subnet core right in the center of the subnet
+                spawnNode('subnet_core', 2500, 2500);
+                game.currentSubnet = prevSubnet;
+            }
+            
             // Tutorial callback
             if (window._tutorialOnNodeCreated) window._tutorialOnNodeCreated(type);
         }
 
         function buyNode(type) {
+            if (type === 'master_router' && game.currentSubnet !== null) {
+                showFloat("Cannot place Master Router inside a subnet", window.innerWidth/2, window.innerHeight/2, '#ef4444');
+                return;
+            }
+            
             const def = NODE_DEFS[type];
             if (game.money >= def.cost) {
                 game.money -= def.cost;
@@ -2140,7 +2225,7 @@
         function deleteSelectedNode() {
              if (!selNodeId) return;
              const n = game.nodes.find(x => x.id === selNodeId);
-             if (n.type === 'router') return; 
+             if (n.type === 'router' || n.type === 'subnet_core') return; 
              
              game.nodes = game.nodes.filter(x => x.id !== selNodeId);
              game.conns = game.conns.filter(c => c.from !== selNodeId && c.to !== selNodeId);
@@ -2407,7 +2492,44 @@
             const nodesDiv = document.getElementById('nodes');
             nodesDiv.innerHTML = '';
             
-            game.nodes.forEach(n => {
+            // Add Subnet Exit Button if we are inside a subnet
+            let subnetExitBtn = document.getElementById('subnetExitBtn');
+            if (game.currentSubnet !== null) {
+                if (!subnetExitBtn) {
+                    subnetExitBtn = document.createElement('button');
+                    subnetExitBtn.id = 'subnetExitBtn';
+                    subnetExitBtn.className = 'btn';
+                    subnetExitBtn.style.position = 'absolute';
+                    subnetExitBtn.style.top = '20px';
+                    subnetExitBtn.style.left = '50%';
+                    subnetExitBtn.style.transform = 'translateX(-50%)';
+                    subnetExitBtn.style.zIndex = '1000';
+                    subnetExitBtn.style.backgroundColor = '#3b82f6';
+                    subnetExitBtn.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.5)';
+                    subnetExitBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Return to Main Network';
+                    subnetExitBtn.onclick = () => {
+                        game.currentSubnet = null;
+                        resetZoom();
+                        updateConnectivity(); // Connectivity hasn't changed, but this triggers a clean render of lines
+                        renderWorld();
+                    };
+                    document.body.appendChild(subnetExitBtn);
+                } else {
+                    subnetExitBtn.style.display = 'block';
+                }
+            } else {
+                if (subnetExitBtn) subnetExitBtn.style.display = 'none';
+            }
+            
+            // Tutorial callback for subnets
+            if (game.currentSubnet !== null && window._tutorialOnSubnetEntered) {
+                window._tutorialOnSubnetEntered(game.currentSubnet);
+            }
+            
+            // Filter nodes by current view
+            const visibleNodes = game.nodes.filter(n => n.subnetId === game.currentSubnet);
+            
+            visibleNodes.forEach(n => {
                 const def = NODE_DEFS[n.type];
                 const el = document.createElement('div');
                 let classes = `node ${activeNodes.has(n.id) ? '' : 'disconnected'} ${n.infected ? 'infected' : ''}`;
@@ -2429,16 +2551,35 @@
                 el.style.left = n.x + 'px';
                 el.style.top = n.y + 'px';
                 
-                // Wide nodes get 4 ports, normal get 2
-                let ports;
-                if (isWide) {
-                    ports = `<div class="port in port-tl" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                             <div class="port in port-bl" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                             <div class="port out port-tr" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                             <div class="port out port-br" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
-                } else {
-                    ports = `<div class="port in" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>
-                             <div class="port out" onmousedown="portDown(${n.id}, event)" onmouseup="portUp(${n.id})"></div>`;
+                if (n.type === 'master_router') {
+                    el.ondblclick = (e) => {
+                        e.stopPropagation();
+                        game.currentSubnet = n.id;
+                        resetZoom();
+                        updateConnectivity(); // Connectivity hasn't changed, but triggers clean update
+                        renderWorld();
+                        showFloat("Entered Subnet", window.innerWidth/2, window.innerHeight/2, '#3b82f6');
+                    };
+                }
+                
+                let ports = '';
+                if (def.ports) {
+                    const ins = def.ports.filter(p => p === 'in');
+                    const outs = def.ports.filter(p => p === 'out');
+                    let inDrawn = 0;
+                    let outDrawn = 0;
+                    
+                    def.ports.forEach(pType => {
+                        let cls = `port ${pType}`;
+                        if (pType === 'in') {
+                            if (ins.length > 1) cls += inDrawn === 0 ? ' port-tl' : ' port-bl';
+                            inDrawn++;
+                        } else {
+                            if (outs.length > 1) cls += outDrawn === 0 ? ' port-tr' : ' port-br';
+                            outDrawn++;
+                        }
+                        ports += `<div class="${cls}" onmousedown="portDown(${n.id}, '${pType}', event)" onmouseup="portUp(${n.id}, '${pType}')"></div>\n`;
+                    });
                 }
                 
                 const cleanBtn = n.infected ? `<div class="clean-btn" onmousedown="cleanNode(game.nodes.find(x=>x.id===${n.id}), event)">CLEAN [-$500]</div>` : '';
@@ -2456,22 +2597,37 @@
                 const bandwidthBar = `<div class="bandwidth-bar"><div class="bandwidth-fill" style="width:${Math.round(bwUsage * 100)}%;background:${bwColor}"></div></div>`;
                 
                 // Use firmware icon/color if flashed
-                const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
-                const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : def.color;
-
-                el.innerHTML = `
-                    ${ports}
-                    ${cleanBtn}
-                    ${firmwareBadge}
-                    <div class="node-header">
-                        <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
-                        <div class="node-info">
-                            <div class="node-title">${def.name}</div>
-                            <div class="node-lvl">Level ${n.level}</div>
-                        </div>
-                    </div>
-                    ${bandwidthBar}
-                `;
+        const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
+        const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : '#fff';
+        
+        el.innerHTML = `
+            ${firmwareBadge}
+            <div class="node-header">
+                <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
+                <div style="flex:1; min-width: 0;">
+                    <div class="node-title">${def.name}</div>
+                    <div class="node-lvl">LVL ${n.level}</div>
+                </div>
+            </div>
+            <div class="node-body">
+                <div class="node-stat-row">
+                    <span>Flow:</span>
+                    <span class="flow-badge tier-${def.flowLevel}">T${def.flowLevel}</span>
+                </div>
+                ${ports}
+            </div>
+            ${cleanBtn}
+            ${bandwidthBar}
+        `;
+        
+        el.onmousedown = (e) => {
+            if (e.target.classList.contains('port')) return;
+            dragStart(n, e);
+        };
+        el.oncontextmenu = (e) => {
+            e.preventDefault();
+            showContext(n, e);
+        };
                 
                 // Custom Tooltip Logic
                 el.onmouseover = (e) => {
@@ -2480,11 +2636,30 @@
                     if (n.firmware && FIRMWARE_DEFS[n.firmware]) {
                         fwHtml = `<div class="custom-tooltip-fw">Firmware: ${FIRMWARE_DEFS[n.firmware].name}</div>`;
                     }
+                    const bwPct = Math.round((n._bandwidthUsage || 0) * 100);
+                    const bwCol = bwPct > 90 ? '#ef4444' : bwPct > 60 ? '#f59e0b' : '#10b981';
+                    const bwLabel = n._bottlenecked ? '⚠️ BOTTLENECK' : `${bwPct}%`;
+                    
+                    let extraActionText = '';
+                    if (n.type === 'master_router') {
+                        extraActionText = '<div style="margin-top:8px; color:#3b82f6; font-weight:bold; text-align:center;"><i class="fa-solid fa-mouse-pointer"></i> Double-Click to Enter Subnet</div>';
+                    }
+                    
                     tooltip.innerHTML = `
                         <div class="custom-tooltip-title">
                             ${def.name} <span class="custom-tooltip-lvl">Lv${n.level}</span>
                         </div>
                         <div class="custom-tooltip-desc">${def.desc}</div>
+                        ${extraActionText}
+                        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08)">
+                            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+                                <span style="color:#94a3b8">Bandwidth</span>
+                                <span style="color:${bwCol};font-weight:600">${bwLabel}</span>
+                            </div>
+                            <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">
+                                <div style="height:100%;width:${bwPct}%;background:${bwCol};border-radius:2px;transition:width .3s"></div>
+                            </div>
+                        </div>
                         ${fwHtml}
                     `;
                     tooltip.classList.add('visible');
@@ -2600,7 +2775,8 @@
                 const freshN2 = game.nodes.find(n => n.id === n2.id);
                 if (!freshN1 || !freshN2) return;
                 
-                const x1 = freshN1.x + 170;
+                const w1 = (NODE_DEFS[freshN1.type].size && NODE_DEFS[freshN1.type].size[0] === 2) ? 340 : 170;
+                const x1 = freshN1.x + w1;
                 const y1 = freshN1.y + 35;
                 const x2 = freshN2.x;
                 const y2 = freshN2.y + 35;
@@ -2635,8 +2811,8 @@
             
             document.getElementById('modalRpDisplay').innerText = fmt(game.rp);
             
-            const world = document.getElementById('world');
-            world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+            // World transform is handled by updateWorldTransform() during zoom/pan
+            // — no need to re-set it every UI tick
             
             const prestigeMult = 1 + getSkill('quantum') * 1.0;
             const driverDownloadMult = 1 + (game.drivers.download * DRIVERS.download.effect);
@@ -2692,6 +2868,52 @@
             if (activeNodeTypes.has('miner') && activeNodeTypes.has('crypto_farm')) synergyPercent += 30;
             const synergyEl = document.getElementById('synergyBonusDisplay');
             if (synergyEl) synergyEl.innerText = `Node Synergy: +${synergyPercent}%`;
+            
+            // === Network Overview Panel Updates ===
+            const totalNodes = game.nodes.length;
+            const activeCount = game.nodes.filter(n => activeNodes.has(n.id)).length;
+            const bottleneckCount = game.nodes.filter(n => n._bottlenecked).length;
+            const cableCount = game.cables ? game.cables.length : 0;
+            
+            const ncEl = document.getElementById('sidebarNodeCount');
+            const acEl = document.getElementById('sidebarActiveCount');
+            const ccEl = document.getElementById('sidebarCableCount');
+            const bnEl = document.getElementById('sidebarBottlenecks');
+            
+            if (ncEl) ncEl.innerText = totalNodes;
+            if (acEl) acEl.innerText = activeCount;
+            if (ccEl) ccEl.innerText = cableCount;
+            if (bnEl) {
+                bnEl.innerText = bottleneckCount;
+                bnEl.style.color = bottleneckCount > 0 ? '#ef4444' : '#64748b';
+            }
+            
+            // Income tracking
+            const incEl = document.getElementById('sidebarIncome');
+            const npmEl = document.getElementById('sidebarNetPerMin');
+            if (incEl) {
+                const rateEl = document.getElementById('moneyRate');
+                const rateTxt = rateEl ? rateEl.innerText : '+$0/s';
+                incEl.innerText = rateTxt;
+            }
+            if (npmEl) {
+                // Approximate net per minute based on current money rate
+                const rateEl = document.getElementById('moneyRate');
+                const moneyRate = parseFloat((rateEl ? rateEl.innerText : '0').replace(/[^0-9.-]/g, '')) || 0;
+                npmEl.innerText = '$' + fmt(Math.round(moneyRate * 60)) + '/min';
+            }
+            
+            // Network Health (% of active nodes NOT bottlenecked)
+            const hpEl = document.getElementById('sidebarHealthPct');
+            const hbEl = document.getElementById('sidebarHealthBar');
+            if (hpEl && hbEl) {
+                const health = activeCount > 0 ? Math.round(((activeCount - bottleneckCount) / activeCount) * 100) : 100;
+                const hCol = health > 80 ? '#10b981' : health > 50 ? '#f59e0b' : '#ef4444';
+                hpEl.innerText = health + '%';
+                hpEl.style.color = hCol;
+                hbEl.style.width = health + '%';
+                hbEl.style.background = hCol;
+            }
             
             const cw = document.getElementById('activeContractWidget');
             if (activeContract) {
@@ -2977,7 +3199,7 @@
         }
 
         let drag = { active: false, node: null, startX: 0, startY: 0, offX: 0, offY: 0 };
-        let port = { active: false, src: null };
+        let port = { active: false, src: null, type: null };
         let selNodeId = null;
 
         function setupInputs() {
@@ -3012,13 +3234,15 @@
                 }
             };
             
-            // Separate world transform update for panning
-            function updateWorldTransform() {
-                const world = document.getElementById('world');
-                world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
-            }
-            
-            window.onmouseup = () => { drag.active = false; drag.node = null; };
+            window.onmouseup = () => { 
+                drag.active = false; drag.node = null; 
+                if (port.active) {
+                    port.active = false;
+                    document.getElementById('world').classList.remove('dragging-cable');
+                    document.body.classList.remove('dragging-in');
+                    document.body.classList.remove('dragging-out');
+                }
+            };
             
             vp.onwheel = (e) => {
                 e.preventDefault();
@@ -3030,7 +3254,16 @@
                 const worldX = (mouseX - view.x) / view.scale;
                 const worldY = (mouseY - view.y) / view.scale;
                 
-                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                // Normalize deltaY across browsers and input devices.
+                // deltaMode 1 = lines (multiply by ~40px), 0 = pixels (trackpad/mouse).
+                let delta = e.deltaY;
+                if (e.deltaMode === 1) delta *= 40;
+                
+                // Clamp to avoid huge jumps from momentum scrolling
+                delta = Math.max(-150, Math.min(150, delta));
+                
+                // Sensitivity: ~0.2% zoom per pixel of delta
+                const zoomFactor = 1 - delta * 0.002;
                 const newScale = Math.max(0.3, Math.min(2, view.scale * zoomFactor));
                 
                 view.x = mouseX - worldX * newScale;
@@ -3038,21 +3271,53 @@
                 view.scale = newScale;
                 
                 updateZoomDisplay();
+                updateWorldTransform();
             };
+            
+            // Safari native pinch gesture support
+            vp.addEventListener('gesturestart', (e) => e.preventDefault());
+            vp.addEventListener('gesturechange', (e) => {
+                e.preventDefault();
+                const rect = vp.getBoundingClientRect();
+                const cx = e.clientX - rect.left;
+                const cy = e.clientY - rect.top;
+                const worldX = (cx - view.x) / view.scale;
+                const worldY = (cy - view.y) / view.scale;
+                const newScale = Math.max(0.3, Math.min(2, view.scale * e.scale));
+                view.x = cx - worldX * newScale;
+                view.y = cy - worldY * newScale;
+                view.scale = newScale;
+                updateZoomDisplay();
+                updateWorldTransform();
+            });
+            vp.addEventListener('gestureend', (e) => e.preventDefault());
+            
+            // Toggle modal helper — opens if closed, closes if open
+            function toggleModal(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (el.style.display === 'flex') {
+                    el.style.display = 'none';
+                } else {
+                    // Close any other open modals first
+                    document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                    el.style.display = 'flex';
+                }
+            }
             
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT') return;
                 if (e.key === '+' || e.key === '=') zoomIn();
                 else if (e.key === '-' || e.key === '_') zoomOut();
                 else if (e.key === '0') resetZoom();
-                else if (e.key === '?' || e.key === '/') document.getElementById('helpModal').style.display='flex';
-                else if (e.key === 'r' || e.key === 'R') document.getElementById('researchModal').style.display='flex';
-                else if (e.key === 'c' || e.key === 'C') document.getElementById('codeModal').style.display='flex';
-                else if (e.key === 'a' || e.key === 'A') document.getElementById('achievementsModal').style.display='flex';
+                else if (e.key === '?' || e.key === '/') toggleModal('helpModal');
+                else if (e.key === 'r' || e.key === 'R') toggleModal('researchModal');
+                else if (e.key === 'c' || e.key === 'C') toggleModal('codeModal');
+                else if (e.key === 'a' || e.key === 'A') toggleModal('achievementsModal');
                 else if (e.key === 'x' || e.key === 'X') toggleCableDeleteMode();
-                else if (e.key === 's' || e.key === 'S') document.getElementById('statsModal').style.display='flex';
-                else if (e.key === 'p' || e.key === 'P') document.getElementById('prestigeModal').style.display='flex';
-                else if (e.key === 'l' || e.key === 'L') document.getElementById('accountModal').style.display='flex';
+                else if (e.key === 's' || e.key === 'S') toggleModal('statsModal');
+                else if (e.key === 'p' || e.key === 'P') toggleModal('prestigeModal');
+                else if (e.key === 'l' || e.key === 'L') toggleModal('accountModal');
                 else if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
                 }
@@ -3071,28 +3336,65 @@
             document.getElementById(`node-${node.id}`).classList.add('selected');
         }
         
-        function portDown(id, e) {
+        function portDown(id, type, e) {
             e.stopPropagation();
-            port.active = true; port.src = id;
+            port.active = true; 
+            port.src = id;
+            port.type = type;
+            document.getElementById('world').classList.add('dragging-cable');
+            document.body.classList.add('dragging-' + type);
         }
         
-        function portUp(id) {
+        function portUp(id, type) {
+            document.getElementById('world').classList.remove('dragging-cable');
+            document.body.classList.remove('dragging-in');
+            document.body.classList.remove('dragging-out');
+            
             if (port.active && port.src !== id) {
+                if (port.type === type) {
+                    showFloat("Invalid connection", window.innerWidth/2, window.innerHeight/2, 'red');
+                    port.active = false; 
+                    return;
+                }
+                
+                const sourceNode = game.nodes.find(n => n.id === (port.type === 'out' ? port.src : id));
+                const targetNode = game.nodes.find(n => n.id === (port.type === 'in' ? port.src : id));
+
+                if (!sourceNode || !targetNode) {
+                    port.active = false;
+                    return;
+                }
+
+                const sourceDef = NODE_DEFS[sourceNode.type];
+                const targetDef = NODE_DEFS[targetNode.type];
+
+                // Task 37: Enforce Upstream / Downstream Flow
+                if (sourceDef.flowLevel >= targetDef.flowLevel) {
+                    showFloat("Invalid Flow: Must go Upstream", window.innerWidth/2, window.innerHeight/2, 'red');
+                    document.body.classList.add('invalid-shake');
+                    setTimeout(() => document.body.classList.remove('invalid-shake'), 500);
+                    port.active = false;
+                    return;
+                }
+                
                 const cableCost = 10;
                 if (game.money < cableCost) {
                     showFloat("Need $10", window.innerWidth/2, window.innerHeight/2, 'red');
                     port.active = false; return;
                 }
-                if (!game.conns.some(c => (c.from===port.src && c.to===id) || (c.from===id && c.to===port.src))) {
+                
+                const fromId = sourceNode.id;
+                const toId = targetNode.id;
+                
+                if (!game.conns.some(c => c.from === fromId && c.to === toId)) {
                     game.money -= cableCost;
                     game.stats.moneySpent += cableCost;
-                    game.conns.push({ from: port.src, to: id });
+                    game.conns.push({ from: fromId, to: toId });
                     game.stats.cablesPlaced++;
                     renderCables();
                     updateConnectivity();
                     checkAchievements();
                     addCombo();
-                    // Tutorial callback
                     if (window._tutorialOnCableCreated) window._tutorialOnCableCreated();
                 }
             }
@@ -3174,7 +3476,11 @@
             spawnParticles(node.x + 90, node.y + 40, fw.color, 15);
             showFloat(`Firmware: ${fw.name}`, window.innerWidth/2, window.innerHeight/2, fw.color);
             renderWorld();
+            
+            // Tutorial callback
+            if (window._tutorialOnFirmwareFlashed) window._tutorialOnFirmwareFlashed();
         }
+
         
         // ==================== LOGIC CONTROLLER AUTOMATION ====================
         
@@ -3275,7 +3581,11 @@
             modal.dataset.nodeId = nodeId;
             
             renderLogicRules(node);
+            
+            // Tutorial callback
+            if (window._tutorialOnModalOpened) window._tutorialOnModalOpened('logic_controller');
         }
+
         
         function renderLogicRules(node) {
             const container = document.getElementById('logicRulesContainer');
@@ -3492,6 +3802,9 @@
         function repairSaveData(gameData) {
             const repaired = { ...gameData };
             
+            // Fix subnet state
+            if (repaired.currentSubnet === undefined) repaired.currentSubnet = null;
+            
             // Fix NaN, Infinity, and negative values
             if (typeof repaired.money !== 'number' || !isFinite(repaired.money) || repaired.money < 0) repaired.money = 2000;
             if (typeof repaired.rp !== 'number' || !isFinite(repaired.rp) || repaired.rp < 0) repaired.rp = 0;
@@ -3519,6 +3832,7 @@
             repaired.nodes = repaired.nodes.filter(n => n && n.id && n.type);
             repaired.nodes.forEach(n => {
                 if (typeof n.level !== 'number' || isNaN(n.level)) n.level = 1;
+                if (n.subnetId === undefined) n.subnetId = null;
                 if (typeof n.infected !== 'boolean') n.infected = false;
                 if (n.firmware && (!FIRMWARE_DEFS || !FIRMWARE_DEFS[n.firmware])) delete n.firmware; // Validate firmware against DEFS, delete if invalid
                 if (isNaN(n.x)) n.x = 2500;

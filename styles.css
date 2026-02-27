@@ -14,6 +14,24 @@
   --glow-blue: rgba(59, 130, 246, 0.15);
   --glow-purple: rgba(139, 92, 246, 0.15);
   --glow-cyan: rgba(0, 212, 255, 0.1);
+
+  /* Design tokens � spacing, radii, transitions */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --spacing-xs: 6px;
+  --spacing-sm: 10px;
+  --spacing-md: 14px;
+  --spacing-lg: 20px;
+  --spacing-xl: 24px;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-default: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --modal-width-sm: 450px;
+  --modal-width-md: 600px;
+  --modal-width-lg: 700px;
+  --modal-width-xl: 900px;
 }
 
 * {
@@ -278,73 +296,82 @@ body {
   grid-area: sidebar;
   background: linear-gradient(
     180deg,
-    rgba(20, 26, 35, 0.95),
-    rgba(15, 20, 28, 0.98)
+    rgba(12, 17, 28, 0.98),
+    rgba(8, 12, 20, 0.99)
   );
-  border-right: 1px solid rgba(59, 130, 246, 0.1);
-  padding: 14px;
+  border-right: 1px solid rgba(59, 130, 246, 0.08);
+  padding: 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   overflow-y: auto;
   z-index: 40;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
   contain: layout style;
   will-change: transform;
 }
 
 .sidebar::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
 }
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.5));
 }
 
-/* Panel - Optimized */
+/* Panel - Enhanced */
 .panel {
   background: linear-gradient(
     145deg,
-    rgba(30, 41, 59, 0.6),
-    rgba(20, 26, 35, 0.8)
+    rgba(22, 30, 46, 0.75),
+    rgba(14, 20, 32, 0.85)
   );
-  border-radius: 16px;
+  border-radius: 14px;
   contain: layout style paint;
   content-visibility: auto;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(255, 255, 255, 0.03) inset;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+    0 2px 12px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.02) inset;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .panel:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.15);
   box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(59, 130, 246, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
 .panel-title {
-  font-size: 11px;
-  color: #94a3b8;
-  font-weight: 600;
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 12px;
+  letter-spacing: 1.8px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.panel-title i {
+  filter: drop-shadow(0 0 4px currentColor);
 }
 
 .action-row {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .btn {
@@ -1086,6 +1113,7 @@ input:checked + .toggle-slider:before {
   transform-origin: 0 0;
   width: 0;
   height: 0;
+  will-change: transform;
 }
 
 .grid-bg {
@@ -1434,6 +1462,142 @@ svg.connections-layer {
   transform: translateY(-50%);
   border-color: #10b981;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Node Hierarchy Flow Badges */
+.node-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+.flow-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  border: 1px solid currentColor;
+}
+.flow-badge.tier-1 { color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+.flow-badge.tier-2 { color: #a78bfa; background: rgba(167, 139, 250, 0.1); }
+.flow-badge.tier-3 { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+.flow-badge.tier-4 { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+
+/* Glossary Modal Styles */
+.glossary-grid {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+.glossary-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.glossary-card:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px var(--glow-blue);
+}
+.glossary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.glossary-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.glossary-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+}
+.glossary-tier-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.glossary-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.5;
+  min-height: 3em;
+}
+.glossary-stats {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.glossary-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.glossary-ports {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.port-info {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid currentColor;
+}
+.port-info.in { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+.port-info.out { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+
+/* Invalid Flow Feedback */
+@keyframes invalid-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.invalid-shake {
+  animation: invalid-shake 0.2s cubic-bezier(.36,.07,.19,.97) both;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+/* Dragging state highlights */
+body.dragging-out .port.in,
+body.dragging-in .port.out {
+  animation: port-pulse-valid 0.8s infinite alternate;
+  border-width: 3px;
+}
+
+@keyframes port-pulse-valid {
+  from { box-shadow: 0 0 15px currentColor; }
+  to { box-shadow: 0 0 30px currentColor, 0 0 10px currentColor inset; }
+}
+
+body.dragging-out .port.out,
+body.dragging-in .port.in {
+  opacity: 0.2;
+  pointer-events: none;
+  filter: grayscale(1);
 }
 
 /* ==================== CUSTOM TOOLTIP ==================== */
@@ -3161,7 +3325,7 @@ body.ultra-low-perf .tier-nav-btn:hover {
 }
 
 /* ============================================
-           VISUAL ENHANCEMENTS — Task 3
+           VISUAL ENHANCEMENTS � Task 3
            ============================================ */
 
 /* === Enhanced Canvas Background with Ambient Glow === */
@@ -3589,9 +3753,10 @@ body.ultra-low-perf .tier-nav-btn:hover {
 .modal-overlay[style*="flex"] {
   background: radial-gradient(
     ellipse at center,
-    rgba(5, 8, 12, 0.85) 0%,
+    rgba(5, 8, 12, 0.82) 0%,
     rgba(5, 8, 12, 0.95) 100%
   );
+  backdrop-filter: blur(14px);
 }
 
 /* === Enhanced Welcome Modal Glow === */
@@ -3650,18 +3815,11 @@ body.ultra-low-perf .tier-nav-btn:hover {
   backdrop-filter: blur(12px);
 }
 
-/* === Enhanced Context Menu === */
+/* === Enhanced Context Menu � use outline instead of border-image to preserve border-radius === */
 #contextMenu {
-  border-image: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.3),
-      rgba(139, 92, 246, 0.2),
-      rgba(59, 130, 246, 0.3)
-    )
-    1;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 12px;
+  border: 1px solid rgba(99, 110, 140, 0.25);
+  outline: 1px solid rgba(59, 130, 246, 0.12);
+  outline-offset: -1px;
 }
 
 /* === Enhanced Achievement Popup === */
@@ -3979,16 +4137,35 @@ body {
 
 .settings-section {
   margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
 }
 .settings-section:last-child {
   margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 .settings-section h3 {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 15px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.settings-section h3 i {
+  filter: drop-shadow(0 0 4px currentColor);
+  font-size: 14px;
+}
+
+/* Danger Zone section emphasis */
+.settings-section:last-child h3 {
+  color: var(--danger);
 }
 
 /* === Reduce Motion Mode === */
@@ -4239,7 +4416,7 @@ body.ultra-low-perf .btn-prestige {
   transition: opacity 0.3s ease;
 }
 
-/* Highlight ring — spotlight cutout effect */
+/* Highlight ring � spotlight cutout effect */
 .tutorial-highlight {
   position: fixed;
   z-index: 9999;
@@ -4713,4 +4890,440 @@ body.ultra-low-perf .tutorial-btn-next {
   background: rgba(251, 191, 36, 0.1);
   border-color: rgba(251, 191, 36, 0.3);
   color: #fbbf24;
+}
+
+/* ============================================
+   TASK 34: HEAVY UI POLISHING
+   ============================================ */
+
+/* === 1. Daily Reward Items === */
+.daily-reward-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.daily-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.daily-reward-item {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(20, 26, 35, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 14px 10px;
+  text-align: center;
+  transition: all var(--transition-default);
+  position: relative;
+  overflow: hidden;
+}
+.daily-reward-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.daily-reward-item:hover::before {
+  opacity: 1;
+}
+.daily-reward-item:hover {
+  border-color: rgba(251, 191, 36, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.daily-reward-item .reward-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.3));
+}
+.daily-reward-item .reward-day {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.daily-reward-item .reward-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fcd34d;
+  font-family: "JetBrains Mono", monospace;
+  margin-top: 4px;
+}
+.daily-reward-item.claimed {
+  opacity: 0.45;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.daily-reward-item.claimed .reward-icon {
+  color: #10b981;
+}
+.daily-reward-item.current {
+  border-color: rgba(251, 191, 36, 0.5);
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.08), rgba(245, 158, 11, 0.04));
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+}
+
+/* Premium tier rewards (Day 5-7) */
+.daily-reward-item.premium {
+  border-color: rgba(168, 85, 247, 0.25);
+}
+.daily-reward-item.premium .reward-icon {
+  color: #c084fc;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4));
+}
+.daily-reward-item.premium .reward-amount {
+  background: linear-gradient(135deg, #fcd34d, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Claim button animation */
+.daily-claim-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1a1a2e;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
+  letter-spacing: 0.3px;
+}
+.daily-claim-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4);
+  filter: brightness(1.1);
+}
+.daily-claim-btn:active {
+  transform: translateY(0);
+}
+.daily-claim-btn::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.15) 10%, transparent 20%);
+  animation: claim-spin 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes claim-spin {
+  to { transform: rotate(360deg); }
+}
+.daily-claim-btn.claimed {
+  background: linear-gradient(135deg, #10b981, #059669);
+  cursor: default;
+  animation: none;
+}
+.daily-claim-btn.claimed::after {
+  display: none;
+}
+
+/* === 2. Modal Top Glow Line === */
+.modal::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.4), rgba(59, 130, 246, 0.5), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+.modal {
+  position: relative;
+}
+
+/* Modal close button consistency */
+.btn-close-modal {
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #94a3b8;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-close-modal:hover {
+  background: linear-gradient(145deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06));
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  transform: translateY(-1px);
+}
+.btn-close-modal:active {
+  transform: translateY(0);
+}
+
+/* === 3. Sidebar Panel Separators === */
+.panel + .panel {
+  position: relative;
+}
+.panel + .panel::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.08), transparent);
+  pointer-events: none;
+}
+
+/* Account panel helper text styling */
+.panel .sidebar-hint {
+  font-size: 10px;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* Account login button glow */
+.btn-account-login {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.08));
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #93c5fd;
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all var(--transition-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.12);
+}
+.btn-account-login:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.15));
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+  color: #bfdbfe;
+}
+
+/* === 4. Achievements Modal === */
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.achievement-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(20, 26, 35, 0.7));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all var(--transition-default);
+  position: relative;
+  overflow: hidden;
+}
+.achievement-card:hover {
+  border-color: rgba(251, 191, 36, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.achievement-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(100, 116, 139, 0.3), transparent);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+.achievement-card.unlocked::before {
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+}
+.achievement-card.unlocked {
+  border-color: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.04), rgba(30, 41, 59, 0.6));
+}
+.achievement-card.locked {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.achievement-card .ach-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2));
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.achievement-card.unlocked .ach-icon {
+  border-color: rgba(251, 191, 36, 0.2);
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.1);
+}
+.achievement-card .ach-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 3px;
+}
+.achievement-card .ach-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.achievement-card.just-unlocked {
+  animation: ach-celebrate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes ach-celebrate {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5); }
+  40% { transform: scale(1.04); box-shadow: 0 0 25px rgba(251, 191, 36, 0.3); }
+  100% { transform: scale(1); box-shadow: none; }
+}
+
+/* === 5. Form Divider ("OR" line) === */
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.form-divider::before,
+.form-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* Enhanced form input focus */
+.form-input:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 0 20px rgba(59, 130, 246, 0.08);
+}
+
+/* === 6. Tab Animation === */
+.tab {
+  position: relative;
+}
+.tab::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 2px;
+  background: #3b82f6;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+.tab.active::before {
+  left: 20%;
+  right: 20%;
+  opacity: 0.6;
+}
+.tab:hover::before {
+  left: 30%;
+  right: 30%;
+  opacity: 0.3;
+}
+
+/* === 7. Shop Item Locked Badge === */
+.shop-item.disabled::after {
+  content: "\f023";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  color: rgba(100, 116, 139, 0.4);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* === 8. Context Menu Separator === */
+.ctx-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  margin: 4px 8px;
+}
+
+/* === 9. Sidebar Scrollbar Unification === */
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.2));
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.35));
+}
+
+/* === 10. Small Modal Width Helper === */
+.modal-sm { width: var(--modal-width-sm); max-width: 95%; }
+.modal-md { width: var(--modal-width-md); max-width: 95%; }
+.modal-lg { width: var(--modal-width-lg); max-width: 95%; }
+.modal-xl { width: var(--modal-width-xl); max-width: 95%; }
+
+/* === 11. ULPM Compliance for Task 34 Additions === */
+body.ultra-low-perf .daily-claim-btn::after {
+  display: none !important;
+}
+body.ultra-low-perf .daily-reward-item:hover {
+  transform: none !important;
+}
+body.ultra-low-perf .daily-reward-item::before {
+  display: none !important;
+}
+body.ultra-low-perf .modal::before {
+  display: none !important;
+}
+body.ultra-low-perf .achievement-card:hover {
+  transform: none !important;
+}
+body.ultra-low-perf .achievement-card.just-unlocked {
+  animation: none !important;
+}
+body.ultra-low-perf .panel + .panel::after {
+  display: none !important;
+}
+body.ultra-low-perf .tab::before {
+  display: none !important;
+}
+body.ultra-low-perf .btn-close-modal:hover,
+body.ultra-low-perf .btn-account-login:hover {
+  transform: none !important;
+}
+body.ultra-low-perf .shop-item.disabled::after {
+  display: none !important;
 }

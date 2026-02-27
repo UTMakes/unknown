@@ -91,23 +91,13 @@ const TUTORIAL_STEPS = [
         icon: 'fa-solid fa-coins'
     },
     {
-        id: 'buy_lab',
-        title: 'Build a Research Lab',
-        message: "Now let's unlock new technologies! Buy a <strong style='color:#8b5cf6'>Research Lab</strong> from the <strong>Upload & Security</strong> tab. Labs convert files into <strong style='color:#a78bfa'>Research Points (RP)</strong>.",
-        target: () => document.querySelector('.shop-item'),
-        position: 'top',
-        action: 'node_created',
-        actionValue: 'lab',
-        icon: 'fa-solid fa-flask'
-    },
-    {
-        id: 'connect_lab',
-        title: 'Connect the Lab',
-        message: "Connect your <strong style='color:#8b5cf6'>Research Lab</strong> to the Router with a cable. Labs need a file source — they'll use files collected by your downloaders to generate RP!",
+        id: 'research_labs_info',
+        title: 'Research Labs',
+        message: "As you earn more money, you'll want to buy a <strong style='color:#8b5cf6'>Research Lab</strong> ($4,500) from the <strong>Upload & Security</strong> tab. Labs convert your downloaded files into <strong style='color:#a78bfa'>Research Points (RP)</strong>, which unlock powerful new node types in the tech tree!<br><br>For now, focus on earning money — you'll be able to afford one soon.",
         target: null,
         position: 'center',
-        action: 'cable_created',
-        icon: 'fa-solid fa-link'
+        action: 'click_next',
+        icon: 'fa-solid fa-flask'
     },
     {
         id: 'research_intro',
@@ -128,9 +118,18 @@ const TUTORIAL_STEPS = [
         icon: 'fa-solid fa-terminal'
     },
     {
+        id: 'traffic_intro',
+        title: 'Traffic & Bandwidth',
+        message: "Every node has a <strong style='color:#06b6d4'>bandwidth limit</strong> — shown by the colored bar at the bottom of each node.<br><br>• <strong style='color:#10b981'>Green</strong> = healthy, plenty of bandwidth<br>• <strong style='color:#f59e0b'>Amber</strong> = getting busy (60-90% used)<br>• <strong style='color:#ef4444'>Red + ⚠️</strong> = bottleneck! Node is capped at max speed<br><br><strong style='color:#06b6d4'>Load Balancers</strong> share their bandwidth with connected nodes. <strong>Upgrading</strong> nodes also increases their bandwidth!",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-gauge-high'
+    },
+    {
         id: 'advanced_mechanics',
         title: 'Advanced Network Strategy',
-        message: "As your network grows, strategy matters!\n\u2022 <strong style='color:#06b6d4'>Traffic & Bottlenecks:</strong> Nodes have bandwidth limits — plan your routing carefully!\n\u2022 <strong style='color:#f59e0b'>Placement:</strong> Some nodes occupy larger spaces. Adjacency bonuses and penalties reward smart layouts.\n\u2022 <strong style='color:#a855f7'>Firmware:</strong> Flash nodes with specialized firmware to create unique, powerful variants.\n\nThink of your network like a server room — optimize everything!",
+        message: "As your network grows, strategy matters!\n\u2022 <strong style='color:#f59e0b'>Placement:</strong> Some high-tier nodes are 2x wide. Nodes near each other get adjacency bonuses (or penalties).\n\u2022 <strong style='color:#a855f7'>Firmware:</strong> Right-click a Server Rack to flash specialized firmware — permanently transforming it.\n\u2022 <strong style='color:#ef4444'>Overclocking:</strong> Doubles speed but generates heat. Balance it with Cryo Coolers!\n\nThink of your network like a server room — optimize everything!",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -138,13 +137,68 @@ const TUTORIAL_STEPS = [
     },
     {
         id: 'complete',
+        title: 'Basic Skills Mastered!',
+        message: "You've got the basics down! But as your network grows, you'll encounter more complex challenges. Let's look at some advanced tech you'll unlock soon.",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-graduation-cap'
+    },
+    {
+        id: 'directional_flow',
+        title: 'Directional Flow',
+        message: "Notice the ports? Data only flows from <span style='color:#10b981'>Green Ports</span> (Out) to <span style='color:#3b82f6'>Blue Ports</span> (In).<br><br>Network layout is a puzzle! You can't just connect anything to anything — you must plan your data paths carefully.",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-arrows-left-right'
+    },
+    {
+        id: 'master_router_intro',
+        title: 'Sub-Networks',
+        message: "When your main screen gets too crowded, use <strong>Master Routers</strong>. They host <strong>Sub-Networks</strong> — entirely separate grids where you can tuck away complex systems like Crypto Farms or Research wings.",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-network-wired'
+    },
+    {
+        id: 'enter_subnet',
+        title: 'Entering a Subnet',
+        message: "<strong>Double-click</strong> a Master Router to enter its sub-network. Try it now if you have one, or just remember for later!",
+        target: null,
+        position: 'center',
+        action: 'subnet_entered',
+        icon: 'fa-solid fa-door-open'
+    },
+    {
+        id: 'logic_controller',
+        title: 'Automation & Logic',
+        message: "Tired of manual upgrades? <strong>Logic Controllers</strong> allow you to set automation rules.<br><br><em>'IF Money > $10,000 THEN Buy File Downloader'</em><br><br>Let your network build itself while you focus on the big picture!",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-microchip'
+    },
+    {
+        id: 'firmware_specialization',
+        title: 'Firmware Specialization',
+        message: "<strong>Server Racks</strong> are versatile. You can flash them with specialized <strong>Firmware</strong> to turn them into high-speed Uploaders, Research Arrays, or even Virus Scanners.<br><br>Right-click a Rack to see the Flash options!",
+        target: null,
+        position: 'center',
+        action: 'click_next',
+        icon: 'fa-solid fa-memory'
+    },
+    {
+        id: 'final_tips',
         title: 'You\'re Ready!',
         message: "That's the basics! Here are some pro tips:\n\u2022 <strong style='color:#8b5cf6'>Labs</strong> convert files \u2192 Research Points (RP)\n\u2022 <strong style='color:#ef4444'>Firewalls</strong> protect nodes from virus infections\n\u2022 <strong style='color:#f59e0b'>Overclock Units</strong> double speed but create heat!\n\u2022 <strong style='color:#00d4aa'>Coder Nodes</strong> \u2192 Code Bits \u2192 Drivers (permanent boosts)\n\u2022 <strong>Right-click</strong> nodes to upgrade or delete them\n\u2022 Press <strong>R</strong> for Research, <strong>C</strong> for Coding, <strong>?</strong> for Help\n\nGo build your data empire! \uD83D\uDE80",
         target: null,
         position: 'center',
         action: 'click_next',
-        icon: 'fa-solid fa-graduation-cap'
+        icon: 'fa-solid fa-rocket'
     }
+
 ];
 
 class TutorialManager {
@@ -432,6 +486,32 @@ class TutorialManager {
                     setTimeout(() => this.next(), 300);
                 };
                 break;
+
+            case 'modal_opened':
+                window._tutorialOnModalOpened = (modalId) => {
+                    if (!step.actionValue || modalId === step.actionValue) {
+                        window._tutorialOnModalOpened = null;
+                        setTimeout(() => this.next(), 300);
+                    }
+                };
+                break;
+
+            case 'subnet_entered':
+                window._tutorialOnSubnetEntered = (subnetId) => {
+                    if (subnetId !== null) {
+                        window._tutorialOnSubnetEntered = null;
+                        setTimeout(() => this.next(), 300);
+                    }
+                };
+                break;
+
+            case 'firmware_flashed':
+                window._tutorialOnFirmwareFlashed = () => {
+                    window._tutorialOnFirmwareFlashed = null;
+                    setTimeout(() => this.next(), 300);
+                };
+                break;
+
         }
     }
 
@@ -442,7 +522,11 @@ class TutorialManager {
         window._tutorialOnTabChanged = null;
         window._tutorialOnNodeCreated = null;
         window._tutorialOnCableCreated = null;
+        window._tutorialOnModalOpened = null;
+        window._tutorialOnSubnetEntered = null;
+        window._tutorialOnFirmwareFlashed = null;
         this.boundHandlers = {};
+
     }
 
     next() {
