@@ -23,7 +23,23 @@ function createWindow() {
     // Hide the default menu bar for a cleaner game experience
     win.setMenuBarVisibility(false);
 
-    // Open DevTools in development mode (set ELECTRON_DEV=1 to enable)
+    // Register dev specific shortcuts
+    win.webContents.on('before-input-event', (event, input) => {
+        if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+            win.webContents.toggleDevTools();
+            event.preventDefault();
+        }
+        if (input.key === 'F12') {
+            win.webContents.toggleDevTools();
+            event.preventDefault();
+        }
+        if (input.key === 'F5' || (input.control && input.key.toLowerCase() === 'r')) {
+            win.webContents.reload();
+            event.preventDefault();
+        }
+    });
+
+    // Open DevTools automatically if ELECTRON_DEV is set
     if (process.env.ELECTRON_DEV === '1') {
         win.webContents.openDevTools();
     }
