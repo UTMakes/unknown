@@ -142,6 +142,11 @@
 
 ### 🚀 Upcoming Features & Improvements
 
+- [ ] **Aesthetic "Glassmorphism" Polish for Shop UI** - _Task 45_
+
+  > - Upgrade the CSS of the `.items-tray` itself to use a modern frosted-glass blur (`backdrop-filter: blur(10px)`) with a slightly translucent border.
+  > - Make it look like a high-tech holographic HUD floating over the game canvas.
+
 - [ ] **Implement "Dark Net" Layer** - _High Risk, High Reward_ - _Task 24_
 
   > - Add a toggle for a red/black "Dark Net" view.
@@ -200,12 +205,12 @@
 | 🟢 Low   | Keep everything up to date            |
 | 🟢 Low   | Update Ultra Low Performance features |
 
-- [ ] **Keep everything up to date** - _Task 10 (Maintenance)_ ⚠️ _Permanent task - never remove_
-  > - **Note:** Current version: 14.1
+- [x] **Keep everything up to date** - _Task 10 (Maintenance)_ ⚠️ _Permanent task - never remove_
+  > - **Note:** Current version: 14.2
   > - Update the version number following the versioning rules
   > - Update the "Latest Changes" panel on the welcome screen
   > - Update the "What's New" panel on the welcome screen
-- [ ] **Ultra Low Performance Updates** - _Task 31 (Maintenance)_ ⚠️ _Permanent task - never remove_
+- [x] **Ultra Low Performance Updates** - _Task 31 (Maintenance)_ ⚠️ _Permanent task - never remove_
   > - Ensure new visual effects or complex UI animations are disabled when Ultra Low Performance is ON.
 
 ---

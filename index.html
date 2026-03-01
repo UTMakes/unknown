@@ -174,25 +174,21 @@
               );
             "
           >
-            <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v14.1</span></h2>
+            <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v14.2</span></h2>
           </div>
           <div class="welcome-sidebar-body">
             <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
               <li class="changelog-item">
                 <span class="changelog-badge new">New</span>
-                <span><strong>Singularity Skill Tree:</strong> Prestige revamp, earn Shards based on Network Value!</span>
-              </li>
-              <li class="changelog-item">
-                <span class="changelog-badge new">New</span>
-                <span><strong>Deep Node Mechanics:</strong> Traffic, bottlenecks, larger nodes, and placement rules.</span>
-              </li>
-              <li class="changelog-item">
-                <span class="changelog-badge new">New</span>
-                <span><strong>Logic Controller:</strong> Automate your expanding network with If/Then rules.</span>
+                <span><strong>Shop UI Polish:</strong> New hover tooltips, dynamic affordability colors, and smart item sorting!</span>
               </li>
               <li class="changelog-item">
                 <span class="changelog-badge fix">Fix</span>
-                <span><strong>Save System Updates:</strong> Enhanced repair logic and Ultra Low Performance persistence.</span>
+                <span><strong>Modularization:</strong> Extracted large definitions into `nodes.js` and `tech.js` for cleaner code.</span>
+              </li>
+              <li class="changelog-item">
+                <span class="changelog-badge fix">Fix</span>
+                <span><strong>Visual Fixes:</strong> Fixed Research Tree connection lines and Electron Desktop app visual overlap quirks.</span>
               </li>
             </ul>
           </div>
@@ -200,7 +196,7 @@
 
         <div class="welcome-main">
           <div class="modal-header">
-            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.1</span></h2>
+            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.2</span></h2>
             <button
               class="btn"
               onclick="
@@ -2481,10 +2477,12 @@
         <div class="items-tray" id="tray"></div>
       </div>
     </div>
+    <!-- Node Hover Tooltip Container -->
+    <div id="nodeTooltip" class="node-tooltip"></div>
 
-    <script defer src="js/nodes.js?v=14.1.1"></script>
-    <script defer src="js/tech.js?v=14.1.1"></script>
-    <script defer src="js/tutorial.js?v=14.1.1"></script>
-    <script defer src="js/game.js?v=14.1.1"></script>
+    <script defer src="js/nodes.js?v=14.2.0"></script>
+    <script defer src="js/tech.js?v=14.2.0"></script>
+    <script defer src="js/tutorial.js?v=14.2.0"></script>
+    <script defer src="js/game.js?v=14.2.0"></script>
   </body>
 </html>

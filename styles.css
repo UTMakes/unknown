@@ -1877,7 +1877,8 @@ body.dragging-in .port.in {
 
 .shop-item {
   min-width: 150px;
-  height: 105px;
+  height: auto;
+  min-height: 115px;
   background: linear-gradient(
     145deg,
     rgba(30, 41, 59, 0.8),
@@ -1912,6 +1913,15 @@ body.dragging-in .port.in {
   opacity: 0.35;
   filter: grayscale(0.8);
   cursor: not-allowed;
+}
+.shop-item.unaffordable:not(.disabled) {
+  opacity: 0.7;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+.shop-item.unaffordable .item-cost {
+  color: #ef4444; /* Red cost text */
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 .item-cost {
   position: absolute;
@@ -1955,13 +1965,57 @@ body.dragging-in .port.in {
 
 /* Shop Item Flow Tier Badge */
 .item-flow-tier {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
+  margin-top: 2px;
+  margin-bottom: 6px;
 }
 .item-flow-tier .flow-badge {
-  font-size: 8px;
-  padding: 1px 4px;
+  font-size: 8.5px;
+  padding: 2px 5px;
+}
+
+/* Hover Tooltip for Nodes */
+.node-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10000;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(5, 8, 15, 0.98));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  width: 200px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(59, 130, 246, 0.15);
+  backdrop-filter: blur(8px);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.node-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.node-tooltip-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #60a5fa;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+.node-tooltip-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+.node-tooltip-stat span:first-child {
+  color: #94a3b8;
+}
+.node-tooltip-stat span:last-child {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: bold;
 }
 
 /* Modal System - Optimized */
@@ -4486,6 +4540,11 @@ body.ultra-low-perf .tutorial-highlight {
 body.ultra-low-perf .tutorial-tooltip {
   backdrop-filter: none !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.ultra-low-perf .node-tooltip {
+  transition: none !important;
+  backdrop-filter: none !important;
 }
 
 body.ultra-low-perf .tutorial-tooltip::before {

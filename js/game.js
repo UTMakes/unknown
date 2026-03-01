@@ -2872,6 +2872,21 @@
             updateCodeUI();
             renderStatistics();
             updateNetworkAnalysis();
+            
+            // Dynamic Shop Affordability
+            const shopItems = document.querySelectorAll('.shop-item');
+            shopItems.forEach(item => {
+                if (item.classList.contains('disabled')) return; // Ignore locked items
+                
+                const nodeId = item.dataset.nodeId;
+                if (!nodeId || !NODE_DEFS[nodeId]) return;
+                
+                if (game.money < NODE_DEFS[nodeId].cost) {
+                    item.classList.add('unaffordable');
+                } else {
+                    item.classList.remove('unaffordable');
+                }
+            });
         }
         
         // Network Analyzer - provides insights and optimization tips
@@ -3101,7 +3116,9 @@
             const tray = document.getElementById('tray');
             tray.innerHTML = '';
             
-            Object.keys(NODE_DEFS).forEach(k => {
+            const sortedKeys = Object.keys(NODE_DEFS).sort((a, b) => NODE_DEFS[a].cost - NODE_DEFS[b].cost);
+            
+            sortedKeys.forEach(k => {
                 const def = NODE_DEFS[k];
                 if (currTab === 'infra' && def.type !== 'infra' && def.type !== 'core') return;
                 if (currTab === 'download' && def.type !== 'download') return;
@@ -3112,6 +3129,8 @@
 
                 const el = document.createElement('div');
                 el.className = 'shop-item';
+                // Add node id as dataset for easy dynamic updating later
+                el.dataset.nodeId = k;
                 
                 const locked = def.req && !game.unlocked.includes(def.req);
                 if (locked) el.classList.add('disabled');
@@ -3125,6 +3144,38 @@
                     <div class="item-flow-tier"><span class="flow-badge tier-${def.flowLevel}">T${def.flowLevel} ${shopTierName}</span></div>
                     <div class="item-desc">${locked ? "LOCKED (Research)" : def.desc}</div>
                 `;
+                
+                // Tooltip Logic
+                el.onmouseenter = (e) => {
+                    if (locked) return;
+                    const tt = document.getElementById('nodeTooltip');
+                    if (!tt) return;
+                    
+                    let statsHtml = '';
+                    if (def.income > 0) statsHtml += `<div class="node-tooltip-stat"><span>Income/sec</span><span style="color:#10b981">+$${fmt(def.income)}</span></div>`;
+                    if (def.rp > 0) statsHtml += `<div class="node-tooltip-stat"><span>RP/sec</span><span style="color:#a78bfa">+${fmt(def.rp)}</span></div>`;
+                    if (def.bandwidth > 0) statsHtml += `<div class="node-tooltip-stat"><span>Bandwidth Cost</span><span style="color:#ef4444">${fmt(def.bandwidth)} B/s</span></div>`;
+                    if (def.heat > 0) statsHtml += `<div class="node-tooltip-stat"><span>Heat Gen</span><span style="color:#f59e0b">+${def.heat}°C</span></div>`;
+                    if (def.cooling > 0) statsHtml += `<div class="node-tooltip-stat"><span>Cooling</span><span style="color:#38bdf8">-${def.cooling}°C</span></div>`;
+                    if (def.maxConns) statsHtml += `<div class="node-tooltip-stat"><span>Max Conns</span><span style="color:#cbd5e1">${def.maxConns}</span></div>`;
+                    
+                    tt.innerHTML = `
+                        <div class="node-tooltip-title">${def.name}</div>
+                        ${statsHtml}
+                    `;
+                    tt.classList.add('visible');
+                    
+                    // Position tooltip above the tray
+                    const rect = el.getBoundingClientRect();
+                    tt.style.left = rect.left + 'px';
+                    tt.style.top = (rect.top - tt.offsetHeight - 10) + 'px';
+                };
+                
+                el.onmouseleave = () => {
+                    const tt = document.getElementById('nodeTooltip');
+                    if (tt) tt.classList.remove('visible');
+                };
+                
                 tray.appendChild(el);
             });
         }
