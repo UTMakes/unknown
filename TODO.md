@@ -210,7 +210,7 @@
   > - Update the version number following the versioning rules
   > - Update the "Latest Changes" panel on the welcome screen
   > - Update the "What's New" panel on the welcome screen
-- [x] **Ultra Low Performance Updates** - _Task 31 (Maintenance)_ ⚠️ _Permanent task - never remove_
+- [ ] **Ultra Low Performance Updates** - _Task 31 (Maintenance)_ ⚠️ _Permanent task - never remove_
   > - Ensure new visual effects or complex UI animations are disabled when Ultra Low Performance is ON.
 
 ---
