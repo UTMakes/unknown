@@ -1,0 +1,12 @@
+ERROR:
+TypeError: Cannot read properties of undefined (reading 'length')
+    at renderCables (D:\Github Coding\unknown\js\game.js:2792:30)
+    at renderWorld (D:\Github Coding\unknown\js\game.js:2700:13)
+    at spawnNode (D:\Github Coding\unknown\js\game.js:2161:13)
+    at init (D:\Github Coding\unknown\js\game.js:554:42)
+    at Object.<anonymous> (D:\Github Coding\unknown\js\game.js:5136:9)
+    at Module._compile (node:internal/modules/cjs/loader:1811:14)
+    at Object..js (node:internal/modules/cjs/loader:1942:10)
+    at Module.load (node:internal/modules/cjs/loader:1532:32)
+    at Module._load (node:internal/modules/cjs/loader:1334:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)

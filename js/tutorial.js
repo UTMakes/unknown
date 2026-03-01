@@ -5,7 +5,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'welcome',
         title: 'Welcome to Upload Labs!',
-        message: "Let's build your first network together. This tutorial will walk you through the basics — it only takes a minute!",
+        message: "Let's build your first network together. This tutorial will walk you through the basics - it only takes a minute!",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -14,7 +14,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'router_intro',
         title: 'Your Network Router',
-        message: "This is your <strong>Router</strong> — the core of your entire network. Every node must be connected to it to function. Click on the router to select it.",
+        message: "This is your <strong>Router</strong> - the core of your entire network. Every node must be connected to it to function. Click on the router to select it.",
         target: () => {
             const routerNode = game.nodes.find(n => n.type === 'router');
             return routerNode ? document.getElementById(`node-${routerNode.id}`) : null;
@@ -26,7 +26,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'toolbar_intro',
         title: 'The Node Toolbar',
-        message: "Down here is your <strong>toolbar</strong> — it has 5 tabs of different nodes you can buy. Let's start by switching to the <strong>Download</strong> tab.",
+        message: "Down here is your <strong>toolbar</strong> - it has 5 tabs of different nodes you can buy. Let's start by switching to the <strong>Download</strong> tab.",
         target: () => document.querySelector('.tab[data-tab="download"]'),
         position: 'top',
         action: 'tab_changed',
@@ -93,7 +93,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'research_labs_info',
         title: 'Research Labs',
-        message: "As you earn more money, you'll want to buy a <strong style='color:#8b5cf6'>Research Lab</strong> ($4,500) from the <strong>Upload & Security</strong> tab. Labs convert your downloaded files into <strong style='color:#a78bfa'>Research Points (RP)</strong>, which unlock powerful new node types in the tech tree!<br><br>For now, focus on earning money — you'll be able to afford one soon.",
+        message: "As you earn more money, you'll want to buy a <strong style='color:#8b5cf6'>Research Lab</strong> ($4,500) from the <strong>Upload & Security</strong> tab. Labs convert your downloaded files into <strong style='color:#a78bfa'>Research Points (RP)</strong>, which unlock powerful new node types in the tech tree!<br><br>For now, focus on earning money - you'll be able to afford one soon.",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -120,7 +120,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'traffic_intro',
         title: 'Traffic & Bandwidth',
-        message: "Every node has a <strong style='color:#06b6d4'>bandwidth limit</strong> — shown by the colored bar at the bottom of each node.<br><br>• <strong style='color:#10b981'>Green</strong> = healthy, plenty of bandwidth<br>• <strong style='color:#f59e0b'>Amber</strong> = getting busy (60-90% used)<br>• <strong style='color:#ef4444'>Red + ⚠️</strong> = bottleneck! Node is capped at max speed<br><br><strong style='color:#06b6d4'>Load Balancers</strong> share their bandwidth with connected nodes. <strong>Upgrading</strong> nodes also increases their bandwidth!",
+        message: "Every node has a <strong style='color:#06b6d4'>bandwidth limit</strong> - shown by the colored bar at the bottom of each node.<br><br>• <strong style='color:#10b981'>Green</strong> = healthy, plenty of bandwidth<br>• <strong style='color:#f59e0b'>Amber</strong> = getting busy (60-90% used)<br>• <strong style='color:#ef4444'>Red + ⚠️</strong> = bottleneck! Node is capped at max speed<br><br><strong style='color:#06b6d4'>Load Balancers</strong> share their bandwidth with connected nodes. <strong>Upgrading</strong> nodes also increases their bandwidth!",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -129,7 +129,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'advanced_mechanics',
         title: 'Advanced Network Strategy',
-        message: "As your network grows, strategy matters!\n\u2022 <strong style='color:#f59e0b'>Placement:</strong> Some high-tier nodes are 2x wide. Nodes near each other get adjacency bonuses (or penalties).\n\u2022 <strong style='color:#a855f7'>Firmware:</strong> Right-click a Server Rack to flash specialized firmware — permanently transforming it.\n\u2022 <strong style='color:#ef4444'>Overclocking:</strong> Doubles speed but generates heat. Balance it with Cryo Coolers!\n\nThink of your network like a server room — optimize everything!",
+        message: "As your network grows, strategy matters!\n\u2022 <strong style='color:#f59e0b'>Placement:</strong> Some high-tier nodes are 2x wide. Nodes near each other get adjacency bonuses (or penalties).\n\u2022 <strong style='color:#a855f7'>Firmware:</strong> Right-click a Server Rack to flash specialized firmware - permanently transforming it.\n\u2022 <strong style='color:#ef4444'>Overclocking:</strong> Doubles speed but generates heat. Balance it with Cryo Coolers!\n\nThink of your network like a server room - optimize everything!",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -147,7 +147,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'directional_flow',
         title: 'Directional Flow',
-        message: "Notice the ports? Data only flows from <span style='color:#10b981'>Green Ports</span> (Out) to <span style='color:#3b82f6'>Blue Ports</span> (In).<br><br>Network layout is a puzzle! You can't just connect anything to anything — you must plan your data paths carefully.",
+        message: "Notice the ports? Data only flows from <span style='color:#10b981'>Green Ports</span> (Out) to <span style='color:#3b82f6'>Blue Ports</span> (In).<br><br>Network layout is a puzzle! You can't just connect anything to anything - you must plan your data paths carefully.",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -156,7 +156,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'master_router_intro',
         title: 'Sub-Networks',
-        message: "When your main screen gets too crowded, use <strong>Master Routers</strong>. They host <strong>Sub-Networks</strong> — entirely separate grids where you can tuck away complex systems like Crypto Farms or Research wings.",
+        message: "When your main screen gets too crowded, use <strong>Master Routers</strong>. They host <strong>Sub-Networks</strong> - entirely separate grids where you can tuck away complex systems like Crypto Farms or Research wings.",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -168,7 +168,7 @@ const TUTORIAL_STEPS = [
         message: "<strong>Double-click</strong> a Master Router to enter its sub-network. Try it now if you have one, or just remember for later!",
         target: null,
         position: 'center',
-        action: 'subnet_entered',
+        action: 'click_next',
         icon: 'fa-solid fa-door-open'
     },
     {
@@ -192,7 +192,7 @@ const TUTORIAL_STEPS = [
     {
         id: 'final_tips',
         title: 'You\'re Ready!',
-        message: "That's the basics! Here are some pro tips:\n\u2022 <strong style='color:#8b5cf6'>Labs</strong> convert files \u2192 Research Points (RP)\n\u2022 <strong style='color:#ef4444'>Firewalls</strong> protect nodes from virus infections\n\u2022 <strong style='color:#f59e0b'>Overclock Units</strong> double speed but create heat!\n\u2022 <strong style='color:#00d4aa'>Coder Nodes</strong> \u2192 Code Bits \u2192 Drivers (permanent boosts)\n\u2022 <strong>Right-click</strong> nodes to upgrade or delete them\n\u2022 Press <strong>R</strong> for Research, <strong>C</strong> for Coding, <strong>?</strong> for Help\n\nGo build your data empire! \uD83D\uDE80",
+        message: "That's the basics! Here are some pro tips:\n\u2022 <strong style='color:#8b5cf6'>Labs</strong> convert files -> Research Points (RP)\n\u2022 <strong style='color:#ef4444'>Firewalls</strong> protect nodes from virus infections\n\u2022 <strong style='color:#f59e0b'>Overclock Units</strong> double speed but create heat!\n\u2022 <strong style='color:#00d4aa'>Coder Nodes</strong> -> Code Bits -> Drivers (permanent boosts)\n\u2022 <strong>Right-click</strong> nodes to upgrade or delete them\n\u2022 Press <strong>R</strong> for Research, <strong>C</strong> for Coding, <strong>?</strong> for Help\n\nGo build your data empire!",
         target: null,
         position: 'center',
         action: 'click_next',
@@ -336,7 +336,7 @@ class TutorialManager {
         this.tooltip.style.pointerEvents = 'auto';
 
         if (targetEl && step.position !== 'center') {
-            // Show highlight around target — spotlight cutout effect
+            // Show highlight around target - spotlight cutout effect
             const rect = targetEl.getBoundingClientRect();
             const padding = 8;
 
@@ -405,7 +405,7 @@ class TutorialManager {
             this.highlight.style.pointerEvents = 'none';
 
         } else {
-            // Center tooltip, no highlight — block game interaction
+            // Center tooltip, no highlight - block game interaction
             this.highlight.style.display = 'none';
             this.overlay.classList.remove('spotlight');
             this.tooltip.classList.remove('pos-top', 'pos-right', 'pos-bottom', 'pos-left');

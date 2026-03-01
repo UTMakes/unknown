@@ -1,4 +1,4 @@
-﻿fixconst GAME_VERSION = "14.1";
+﻿const GAME_VERSION = "14.1";
 
         // --- CONFIGURATION ---
         
@@ -39,149 +39,7 @@
             { id: 'first_prestige', name: 'Migration', desc: 'Prestige for the first time', check: () => (game.prestigeLevel || 0) >= 1, reward: { money: 100000 } },
         ];
         
-        // Flow Tier Names: T1=Source, T2=Bridge, T3=Process, T4=Hub
-        const FLOW_TIER_NAMES = { 1: 'Source', 2: 'Bridge', 3: 'Process', 4: 'Hub' };
-        const FLOW_TIER_ICONS = { 1: 'fa-solid fa-download', 2: 'fa-solid fa-right-left', 3: 'fa-solid fa-microchip', 4: 'fa-solid fa-globe' };
-
-        const NODE_DEFS = {
-            router: { name: "Network Router", type: "core", cost: 0, icon: "fa-solid fa-globe", color: "#3b82f6", desc: "Network Core. Required for connectivity.", bandwidth: 1000, ports: ['in', 'out'], flowLevel: 4 },
-
-            // Infra - Early game utility
-            miner: { name: "Crypto Miner", type: "infra", cost: 500, icon: "fa-brands fa-bitcoin", color: "#fbbf24", desc: "Uses bandwidth to mine money. Slow but steady income.", bandwidth: 200, ports: ['out'], flowLevel: 1 },
-            cache: { name: "Cache Server", type: "infra", cost: 3000, icon: "fa-solid fa-database", color: "#10b981", desc: "Buffers data. Connected downloaders work 50% faster.", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-            firewall: { name: "Firewall", type: "infra", cost: 2000, icon: "fa-solid fa-shield-halved", color: "#ef4444", desc: "Prevents virus infection for self and neighbors.", req: "tech_sec", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
-            balancer: { name: "Load Balancer", type: "infra", cost: 5500, icon: "fa-solid fa-scale-balanced", color: "#06b6d4", desc: "Distributes data evenly. Boosts connected nodes by 10% per connection. Redistributes excess bandwidth.", req: "tech_balance", bandwidth: 600, ports: ['in', 'out'], flowLevel: 2 },
-            overclock: { name: "Overclock Unit", type: "infra", cost: 8000, icon: "fa-solid fa-bolt", color: "#f59e0b", desc: "Connect to Router to DOUBLE speed. Generates significant heat!", req: "tech_oc", bandwidth: 500, ports: ['in', 'out'], flowLevel: 2 },
-            cryo_cooler: { name: "Cryo Cooler", type: "infra", cost: 500000, icon: "fa-solid fa-snowflake", color: "#22d3ee", desc: "Advanced cooling system. Reduces router heat by 20/sec per level. End-game unlock.", req: "tech_cryo", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-
-            // Downloaders - Tiered progression
-            dl_file: { name: "File Downloader", type: "download", out: "files", cost: 250, icon: "fa-solid fa-file-code", color: "#60a5fa", desc: "Downloads small files. Basic data collection.", bandwidth: 300, ports: ['out'], flowLevel: 1 },
-            dl_img: { name: "Image Downloader", type: "download", out: "images", cost: 2200, icon: "fa-solid fa-image", color: "#c084fc", desc: "Downloads images. Higher value than files.", req: "tech_img", bandwidth: 400, ports: ['out'], flowLevel: 1 },
-            dl_audio: { name: "Audio Downloader", type: "download", out: "audio", cost: 7500, icon: "fa-solid fa-music", color: "#f472b6", desc: "Downloads audio files. Medium tier resource.", req: "tech_audio", bandwidth: 500, ports: ['out'], flowLevel: 1 },
-            dl_vid: { name: "Video Downloader", type: "download", out: "videos", cost: 18000, icon: "fa-solid fa-film", color: "#f472b6", desc: "Downloads videos. Highest value resource.", req: "tech_vid", bandwidth: 600, ports: ['out'], flowLevel: 1 },
-
-            // Upload & Labs - Money and RP generation
-            uploader: { name: "Uploader", type: "upload", cost: 500, icon: "fa-solid fa-cloud-arrow-up", color: "#2dd4bf", desc: "Sells data for Money. Essential for income.", bandwidth: 400, ports: ['in'], flowLevel: 3 },
-            lab: { name: "Research Lab", type: "lab", cost: 4500, icon: "fa-solid fa-flask", color: "#8b5cf6", desc: "Converts Files into Research Points (RP).", bandwidth: 400, ports: ['in'], flowLevel: 3 },
-            rack: { name: "Server Rack", type: "special", cost: 18000, icon: "fa-solid fa-server", color: "#f97316", desc: "High density server. Acts as both Downloader AND Uploader.", req: "tech_rack", bandwidth: 800, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-            quantum: { name: "Quantum Core", type: "special", cost: 150000, icon: "fa-solid fa-atom", color: "#ef4444", desc: "Endgame technology. 2.5x Global Speed multiplier.", req: "tech_quantum", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-            master_router: { name: "Master Router", type: "special", cost: 250000, icon: "fa-solid fa-network-wired", color: "#3b82f6", desc: "Double-click to open a private sub-network. Great for organization.", req: "tech_cluster", bandwidth: 2000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 4 },
-            subnet_core: { name: "Subnet Core", type: "core", cost: 0, icon: "fa-solid fa-circle-nodes", color: "#3b82f6", desc: "Core connection to the main network.", bandwidth: 2000, ports: ['out'], flowLevel: 4 },
-
-            // Advanced - Late game specialization
-            proxy: { name: "Proxy Node", type: "advanced", cost: 3500, icon: "fa-solid fa-network-wired", color: "#64748b", desc: "Extends network range without degrading speed.", req: "tech_proxy", bandwidth: 250, ports: ['in', 'out'], flowLevel: 2 },
-            compressor: { name: "Compressor", type: "advanced", cost: 8000, icon: "fa-solid fa-compress", color: "#14b8a6", desc: "Reduces file sizes by 35% for faster transfers.", req: "tech_compress", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
-            backup: { name: "Backup Server", type: "advanced", cost: 12000, icon: "fa-solid fa-box-archive", color: "#a855f7", desc: "Stores excess data. Generates passive income from stored data.", req: "tech_backup", bandwidth: 350, ports: ['in'], flowLevel: 3 },
-            analyzer: { name: "Data Analyzer", type: "advanced", cost: 15000, icon: "fa-solid fa-chart-pie", color: "#eab308", desc: "Analyzes data flow. Increases RP generation by 60%.", req: "tech_analyze", bandwidth: 300, ports: ['in', 'out'], flowLevel: 2 },
-            streaming: { name: "Streaming Server", type: "advanced", cost: 25000, icon: "fa-solid fa-tower-broadcast", color: "#22d3ee", desc: "Specialized for media. 4x audio/video processing speed.", req: "tech_streaming", bandwidth: 600, ports: ['in', 'out'], flowLevel: 3 },
-            cdn: { name: "CDN Node", type: "advanced", cost: 35000, icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "Global content delivery. +30% boost to all uploaders.", req: "tech_cdn", bandwidth: 1000, ports: ['in', 'out'], flowLevel: 3 },
-            cluster: { name: "Cluster Node", type: "advanced", cost: 50000, icon: "fa-solid fa-network-wired", color: "#84cc16", desc: "Links with other clusters. +25% boost per cluster.", req: "tech_cluster", bandwidth: 500, ports: ['in', 'out'], flowLevel: 2 },
-            warehouse: { name: "Data Warehouse", type: "advanced", cost: 75000, icon: "fa-solid fa-warehouse", color: "#e879f9", desc: "Massive storage. Greatly increases downloader efficiency.", req: "tech_warehouse", bandwidth: 1200, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-            ai_processor: { name: "AI Processor", type: "advanced", cost: 120000, icon: "fa-solid fa-brain", color: "#f97316", desc: "AI optimization. +125% efficiency to connected nodes.", req: "tech_ai", bandwidth: 1500, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-            crypto_farm: { name: "Crypto Farm", type: "advanced", cost: 200000, icon: "fa-brands fa-ethereum", color: "#627eea", desc: "Industrial-scale crypto mining. Massive passive income.", req: "tech_crypto_farm", bandwidth: 1000, size: [2, 1], ports: ['in', 'in', 'out', 'out'], flowLevel: 3 },
-
-            // CODING - Programming system
-            coder: { name: "Coder Node", type: "coding", cost: 5000, icon: "fa-solid fa-terminal", color: "#00d4aa", desc: "Generates code bits for driver development.", bandwidth: 150, ports: ['out'], flowLevel: 1 },
-            dev_station: { name: "Dev Station", type: "coding", cost: 20000, icon: "fa-solid fa-laptop-code", color: "#00d4aa", desc: "2.5x code bit generation. Advanced driver development.", req: "dev_station", bandwidth: 300, ports: ['out'], flowLevel: 1 },
-            compiler: { name: "Code Compiler", type: "coding", cost: 60000, icon: "fa-solid fa-gears", color: "#00d4aa", desc: "Automatically converts bits to optimization code.", req: "tech_compiler", bandwidth: 400, ports: ['in', 'out'], flowLevel: 2 },
-
-            // AUTOMATION
-            logic_controller: { name: "Logic Controller", type: "advanced", cost: 100000, icon: "fa-solid fa-microchip", color: "#f472b6", desc: "Programmable automation. Set If/Then rules to auto-manage your network.", req: "tech_automation", bandwidth: 200, ports: ['in', 'out'], flowLevel: 2 }
-        };
-
-        // FIRMWARE DEFINITIONS (for Sub-Systems & Specialization)
-        const FIRMWARE_DEFS = {
-            encrypted_db: { name: "Encrypted Database", icon: "fa-solid fa-lock", color: "#a855f7", desc: "+200% RP from connected Labs. Immune to viruses.", cost: 50000, rpMult: 3.0, virusImmune: true },
-            high_freq: { name: "High-Freq Compute", icon: "fa-solid fa-bolt", color: "#f97316", desc: "+150% mining/upload speed. +50% heat generation.", cost: 50000, speedMult: 2.5, heatMult: 1.5 },
-            cdn_hub: { name: "Content Delivery Hub", icon: "fa-solid fa-earth-americas", color: "#3b82f6", desc: "+100% to connected uploaders. Acts as CDN.", cost: 50000, uploadMult: 2.0, actAsCDN: true }
-        };
-
-        // ADJACENCY RULES (proximity-based bonuses/penalties within 200px)
-        const ADJACENCY_RANGE = 200;
-        const ADJACENCY_RULES = [
-            { type1: 'overclock', type2: 'overclock', effect: 'heat_penalty', value: 0.20, desc: '+20% extra heat per nearby Overclock' },
-            { type1: 'cryo_cooler', type2: 'overclock', effect: 'heat_reduce', value: 0.25, desc: '-25% heat from nearby Overclock' },
-            { type1: 'cache', type2: 'dl_file', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
-            { type1: 'cache', type2: 'dl_img', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
-            { type1: 'cache', type2: 'dl_vid', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
-            { type1: 'cache', type2: 'dl_audio', effect: 'speed_bonus', value: 0.10, desc: '+10% download speed (proximity)' },
-            { type1: 'firewall', type2: '*', effect: 'virus_resist', value: 0.05, desc: '+5% virus resistance for nearby nodes' },
-            { type1: 'miner', type2: 'miner', effect: 'efficiency_penalty', value: 0.05, desc: '-5% mining efficiency (competition)' }
-        ];
-
-        const RESOURCES = {
-            files: { size: 20, price: 6, rp: 3 },
-            images: { size: 80, price: 22, rp: 10 },
-            videos: { size: 350, price: 65, rp: 35 },
-            audio: { size: 120, price: 32, rp: 18 }
-        };
-
-        // DRIVER CONFIGURATION
-        const DRIVERS = {
-            network: { name: "Network Driver", icon: "fa-solid fa-network-wired", desc: "+10% connection speed", cost: 1, effect: 0.1 },
-            compression: { name: "Compression Driver", icon: "fa-solid fa-compress", desc: "+5% file compression", cost: 1, effect: 0.05 },
-            security: { name: "Security Driver", icon: "fa-solid fa-shield-halved", desc: "-10% virus chance", cost: 1, effect: 0.1 },
-            mining: { name: "Mining Driver", icon: "fa-solid fa-coins", desc: "+15% crypto mining", cost: 1, effect: 0.15 },
-            research: { name: "Research Driver", icon: "fa-solid fa-flask", desc: "+10% RP generation", cost: 1, effect: 0.1 },
-            upload: { name: "Upload Driver", icon: "fa-solid fa-cloud-arrow-up", desc: "+10% upload speed", cost: 1, effect: 0.1 },
-            download: { name: "Download Driver", icon: "fa-solid fa-download", desc: "+10% download speed", cost: 1, effect: 0.1 }
-        };
-
-        // CODING UPGRADES CONFIGURATION
-        const CODING_UPGRADES = [
-            // Tier 1 - Basic (affordable early)
-            { id: 'syntax_highlight', name: 'Syntax Highlighting', tier: 1, cost: 500, icon: 'fa-solid fa-highlighter', desc: '+25% code generation speed', effect: 'codeSpeed', value: 0.25 },
-            { id: 'autocomplete', name: 'Auto-Complete', tier: 1, cost: 1000, icon: 'fa-solid fa-wand-magic-sparkles', desc: '-20% conversion cost (80 bits)', effect: 'conversionDiscount', value: 20 },
-            { id: 'code_linter', name: 'Code Linter', tier: 1, cost: 1500, icon: 'fa-solid fa-magnifying-glass-chart', desc: '+10% all driver effects', effect: 'driverBoost', value: 0.1 },
-            // Tier 2 - Intermediate
-            { id: 'parallel_threads', name: 'Parallel Threads', tier: 2, cost: 5000, icon: 'fa-solid fa-code-branch', desc: 'Coder nodes generate 2x bits', effect: 'coderDouble', value: 2 },
-            { id: 'git_vcs', name: 'Git Version Control', tier: 2, cost: 8000, icon: 'fa-brands fa-git-alt', desc: 'Code bits → passive money ($1/100 bits/s)', effect: 'codeIncome', value: 0.01 },
-            { id: 'refactoring', name: 'Code Refactoring', tier: 2, cost: 12000, icon: 'fa-solid fa-arrows-rotate', desc: 'Conversion cost halved (50 bits)', effect: 'conversionDiscount', value: 50 },
-            // Tier 3 - Advanced
-            { id: 'ai_autocoder', name: 'AI Autocoder', tier: 3, cost: 30000, icon: 'fa-solid fa-robot', desc: '+100% code gen globally', effect: 'codeSpeed', value: 1.0 },
-            { id: 'open_source_net', name: 'Open Source Network', tier: 3, cost: 50000, icon: 'fa-solid fa-people-group', desc: 'Every 10 code bits → 1 RP', effect: 'codeToRP', value: 0.1 },
-            { id: 'quantum_compiler', name: 'Quantum Compiler', tier: 3, cost: 100000, icon: 'fa-solid fa-atom', desc: 'Compilers work 5x faster', effect: 'compilerSpeed', value: 5 },
-        ];
-
-        const TECH_TREE = [
-            // Tier 1: Basics (Early game)
-            { id: "tech_img", name: "Image Compression", cost: 400, desc: "Unlock Image Downloaders", tier: 1, icon: "fa-solid fa-image", requires: [] },
-            { id: "tech_sec", name: "Cyber Security", cost: 800, desc: "Unlock Firewall protection", tier: 1, icon: "fa-solid fa-shield-halved", requires: [] },
-            { id: "tech_coding", name: "Basic Programming", cost: 1200, desc: "Unlock Coder Nodes", tier: 1, icon: "fa-solid fa-terminal", requires: [] },
-            
-            // Tier 2: Expansion (Mid-early game)
-            { id: "tech_proxy", name: "Proxy Networking", cost: 2500, desc: "Unlock Proxy Nodes for range extension", tier: 2, icon: "fa-solid fa-network-wired", requires: ["tech_sec"] },
-            { id: "tech_oc", name: "Overclocking", cost: 3500, desc: "Unlock Overclock Units (risk/reward)", tier: 2, icon: "fa-solid fa-bolt", requires: [] },
-            { id: "tech_balance", name: "Load Balancing", cost: 4500, desc: "Unlock Load Balancers", tier: 2, icon: "fa-solid fa-scale-balanced", requires: ["tech_sec"] },
-            
-            // Tier 3: Specialization (Mid game)
-            { id: "tech_vid", name: "Video Streaming", cost: 6000, desc: "Unlock Video Downloaders", tier: 3, icon: "fa-solid fa-film", requires: ["tech_img"] },
-            { id: "tech_compress", name: "Data Compression", cost: 7500, desc: "Unlock Compressor nodes", tier: 3, icon: "fa-solid fa-compress", requires: ["tech_img"] },
-            { id: "tech_audio", name: "Audio Processing", cost: 9000, desc: "Unlock Audio Downloaders", tier: 3, icon: "fa-solid fa-music", requires: ["tech_vid"] },
-            { id: "tech_analyze", name: "Data Analysis", cost: 10000, desc: "Unlock Data Analyzers (+RP generation)", tier: 3, icon: "fa-solid fa-chart-pie", requires: ["tech_balance"] },
-            { id: "tech_backup", name: "Backup Systems", cost: 12000, desc: "Unlock Backup Servers", tier: 3, icon: "fa-solid fa-box-archive", requires: ["tech_proxy"] },
-            
-            // Tier 4: Advanced Infrastructure (Late-mid game)
-            { id: "tech_fiber", name: "Fiber Optics", cost: 15000, desc: "Global network speed +25%", tier: 4, icon: "fa-solid fa-bolt", requires: ["tech_oc"] },
-            { id: "dev_station", name: "Dev Environment", cost: 18000, desc: "Unlock Dev Stations", tier: 4, icon: "fa-solid fa-laptop-code", requires: ["tech_coding"] },
-            { id: "tech_rack", name: "Server Racks", cost: 25000, desc: "Unlock high-density Server Racks", tier: 4, icon: "fa-solid fa-server", requires: ["tech_fiber"] },
-            { id: "tech_sat", name: "Satellite Uplink", cost: 30000, desc: "Global upload speed +50%", tier: 4, icon: "fa-solid fa-satellite", requires: ["tech_fiber"] },
-            { id: "tech_streaming", name: "Media Streaming", cost: 35000, desc: "Unlock Streaming Servers", tier: 4, icon: "fa-solid fa-tower-broadcast", requires: ["tech_audio", "tech_analyze"] },
-            
-            // Tier 5: Enterprise (Late game)
-            { id: "tech_cdn", name: "CDN Network", cost: 50000, desc: "Unlock CDN Nodes (global uploader boost)", tier: 5, icon: "fa-solid fa-earth-americas", requires: ["tech_rack", "tech_streaming"] },
-            { id: "tech_cluster", name: "Cluster Computing", cost: 65000, desc: "Unlock Cluster Nodes (synergy bonuses)", tier: 5, icon: "fa-solid fa-network-wired", requires: ["tech_rack", "tech_backup"] },
-            { id: "tech_compiler", name: "Auto-Compilation", cost: 80000, desc: "Unlock Code Compilers", tier: 5, icon: "fa-solid fa-gears", requires: ["dev_station"] },
-            { id: "tech_warehouse", name: "Data Warehousing", cost: 100000, desc: "Unlock massive Data Warehouses", tier: 5, icon: "fa-solid fa-warehouse", requires: ["tech_backup", "tech_cdn"] },
-            { id: "tech_ai", name: "AI Processing", cost: 150000, desc: "Unlock AI Processors", tier: 5, icon: "fa-solid fa-brain", requires: ["tech_analyze", "tech_cluster"] },
-            
-            // Tier 6: Endgame (Very late game)
-            { id: "tech_quantum", name: "Quantum Computing", cost: 500000, desc: "Unlock Quantum Core (2.5x global speed)", tier: 6, icon: "fa-solid fa-atom", requires: ["tech_ai", "tech_cluster"] },
-            { id: "tech_cryo", name: "Cryogenic Cooling", cost: 500000, desc: "Unlock Cryo Coolers to counteract overheating", tier: 6, icon: "fa-solid fa-snowflake", requires: ["tech_quantum"] },
-            { id: "tech_crypto_farm", name: "Mining Farm", cost: 750000, desc: "Unlock Crypto Farms (massive passive income)", tier: 6, icon: "fa-brands fa-ethereum", requires: ["tech_cluster", "tech_warehouse"] },
-            { id: "tech_neural", name: "Neural Network", cost: 1000000, desc: "All nodes +50% efficiency. The ultimate upgrade.", tier: 6, icon: "fa-solid fa-circle-nodes", requires: ["tech_ai", "tech_quantum"] },
-            { id: "tech_automation", name: "Network Automation", cost: 2500000, desc: "Unlock Auto-Research - automatically buy tech you can afford", tier: 6, icon: "fa-solid fa-robot", requires: ["tech_neural", "tech_compiler"] },
-        ];
+        // Configurations extracted to nodes.js and tech.js
 
         // ACHIEVEMENTS CONFIGURATION
         const ACHIEVEMENTS = [
@@ -246,27 +104,27 @@
         // RANDOM EVENTS CONFIGURATION
         const RANDOM_EVENTS = [
             // Good Events
-            { id: 'market_boom', name: 'Market Boom', desc: 'Data prices are surging!', type: 'good', duration: 60, effect: () => { eventMultipliers.money = 2; }, cleanup: () => { eventMultipliers.money = 1; } },
-            { id: 'research_grant', name: 'Research Grant', desc: 'Government funding boost!', type: 'good', duration: 45, effect: () => { eventMultipliers.rp = 2; }, cleanup: () => { eventMultipliers.rp = 1; } },
-            { id: 'code_rush', name: 'Code Rush', desc: 'Developers are inspired!', type: 'good', duration: 30, effect: () => { eventMultipliers.code = 3; }, cleanup: () => { eventMultipliers.code = 1; } },
-            { id: 'fiber_upgrade', name: 'Fiber Upgrade', desc: 'ISP upgraded your connection!', type: 'good', duration: 120, effect: () => { eventMultipliers.speed = 1.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'investment', name: 'Angel Investment', desc: 'An investor believes in you!', type: 'good', instant: true, effect: (g) => { g.money += 5000; showFloat('+ $5,000 (Investment)', window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
-            { id: 'bonus_rp', name: 'Research Breakthrough', desc: 'Sudden insight!', type: 'good', instant: true, effect: (g) => { g.rp += 500; showFloat('+ 500 RP (Breakthrough!)', window.innerWidth/2, window.innerHeight/2, '#8b5cf6'); } },
-            { id: 'crypto_surge', name: 'Crypto Surge', desc: 'Cryptocurrency values skyrocketing!', type: 'good', duration: 90, effect: () => { eventMultipliers.money = 2.5; }, cleanup: () => { eventMultipliers.money = 1; } },
-            { id: 'open_source', name: 'Open Source Contribution', desc: 'Community code contributions!', type: 'good', instant: true, effect: (g) => { g.codeBits = (g.codeBits || 0) + 500; showFloat('+ 500 Code Bits (Open Source)', window.innerWidth/2, window.innerHeight/2, '#00d4aa'); } },
-            { id: 'bandwidth_bonus', name: 'Bandwidth Bonus', desc: 'ISP doubled your bandwidth!', type: 'good', duration: 60, effect: () => { eventMultipliers.speed = 2; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'tax_refund', name: 'Tax Refund', desc: 'Government tax refund received!', type: 'good', instant: true, effect: (g) => { const refund = Math.floor(g.stats.totalMoney * 0.01); g.money += refund; showFloat(`+ $${fmt(refund)} (Tax Refund)`, window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
+            { id: 'market_boom', name: 'Market Boom', desc: 'Data prices are surging!', effectDesc: '2x Money from all Data Sales', type: 'good', duration: 60, effect: () => { eventMultipliers.money = 2; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'research_grant', name: 'Research Grant', desc: 'Government funding boost!', effectDesc: '2x RP from Research Labs', type: 'good', duration: 45, effect: () => { eventMultipliers.rp = 2; }, cleanup: () => { eventMultipliers.rp = 1; } },
+            { id: 'code_rush', name: 'Code Rush', desc: 'Developers are inspired!', effectDesc: '3x Code Generation Speed', type: 'good', duration: 30, effect: () => { eventMultipliers.code = 3; }, cleanup: () => { eventMultipliers.code = 1; } },
+            { id: 'fiber_upgrade', name: 'Fiber Upgrade', desc: 'ISP upgraded your connection!', effectDesc: '1.5x Global Network Speed', type: 'good', duration: 120, effect: () => { eventMultipliers.speed = 1.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'investment', name: 'Angel Investment', desc: 'An investor believes in you!', effectDesc: 'Instantly gain $5,000', type: 'good', instant: true, effect: (g) => { g.money += 5000; showFloat('+ $5,000 (Investment)', window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
+            { id: 'bonus_rp', name: 'Research Breakthrough', desc: 'Sudden insight!', effectDesc: 'Instantly gain 500 RP', type: 'good', instant: true, effect: (g) => { g.rp += 500; showFloat('+ 500 RP (Breakthrough!)', window.innerWidth/2, window.innerHeight/2, '#8b5cf6'); } },
+            { id: 'crypto_surge', name: 'Crypto Surge', desc: 'Cryptocurrency values skyrocketing!', effectDesc: '2.5x Money from Crypto Miners', type: 'good', duration: 90, effect: () => { eventMultipliers.money = 2.5; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'open_source', name: 'Open Source Contribution', desc: 'Community code contributions!', effectDesc: 'Instantly gain 500 Code Bits', type: 'good', instant: true, effect: (g) => { g.codeBits = (g.codeBits || 0) + 500; showFloat('+ 500 Code Bits (Open Source)', window.innerWidth/2, window.innerHeight/2, '#00d4aa'); } },
+            { id: 'bandwidth_bonus', name: 'Bandwidth Bonus', desc: 'ISP doubled your bandwidth!', effectDesc: '2x Global Network Speed', type: 'good', duration: 60, effect: () => { eventMultipliers.speed = 2; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'tax_refund', name: 'Tax Refund', desc: 'Government tax refund received!', effectDesc: 'Gain 1% of your Total Earnings', type: 'good', instant: true, effect: (g) => { const refund = Math.floor(g.stats.totalMoney * 0.01); g.money += refund; showFloat(`+ $${fmt(refund)} (Tax Refund)`, window.innerWidth/2, window.innerHeight/2, '#10b981'); } },
             
             // Bad Events
-            { id: 'market_crash', name: 'Market Crash', desc: 'Data prices are plummeting!', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.5; }, cleanup: () => { eventMultipliers.money = 1; } },
-            { id: 'power_outage', name: 'Power Outage', desc: 'Reduced efficiency!', type: 'bad', duration: 30, effect: () => { eventMultipliers.speed = 0.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'ddos_attack', name: 'DDoS Attack', desc: 'Network under attack!', type: 'bad', duration: 45, effect: () => { eventMultipliers.speed = 0.3; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'maintenance', name: 'Emergency Maintenance', desc: 'Servers need repairs!', type: 'bad', instant: true, effect: (g) => { g.money = Math.max(0, g.money - 2000); showFloat('- $2,000 (Maintenance)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
-            { id: 'data_breach', name: 'Data Breach', desc: 'Security incident!', type: 'bad', instant: true, effect: (g) => { g.rp = Math.max(0, g.rp - 200); showFloat('- 200 RP (Breach)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
-            { id: 'hardware_failure', name: 'Hardware Failure', desc: 'A component overheated!', type: 'bad', duration: 40, effect: () => { eventMultipliers.speed = 0.6; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'isp_throttle', name: 'ISP Throttling', desc: 'Your ISP is throttling bandwidth!', type: 'bad', duration: 90, effect: () => { eventMultipliers.speed = 0.7; }, cleanup: () => { eventMultipliers.speed = 1; } },
-            { id: 'crypto_crash', name: 'Crypto Crash', desc: 'Cryptocurrency values plummeting!', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.4; }, cleanup: () => { eventMultipliers.money = 1; } },
-            { id: 'ransomware', name: 'Ransomware Alert', desc: 'Ransomware detected! Pay to recover!', type: 'bad', instant: true, effect: (g) => { const loss = Math.floor(g.money * 0.1); g.money = Math.max(0, g.money - loss); showFloat(`- $${fmt(loss)} (Ransomware)`, window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'market_crash', name: 'Market Crash', desc: 'Data prices are plummeting!', effectDesc: '0.5x Money from all Data Sales', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.5; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'power_outage', name: 'Power Outage', desc: 'Reduced efficiency!', effectDesc: '0.5x Global Network Speed', type: 'bad', duration: 30, effect: () => { eventMultipliers.speed = 0.5; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'ddos_attack', name: 'DDoS Attack', desc: 'Network under attack!', effectDesc: '0.3x Global Network Speed', type: 'bad', duration: 45, effect: () => { eventMultipliers.speed = 0.3; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'maintenance', name: 'Emergency Maintenance', desc: 'Servers need repairs!', effectDesc: 'Instantly lose $2,000', type: 'bad', instant: true, effect: (g) => { g.money = Math.max(0, g.money - 2000); showFloat('- $2,000 (Maintenance)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'data_breach', name: 'Data Breach', desc: 'Security incident!', effectDesc: 'Instantly lose 200 RP', type: 'bad', instant: true, effect: (g) => { g.rp = Math.max(0, g.rp - 200); showFloat('- 200 RP (Breach)', window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
+            { id: 'hardware_failure', name: 'Hardware Failure', desc: 'A component overheated!', effectDesc: '0.6x Global Network Speed', type: 'bad', duration: 40, effect: () => { eventMultipliers.speed = 0.6; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'isp_throttle', name: 'ISP Throttling', desc: 'Your ISP is throttling bandwidth!', effectDesc: '0.7x Global Network Speed', type: 'bad', duration: 90, effect: () => { eventMultipliers.speed = 0.7; }, cleanup: () => { eventMultipliers.speed = 1; } },
+            { id: 'crypto_crash', name: 'Crypto Crash', desc: 'Cryptocurrency values plummeting!', effectDesc: '0.4x Money from Crypto Miners', type: 'bad', duration: 60, effect: () => { eventMultipliers.money = 0.4; }, cleanup: () => { eventMultipliers.money = 1; } },
+            { id: 'ransomware', name: 'Ransomware Alert', desc: 'Ransomware detected! Pay to recover!', effectDesc: 'Instantly lose 10% of current Money', type: 'bad', instant: true, effect: (g) => { const loss = Math.floor(g.money * 0.1); g.money = Math.max(0, g.money - loss); showFloat(`- $${fmt(loss)} (Ransomware)`, window.innerWidth/2, window.innerHeight/2, '#ef4444'); } },
         ];
 
         // --- STATE ---
@@ -688,7 +546,14 @@
             const notif = document.getElementById('eventNotification');
             document.getElementById('eventTitle').innerText = event.name;
             document.getElementById('eventDesc').innerText = event.desc;
-            document.getElementById('eventEffect').innerText = event.instant ? 'Instant effect applied!' : `Duration: ${event.duration} seconds`;
+            
+            let effectText = event.effectDesc ? `Effect: ${event.effectDesc}` : 'Effect applied!';
+            if (event.duration) {
+                effectText += ` (${event.duration}s)`;
+            } else if (event.instant) {
+                effectText += ` (Instant)`;
+            }
+            document.getElementById('eventEffect').innerText = effectText;
             
             notif.style.display = 'block';
             notif.className = `event-notification ${event.type} show`;
@@ -2602,26 +2467,19 @@
                 
                 // Use firmware icon/color if flashed
                 const displayIcon = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].icon : def.icon;
-                const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : '#fff';
-                const tierName = FLOW_TIER_NAMES[def.flowLevel] || 'T' + def.flowLevel;
+                const displayColor = (n.firmware && FIRMWARE_DEFS[n.firmware]) ? FIRMWARE_DEFS[n.firmware].color : def.color;
                 
                 el.innerHTML = `
+                    ${ports}
+                    ${cleanBtn}
                     ${firmwareBadge}
                     <div class="node-header">
                         <div class="node-icon-box" style="color:${displayColor}"><i class="${displayIcon}"></i></div>
-                        <div style="flex:1; min-width: 0;">
+                        <div class="node-info">
                             <div class="node-title">${def.name}</div>
-                            <div class="node-lvl">LVL ${n.level}</div>
+                            <div class="node-lvl">Level ${n.level} <span class="flow-badge tier-${def.flowLevel}" style="margin-left: 4px;">T${def.flowLevel}</span></div>
                         </div>
                     </div>
-                    <div class="node-body">
-                        <div class="node-stat-row">
-                            <span>Flow:</span>
-                            <span class="flow-badge tier-${def.flowLevel}"><i class="${FLOW_TIER_ICONS[def.flowLevel] || ''}"></i> T${def.flowLevel} ${tierName}</span>
-                        </div>
-                        ${ports}
-                    </div>
-                    ${cleanBtn}
                     ${bandwidthBar}
                 `;
                 
@@ -2698,6 +2556,66 @@
             });
 
             renderCables();
+        }
+        
+        function openNodeGlossary() {
+            const container = document.getElementById('glossaryContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const sortedKeys = Object.keys(NODE_DEFS).sort((a, b) => {
+                if (NODE_DEFS[a].flowLevel !== NODE_DEFS[b].flowLevel) return NODE_DEFS[a].flowLevel - NODE_DEFS[b].flowLevel;
+                return NODE_DEFS[a].cost - NODE_DEFS[b].cost;
+            });
+            
+            sortedKeys.forEach(k => {
+                const def = NODE_DEFS[k];
+                const card = document.createElement('div');
+                card.className = `glossary-card tier-${def.flowLevel}`;
+                
+                let inPorts = 0, outPorts = 0;
+                if (def.ports) {
+                    inPorts = def.ports.filter(x => x === 'in').length;
+                    outPorts = def.ports.filter(x => x === 'out').length;
+                }
+                
+                const isWide = def.size && def.size[0] > 1;
+                
+                card.innerHTML = `
+                    <div class="glossary-header">
+                        <div class="glossary-icon"><i class="${def.icon}" style="color:${def.color}"></i></div>
+                        <div class="glossary-title-group">
+                            <div class="glossary-name">${def.name}</div>
+                            <div class="glossary-tier-label">Tier ${def.flowLevel} Node</div>
+                        </div>
+                    </div>
+                    <div class="glossary-body">
+                        <div class="glossary-desc">${def.desc}</div>
+                        <div class="glossary-stats">
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Cost</span>
+                                <span style="color:#fbbf24">$${fmt(def.cost)}</span>
+                            </div>
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Bandwidth</span>
+                                <span style="color:#06b6d4">${fmt(def.bandwidth || 0)} B/s</span>
+                            </div>
+                            <div class="glossary-stat">
+                                <span style="color:#94a3b8">Size</span>
+                                <span style="color:#e2e8f0">${isWide ? '2\xD71 (Wide)' : '1\xD71'}</span>
+                            </div>
+                            ${def.req ? `<div class="glossary-stat"><span style="color:#94a3b8">Requires</span><span style="color:#f472b6">${def.req}</span></div>` : ''}
+                        </div>
+                        <div class="glossary-ports">
+                            ${inPorts > 0 ? `<span class="port-info in">${inPorts} IN</span>` : ''}
+                            ${outPorts > 0 ? `<span class="port-info out">${outPorts} OUT</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            document.getElementById('nodeGlossaryModal').style.display = 'flex';
         }
         
         // Tooltip Helper Functions
@@ -2865,7 +2783,7 @@
             heatStatus.innerText = 'Status: ' + statusText;
             
             const prestigeSectionEl = document.getElementById('prestigeSection');
-            if (prestigeSectionEl && (game.money >= 10000000 || game.prestige > 0)) prestigeSectionEl.style.display = 'block';
+            if (prestigeSectionEl && (game.money >= 1000000 || game.prestige > 0)) prestigeSectionEl.style.display = 'block';
             const prestigeBonusEl = document.getElementById('prestigeBonusDisplay');
             if (prestigeBonusEl) prestigeBonusEl.innerText = `Data Center Bonus: +${Math.round(game.prestige * 100)}%`;
             
@@ -3142,23 +3060,23 @@
                     if (!targetEl) return;
                     
                     const targetRect = targetEl.getBoundingClientRect();
-                    const targetX = targetRect.left - containerRect.left + scrollLeft + targetRect.width / 2;
-                    const targetY = targetRect.top - containerRect.top + scrollTop;
+                    const targetX = targetRect.left - containerRect.left + scrollLeft;
+                    const targetY = targetRect.top - containerRect.top + scrollTop + targetRect.height / 2;
                     
                     tech.requires.forEach(reqId => {
                         const sourceEl = document.getElementById(`tech-${reqId}`);
                         if (!sourceEl) return;
                         
                         const sourceRect = sourceEl.getBoundingClientRect();
-                        const sourceX = sourceRect.left - containerRect.left + scrollLeft + sourceRect.width / 2;
-                        const sourceY = sourceRect.top - containerRect.top + scrollTop + sourceRect.height;
+                        const sourceX = sourceRect.left - containerRect.left + scrollLeft + sourceRect.width;
+                        const sourceY = sourceRect.top - containerRect.top + scrollTop + sourceRect.height / 2;
                         
                         const isUnlocked = game.unlocked.includes(tech.id) && game.unlocked.includes(reqId);
                         const isPartial = !isUnlocked && game.unlocked.includes(reqId);
                         
-                        // Cubic Bezier curve for smooth organic connectors
-                        const midY = (sourceY + targetY) / 2;
-                        const d = `M ${sourceX} ${sourceY} C ${sourceX} ${midY}, ${targetX} ${midY}, ${targetX} ${targetY}`;
+                        // Cubic Bezier curve for smooth organic connectors (horizontal)
+                        const midX = (sourceX + targetX) / 2;
+                        const d = `M ${sourceX} ${sourceY} C ${midX} ${sourceY}, ${midX} ${targetY}, ${targetX} ${targetY}`;
                         
                         const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
                         line.setAttribute('class', `research-tree-line ${isUnlocked ? 'unlocked' : ''} ${isPartial ? 'partial' : ''}`);
@@ -3817,9 +3735,11 @@
             logEvent('Game saved to file', 'good');
         }
         
-        // Generate a simple checksum for save validation
+        // Generate a salted checksum for save validation
         function generateSaveChecksum(gameData) {
-            const str = JSON.stringify(gameData);
+            // Secret salt to prevent easy manual editing of exported saves
+            const SECRET_SALT = "UlTrA_sEcReT_uPlOaD_lAbS_sAlT_14_1";
+            const str = SECRET_SALT + JSON.stringify(gameData);
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
@@ -3839,6 +3759,16 @@
             }
             
             const g = saveData.game;
+            
+            // Verify checksum if present (older saves might not have it)
+            if (saveData.checksum) {
+                const calculatedChecksum = generateSaveChecksum(g);
+                if (saveData.checksum !== calculatedChecksum) {
+                    errors.push('Save data corrupted or modified (Checksum Failed)');
+                    // Critical failure, don't validate further
+                    return { valid: false, isChecksumFailure: true, errors };
+                }
+            }
             
             // Check required fields
             if (typeof g.money !== 'number') errors.push('Invalid money value');
@@ -3970,6 +3900,13 @@
                     const validation = validateSaveData(saveData);
                     if (!validation.valid) {
                         console.warn('Save validation warnings:', validation.errors);
+                        
+                        // Strict check: if it's a checksum failure, it was likely manually edited
+                        if (validation.isChecksumFailure) {
+                            alert('CRITICAL ERROR: Save file has been modified or corrupted.\nChecksum validation failed. This save cannot be loaded.');
+                            return;
+                        }
+                        
                         if (!confirm('Save file appears to have issues:\n' + validation.errors.join('\n') + '\n\nAttempt to repair and load?')) {
                             return;
                         }
@@ -4355,6 +4292,19 @@
                     // Version check (warning only)
                     if (saveData.version && saveData.version !== GAME_VERSION) {
                         logEvent(`Save version: ${saveData.version}`, 'info');
+                    }
+                    
+                    // Conflict Resolution Check
+                    const cloudTimestamp = saveData.timestamp || 0;
+                    const localTimestamp = game.lastSaveTime || 0;
+                    
+                    // If cloud save is newer by more than 2 minutes, prompt the user
+                    if (cloudTimestamp > localTimestamp + 120000 && localTimestamp > 0) {
+                        const timeDiffStr = Math.floor((cloudTimestamp - localTimestamp) / 60000) + ' minutes';
+                        if (!confirm(`Conflict Detected!\n\nThe save file in the Cloud is ${timeDiffStr} newer than your current Local save.\n\nDo you want to overwrite your current progress with the Cloud Save?`)) {
+                            updateCloudSaveStatus('online', 'Load Cancelled (Kept Local)');
+                            return;
+                        }
                     }
                     
                     // Restore game state using improved loading
