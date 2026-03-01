@@ -592,3 +592,16 @@ window.Tutorial = {
     restart: () => tutorialManager.restart(),
     next: () => tutorialManager.next()
 };
+
+// Auto-start tutorial observer
+window.addEventListener('DOMContentLoaded', () => {
+    // We need to wait for `game` object to be fully initialized by game.js
+    const checkGameInterval = setInterval(() => {
+        if (typeof game !== 'undefined' && typeof updateUI === 'function') {
+            clearInterval(checkGameInterval);
+            if (!game.tutorialCompleted && window.Tutorial) {
+                window.Tutorial.start();
+            }
+        }
+    }, 100);
+});

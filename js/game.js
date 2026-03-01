@@ -337,11 +337,6 @@
             
             // Initialize background particles
             initParticles();
-            
-            // Start tutorial for new players
-            if (!game.tutorialCompleted && window.Tutorial) {
-                window.Tutorial.start();
-            }
         }
         
         // Initialize floating particles (reduced count for performance)
