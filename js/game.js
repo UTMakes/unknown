@@ -1,4 +1,4 @@
-fix﻿const GAME_VERSION = "14.1";
+const GAME_VERSION = "14.1";
 
         // --- CONFIGURATION ---
         
