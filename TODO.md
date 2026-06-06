@@ -66,6 +66,10 @@
 
 ### Improvements
 
+- [x] **Aesthetic "Glassmorphism" Polish for Shop UI** - _Task 45_
+  > - Upgraded the CSS of the `.items-tray` itself to use a modern frosted-glass blur (`backdrop-filter: blur(10px)`) with a slightly translucent border.
+  > - Made it look like a high-tech holographic HUD floating over the game canvas.
+
 - [x] **Revamp Research Tree UI** - _Task 30_
   > - Redesigned the Research Tree interface to be more visually engaging.
   > - Improved navigation, readability, and overall user experience when browsing upgrades.
@@ -141,11 +145,6 @@
 ## 🔧 In Progress / Pending
 
 ### 🚀 Upcoming Features & Improvements
-
-- [ ] **Aesthetic "Glassmorphism" Polish for Shop UI** - _Task 45_
-
-  > - Upgrade the CSS of the `.items-tray` itself to use a modern frosted-glass blur (`backdrop-filter: blur(10px)`) with a slightly translucent border.
-  > - Make it look like a high-tech holographic HUD floating over the game canvas.
 
 - [ ] **Implement "Dark Net" Layer** - _High Risk, High Reward_ - _Task 24_
 

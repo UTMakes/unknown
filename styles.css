@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --bg-color: #0a0e14;
   --panel-bg: rgba(20, 26, 35, 0.95);
   --border-color: #2a3447;
@@ -111,13 +111,13 @@ body {
   display: grid;
   grid-template-areas:
     "header header"
-    "sidebar canvas"
-    "toolbar toolbar";
+    "sidebar canvas";
   grid-template-columns: 360px 1fr;
-  grid-template-rows: 70px 1fr 160px;
+  grid-template-rows: 70px 1fr;
   height: 100vh;
   width: 100vw;
   gap: 0;
+  position: relative;
 }
 
 .header {
@@ -892,7 +892,7 @@ input:checked + .toggle-slider:before {
 
 .event-log {
   position: absolute;
-  bottom: 180px;
+  bottom: 240px;
   left: 380px;
   width: 320px;
   max-height: 180px;
@@ -980,7 +980,7 @@ input:checked + .toggle-slider:before {
 
 .zoom-controls {
   position: absolute;
-  bottom: 180px;
+  bottom: 240px;
   right: 20px;
   display: flex;
   flex-direction: column;
@@ -1804,23 +1804,26 @@ body.dragging-in .port.in {
 /* ==================== END TASK 23 ==================== */
 
 .toolbar {
-  grid-area: toolbar;
-  background: linear-gradient(
-    180deg,
-    rgba(20, 26, 35, 0.98),
-    rgba(15, 20, 28, 0.99)
-  );
-  border-top: 1px solid rgba(59, 130, 246, 0.15);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 220px;
+  background: transparent;
   display: flex;
   flex-direction: column;
   z-index: 50;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 .tabs {
   display: flex;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding: 0 15px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(59, 130, 246, 0.15);
+  pointer-events: auto;
 }
 .tab {
   padding: 12px 18px;
@@ -1857,6 +1860,12 @@ body.dragging-in .port.in {
   display: flex;
   gap: 15px;
   align-items: center;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  pointer-events: auto;
 }
 
 /* Custom scrollbar for items tray */
@@ -3329,7 +3338,7 @@ body.ultra-low-perf .tier-nav-btn:hover {
 .cloud-save-status {
   position: fixed;
   top: 20px;
-  left: 20px;
+  left: 260px;
   background: rgba(20, 26, 35, 0.95);
   border: 1px solid var(--border-color);
   padding: 8px 12px;
