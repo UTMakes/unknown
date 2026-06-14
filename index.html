@@ -174,10 +174,14 @@
               );
             "
           >
-            <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v14.2</span></h2>
+            <h2 style="color: #fbbf24;"><i class="fa-solid fa-clipboard-list"></i> Latest Changes <span class="update-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">v14.3</span></h2>
           </div>
           <div class="welcome-sidebar-body">
             <ul class="changelog-list" style="max-height: 60vh; overflow-y: auto;">
+              <li class="changelog-item">
+                <span class="changelog-badge new">New</span>
+                <span><strong>Dynamic Resource Breakdown:</strong> Hover over the Money or RP headers for an exact breakdown!</span>
+              </li>
               <li class="changelog-item">
                 <span class="changelog-badge new">New</span>
                 <span><strong>Shop UI Polish:</strong> New hover tooltips, dynamic affordability colors, and smart item sorting!</span>
@@ -186,17 +190,13 @@
                 <span class="changelog-badge fix">Fix</span>
                 <span><strong>Modularization:</strong> Extracted large definitions into `nodes.js` and `tech.js` for cleaner code.</span>
               </li>
-              <li class="changelog-item">
-                <span class="changelog-badge fix">Fix</span>
-                <span><strong>Visual Fixes:</strong> Fixed Research Tree connection lines and Electron Desktop app visual overlap quirks.</span>
-              </li>
             </ul>
           </div>
         </div>
 
         <div class="welcome-main">
           <div class="modal-header">
-            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.2</span></h2>
+            <h2 style="color:#fff;"><i class="fa-solid fa-network-wired"></i> Upload Labs <span class="version-badge">v14.3</span></h2>
             <button
               class="btn"
               onclick="
@@ -306,36 +306,29 @@
 
         <div class="welcome-sidebar">
           <div class="welcome-sidebar-header">
-            <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v14.2</span></h2>
+            <h2><i class="fa-solid fa-sparkles"></i> What's New <span class="update-badge">v14.3</span></h2>
           </div>
           <div class="welcome-sidebar-body">
             <ul class="feature-list">
               <li class="feature-item">
-                <div class="feature-icon new" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-store"></i></div>
+                <div class="feature-icon new" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="feature-content">
+                  <h4>Resource Breakdown Tooltips!</h4>
+                  <p>Hover your mouse over the Money and RP counters in the top right to instantly see a breakdown of exactly what nodes are generating your wealth!</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-store"></i></div>
                 <div class="feature-content">
                   <h4>Dynamic Shop Polish!</h4>
                   <p>Shop items now dynamically dim out and glow red when unaffordable, instantly lighting up when you have enough cash!</p>
                 </div>
               </li>
               <li class="feature-item">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i class="fa-solid fa-comment-dots"></i></div>
-                <div class="feature-content">
-                  <h4>Hover Tooltips!</h4>
-                  <p>Mouse over any item in the Shop Tray to instantly see a sleek glass tooltip showing detailed node statistics.</p>
-                </div>
-              </li>
-              <li class="feature-item">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fa-solid fa-arrow-down-short-wide"></i></div>
+                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-arrow-down-short-wide"></i></div>
                 <div class="feature-content">
                   <h4>Smart Node Sorting!</h4>
                   <p>Nodes in the Shop Tray are now automatically sorted from cheapest to most expensive left-to-right for better organization.</p>
-                </div>
-              </li>
-              <li class="feature-item">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-code"></i></div>
-                <div class="feature-content">
-                  <h4>Codebase Modularization!</h4>
-                  <p>Major behind-the-scenes refactoring. Over 1,500 lines of data were extracted from the main game loop into fresh submodules!</p>
                 </div>
               </li>
               <li class="feature-item">
@@ -1887,40 +1880,46 @@
           >
         </div>
         <div class="header-stats">
-          <div
-            class="stat-box money group cursor-pointer hover:scale-105 transition-transform"
-            onclick="addMoney(event)"
-          >
-            <i class="fa-solid fa-coins stat-icon text-emerald-400"></i>
+          <div class="stat-wrapper" style="position: relative;">
             <div
-              class="stat-value text-emerald-400 font-mono"
-              id="moneyDisplay"
+              class="stat-box money group cursor-pointer hover:scale-105 transition-transform"
+              onclick="addMoney(event)"
             >
-              $0
+              <i class="fa-solid fa-coins stat-icon text-emerald-400"></i>
+              <div
+                class="stat-value text-emerald-400 font-mono"
+                id="moneyDisplay"
+              >
+                $0
+              </div>
+              <div
+                class="stat-rate text-emerald-500/70 font-mono text-xs"
+                id="moneyRate"
+              >
+                +$0/s
+              </div>
             </div>
-            <div
-              class="stat-rate text-emerald-500/70 font-mono text-xs"
-              id="moneyRate"
-            >
-              +$0/s
-            </div>
+            <div class="resource-breakdown-tooltip" id="moneyBreakdown"></div>
           </div>
-          <div
-            class="stat-box research group cursor-pointer hover:scale-105 transition-transform"
-            onclick="
-              document.getElementById('researchModal').style.display = 'flex'
-            "
-          >
-            <i class="fa-solid fa-flask stat-icon text-purple-400"></i>
-            <div class="stat-value text-purple-400 font-mono" id="rpDisplay">
-              0 RP
-            </div>
+          <div class="stat-wrapper" style="position: relative;">
             <div
-              class="stat-rate text-purple-500/70 font-mono text-xs"
-              id="rpRate"
+              class="stat-box research group cursor-pointer hover:scale-105 transition-transform"
+              onclick="
+                document.getElementById('researchModal').style.display = 'flex'
+              "
             >
-              +0/s
+              <i class="fa-solid fa-flask stat-icon text-purple-400"></i>
+              <div class="stat-value text-purple-400 font-mono" id="rpDisplay">
+                0 RP
+              </div>
+              <div
+                class="stat-rate text-purple-500/70 font-mono text-xs"
+                id="rpRate"
+              >
+                +0/s
+              </div>
             </div>
+            <div class="resource-breakdown-tooltip" id="rpBreakdown"></div>
           </div>
           <div
             class="stat-box code group cursor-pointer hover:scale-105 transition-transform"

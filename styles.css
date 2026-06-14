@@ -5413,3 +5413,43 @@ body.ultra-low-perf .btn-account-login:hover {
 body.ultra-low-perf .shop-item.disabled::after {
   display: none !important;
 }
+
+/* === 12. Resource Breakdown Tooltips === */
+.stat-wrapper:hover .resource-breakdown-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.resource-breakdown-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 220px;
+  background: linear-gradient(145deg, rgba(20, 26, 35, 0.95), rgba(10, 14, 20, 0.98));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.resource-breakdown-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: 40px;
+  width: 10px;
+  height: 10px;
+  background: rgba(20, 26, 35, 0.95);
+  border-top: 1px solid rgba(59, 130, 246, 0.3);
+  border-left: 1px solid rgba(59, 130, 246, 0.3);
+  transform: rotate(45deg);
+}

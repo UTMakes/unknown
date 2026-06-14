@@ -1,4 +1,4 @@
-const GAME_VERSION = "14.1";
+const GAME_VERSION = "14.3";
 
         // --- CONFIGURATION ---
         
@@ -117,6 +117,9 @@ const GAME_VERSION = "14.1";
             money: { current: 0, smoothed: 0, history: [] },
             rp: { current: 0, smoothed: 0, history: [] }
         };
+        // Breakdown tracking - tracks exactly where money/rp came from over the last second
+        let incomeTracker = { money: {}, rp: {} };
+        let lastIncomeTracker = { money: {}, rp: {} };
         const RATE_SMOOTHING_WINDOW = 5; // Average over 5 seconds
         let activeContract = null; 
         
@@ -773,6 +776,7 @@ const GAME_VERSION = "14.1";
                 const codeIncome = codeGenRate * 0.01 * dt;
                 game.money += codeIncome;
                 game.stats.totalMoney += codeIncome;
+                incomeTracker.money['code'] = (incomeTracker.money['code'] || 0) + codeIncome;
             }
             
             // Open Source Network - code bits generate RP
@@ -780,6 +784,7 @@ const GAME_VERSION = "14.1";
                 const codeRP = bitsGenerated * 0.1;
                 game.rp += codeRP;
                 game.stats.totalRP += codeRP;
+                incomeTracker.rp['code'] = (incomeTracker.rp['code'] || 0) + codeRP;
             }
 
             // Process resources
@@ -887,6 +892,7 @@ const GAME_VERSION = "14.1";
                         game.money += gain;
                         history.money = (history.money || 0) + gain;
                         game.stats.totalMoney += gain;
+                        incomeTracker.money[node.type] = (incomeTracker.money[node.type] || 0) + gain;
                     }
                     workAnim(node);
                 }
@@ -896,6 +902,7 @@ const GAME_VERSION = "14.1";
                         game.money += gain;
                         history.money = (history.money || 0) + gain;
                         game.stats.totalMoney += gain;
+                        incomeTracker.money[node.type] = (incomeTracker.money[node.type] || 0) + gain;
                     }
                     workAnim(node);
                 }
@@ -927,6 +934,7 @@ const GAME_VERSION = "14.1";
                             game.money += gain;
                             history.money = (history.money || 0) + gain;
                             game.stats.totalMoney += gain;
+                            incomeTracker.money[node.type] = (incomeTracker.money[node.type] || 0) + gain;
                         }
                         workAnim(node);
                         if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
@@ -978,6 +986,7 @@ const GAME_VERSION = "14.1";
                                 game.money += gain;
                                 history.money = (history.money || 0) + gain;
                                 game.stats.totalMoney += gain;
+                                incomeTracker.money[c.node.type] = (incomeTracker.money[c.node.type] || 0) + gain;
                             }
                             if (activeContract && activeContract.type === 'upload') activeContract.current += count * size;
                         } else {
@@ -986,6 +995,7 @@ const GAME_VERSION = "14.1";
                                 game.rp += gain;
                                 history.rp = (history.rp || 0) + gain;
                                 game.stats.totalRP += gain;
+                                incomeTracker.rp[c.node.type] = (incomeTracker.rp[c.node.type] || 0) + gain;
                             }
                         }
                         workAnim(c.node);
@@ -1002,6 +1012,7 @@ const GAME_VERSION = "14.1";
                             game.money += bonus;
                             history.money = (history.money || 0) + bonus;
                             game.stats.totalMoney += bonus;
+                            incomeTracker.money[n.type] = (incomeTracker.money[n.type] || 0) + bonus;
                         }
                     }
                 }
@@ -1164,6 +1175,13 @@ const GAME_VERSION = "14.1";
             
             // Reset accumulators for next second
             history = { money: 0, rp: 0 };
+            
+            // Rollover breakdown tracking
+            lastIncomeTracker = JSON.parse(JSON.stringify(incomeTracker));
+            incomeTracker = { money: {}, rp: {} };
+            
+            // Update resource tooltips
+            updateResourceTooltips();
             
             // Auto-save check (every 60 seconds)
             if (game.autoSaveEnabled && frameCount % 3600 === 0) {
@@ -3929,6 +3947,55 @@ const GAME_VERSION = "14.1";
             if (isNaN(game.money) || isNaN(game.rp)) {
                 console.warn('Game health check: NaN values detected');
                 emergencyRecover();
+            }
+        }
+        
+        function updateResourceTooltips() {
+            const moneyEl = document.getElementById('moneyBreakdown');
+            const rpEl = document.getElementById('rpBreakdown');
+            
+            function buildBreakdownHTML(trackerData, totalAmount, isMoney) {
+                if (totalAmount <= 0) return '<div style="text-align: center; color: var(--text-muted); font-size: 10px;">No active income</div>';
+                
+                const sources = Object.entries(trackerData)
+                    .filter(([_, val]) => val > 0)
+                    .sort((a, b) => b[1] - a[1]);
+                    
+                if (sources.length === 0) return '<div style="text-align: center; color: var(--text-muted); font-size: 10px;">No active income</div>';
+                
+                let html = '<div style="margin-bottom: 5px; font-weight: bold; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px;">Income Sources</div>';
+                
+                sources.forEach(([key, val]) => {
+                    const percent = Math.min(100, Math.round((val / totalAmount) * 100));
+                    let name = key;
+                    if (NODE_DEFS[key]) name = NODE_DEFS[key].name;
+                    else if (key === 'code') name = 'Code Optimization';
+                    else if (key === 'offline') name = 'Offline Earnings';
+                    
+                    const formattedVal = isMoney ? '$' + fmt(val) : fmt(val) + ' RP';
+                    const color = isMoney ? '#10b981' : '#a855f7';
+                    
+                    html += `
+                    <div style="margin-bottom: 4px; font-size: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                            <span style="color: #cbd5e1;">${name}</span>
+                            <span style="color: ${color}; font-weight: bold;">${formattedVal}/s (${percent}%)</span>
+                        </div>
+                        <div style="height: 3px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percent}%; background: ${color}; opacity: 0.8;"></div>
+                        </div>
+                    </div>`;
+                });
+                return html;
+            }
+            
+            if (moneyEl) {
+                const totalMoney = Object.values(lastIncomeTracker.money).reduce((a, b) => a + b, 0);
+                moneyEl.innerHTML = buildBreakdownHTML(lastIncomeTracker.money, totalMoney, true);
+            }
+            if (rpEl) {
+                const totalRP = Object.values(lastIncomeTracker.rp).reduce((a, b) => a + b, 0);
+                rpEl.innerHTML = buildBreakdownHTML(lastIncomeTracker.rp, totalRP, false);
             }
         }
         

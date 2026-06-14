@@ -139,6 +139,9 @@
   > - Standardized upgrade costs across `upgradeSelectedNode` and `batchUpgrade`.
 - [x] **Improve Save Repair System** - _Task 22_
   > - Enhanced `repairSaveData()` to specifically catch and replace `Infinity`, `NaN`, and negative values in resources, money, and stats.
+- [x] **Dynamic Resource Breakdown (QoL)** - _Task 41_
+  > - Hovering over the total Money/sec or RP/sec reveals a tooltip breaking down exactly what types of nodes or features are generating those resources.
+  > - Helps players immediately identify their best earners and decide what to upgrade.
 
 ---
 
@@ -174,10 +177,7 @@
   > - Instead of holding Shift for x10 or x100, add a "Max" button toggle on the upgrade panel.
   > - Clicking calculates exactly how many levels the player can afford and buys all of them instantly in one click to prevent late-game click fatigue.
 
-- [ ] **Dynamic Resource Breakdown (QoL)** - _Task 41_
 
-  > - Hovering over the total Money/sec or RP/sec reveals a tooltip breaking down exactly what types of nodes or features are generating those resources (e.g., 40% from Botnets, 35% from Downloads).
-  > - Helps players immediately identify their best earners and decide what to upgrade.
 
 - [x] **Server-Side Validation & Anti-Cheat (Cloud Saves)** - _Task 43_
 
@@ -204,8 +204,8 @@
 | 🟢 Low   | Keep everything up to date            |
 | 🟢 Low   | Update Ultra Low Performance features |
 
-- [x] **Keep everything up to date** - _Task 10 (Maintenance)_ ⚠️ _Permanent task - never remove_
-  > - **Note:** Current version: 14.2
+- [ ] **Keep everything up to date** - _Task 10 (Maintenance)_ ⚠️ _Permanent task - never remove_
+  > - **Note:** Current version: 14.3
   > - Update the version number following the versioning rules
   > - Update the "Latest Changes" panel on the welcome screen
   > - Update the "What's New" panel on the welcome screen
