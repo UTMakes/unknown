@@ -1183,6 +1183,13 @@ const GAME_VERSION = "14.3";
             // Update resource tooltips
             updateResourceTooltips();
             
+            // Network pulse animation (every PULSE_INTERVAL seconds)
+            pulseTimer++;
+            if (pulseTimer >= PULSE_INTERVAL) {
+                pulseTimer = 0;
+                spawnNetworkPulses();
+            }
+            
             // Auto-save check (every 60 seconds)
             if (game.autoSaveEnabled && frameCount % 3600 === 0) {
                 autoSaveLocal();
@@ -1231,6 +1238,7 @@ const GAME_VERSION = "14.3";
                     node.level++;
                     actualUpgraded++;
                     spawnParticles(node.x + 85, node.y + 35, '#fbbf24', 5);
+                    spawnLevelUpVFX(node);
                 }
             });
             
@@ -1745,6 +1753,7 @@ const GAME_VERSION = "14.3";
                 game.stats.upgrades++;
                 n.level++;
                 spawnParticles(n.x + 90, n.y + 40, '#fbbf24', 10);
+                spawnLevelUpVFX(n);
                 if (n.type === 'router') {
                     game.routerLevel = n.level;
                     updateRouterCostDisplay();
@@ -2851,6 +2860,17 @@ const GAME_VERSION = "14.3";
 
         function setupInputs() {
             const vp = document.getElementById('viewport');
+            
+            // Shop UI horizontal scrolling
+            const trayEl = document.getElementById('tray');
+            if (trayEl) {
+                trayEl.addEventListener('wheel', (e) => {
+                    if (e.deltaY !== 0 && trayEl.scrollWidth > trayEl.clientWidth) {
+                        e.preventDefault();
+                        trayEl.scrollLeft += e.deltaY;
+                    }
+                }, { passive: false });
+            }
             
             vp.onmousedown = (e) => {
                 if (e.target.closest('.node')) return;
@@ -3996,6 +4016,195 @@ const GAME_VERSION = "14.3";
             if (rpEl) {
                 const totalRP = Object.values(lastIncomeTracker.rp).reduce((a, b) => a + b, 0);
                 rpEl.innerHTML = buildBreakdownHTML(lastIncomeTracker.rp, totalRP, false);
+            }
+        }
+        
+        // ==================== NETWORK PULSE ANIMATION (Task 47) ====================
+        let pulseTimer = 0;
+        const PULSE_INTERVAL = 3; // seconds between pulses
+        const PULSE_DURATION = 1200; // ms for a pulse to travel end-to-end
+        
+        function spawnNetworkPulses() {
+            if (game.ultraLowPerfEnabled) return;
+            if (game.animationsEnabled === false) return;
+            
+            const svg = document.getElementById('cables');
+            if (!svg) return;
+            
+            // Find router node
+            const router = game.nodes.find(n => n.type === 'router');
+            if (!router) return;
+            
+            // BFS outward from router — determine cable direction
+            const visited = new Set([router.id]);
+            const queue = [router.id];
+            const orderedCables = []; // { path, color, delay }
+            let depth = 0;
+            
+            while (queue.length > 0) {
+                const levelSize = queue.length;
+                for (let i = 0; i < levelSize; i++) {
+                    const curr = queue.shift();
+                    
+                    game.conns.forEach(c => {
+                        const other = c.from === curr ? c.to : (c.to === curr ? c.from : null);
+                        if (other === null || visited.has(other)) return;
+                        
+                        const n1 = game.nodes.find(n => n.id === curr);
+                        const n2 = game.nodes.find(n => n.id === other);
+                        if (!n1 || !n2) return;
+                        if (!activeNodes.has(n1.id) || !activeNodes.has(n2.id)) return;
+                        
+                        // Determine cable color from cable-group class
+                        const key = `${c.from},${c.to}`;
+                        const cached = cableCache.get(key);
+                        let color = '#2dd4bf'; // default teal
+                        if (cached) {
+                            if (cached.group.classList.contains('money')) color = '#10b981';
+                            else if (cached.group.classList.contains('power')) color = '#f59e0b';
+                            else if (cached.group.classList.contains('code')) color = '#00d4aa';
+                        }
+                        
+                        // Get the path element to animate along
+                        const pathEl = cached ? cached.bgLine : null;
+                        if (pathEl) {
+                            orderedCables.push({ path: pathEl, color, delay: depth * 150 });
+                        }
+                        
+                        visited.add(other);
+                        queue.push(other);
+                    });
+                }
+                depth++;
+            }
+            
+            // Spawn a pulse dot on each cable, staggered by depth
+            orderedCables.forEach(({ path, color, delay }) => {
+                setTimeout(() => {
+                    animatePulseAlongPath(svg, path, color);
+                }, delay);
+            });
+        }
+        
+        function animatePulseAlongPath(svg, pathEl, color) {
+            if (!pathEl || !pathEl.getTotalLength) return;
+            
+            const totalLen = pathEl.getTotalLength();
+            if (totalLen < 1) return;
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('r', '4');
+            circle.setAttribute('fill', color);
+            circle.style.filter = `drop-shadow(0 0 6px ${color}) drop-shadow(0 0 12px ${color})`;
+            circle.style.pointerEvents = 'none';
+            circle.style.opacity = '0.9';
+            svg.appendChild(circle);
+            
+            const start = performance.now();
+            
+            function tick(now) {
+                const elapsed = now - start;
+                const t = Math.min(elapsed / PULSE_DURATION, 1);
+                
+                // Ease-out for a smooth deceleration
+                const eased = 1 - Math.pow(1 - t, 2);
+                const point = pathEl.getPointAtLength(eased * totalLen);
+                
+                circle.setAttribute('cx', point.x);
+                circle.setAttribute('cy', point.y);
+                
+                // Fade out in the last 30%
+                if (t > 0.7) {
+                    circle.style.opacity = String(Math.max(0, (1 - t) / 0.3 * 0.9));
+                }
+                
+                if (t < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    circle.remove();
+                }
+            }
+            
+            requestAnimationFrame(tick);
+        }
+        
+        // ==================== NODE LEVEL-UP VFX (Task 47) ====================
+        function spawnLevelUpVFX(node) {
+            if (game.ultraLowPerfEnabled) return;
+            if (game.animationsEnabled === false) return;
+            
+            const svg = document.getElementById('cables');
+            if (!svg) return;
+            
+            // Find all cables connected to this node
+            const connectedCables = [];
+            game.conns.forEach(c => {
+                if (c.from === node.id || c.to === node.id) {
+                    const key = `${c.from},${c.to}`;
+                    const cached = cableCache.get(key);
+                    if (cached && cached.bgLine) {
+                        // Determine if pulse goes outward (from this node) or inward
+                        const reverse = c.to === node.id;
+                        connectedCables.push({ path: cached.bgLine, reverse });
+                    }
+                }
+            });
+            
+            // Fire bursts along each connected cable
+            connectedCables.forEach(({ path, reverse }, i) => {
+                setTimeout(() => {
+                    animateLevelUpBurst(svg, path, '#fbbf24', reverse);
+                }, i * 60);
+            });
+            
+            // Add a glowing ring effect on the node itself
+            const nodeEl = document.getElementById(`node-${node.id}`);
+            if (nodeEl) {
+                nodeEl.classList.add('level-up-flash');
+                setTimeout(() => nodeEl.classList.remove('level-up-flash'), 800);
+            }
+        }
+        
+        function animateLevelUpBurst(svg, pathEl, color, reverse = false) {
+            if (!pathEl || !pathEl.getTotalLength) return;
+            
+            const totalLen = pathEl.getTotalLength();
+            if (totalLen < 1) return;
+            
+            // Spawn 3 staggered particles for a "burst" effect
+            for (let j = 0; j < 3; j++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                const size = 5 - j;
+                circle.setAttribute('r', String(size));
+                circle.setAttribute('fill', color);
+                circle.style.filter = `drop-shadow(0 0 8px ${color})`;
+                circle.style.pointerEvents = 'none';
+                svg.appendChild(circle);
+                
+                const duration = 500 + j * 100;
+                const startTime = performance.now() + j * 80;
+                
+                function tick(now) {
+                    const elapsed = now - startTime;
+                    if (elapsed < 0) { requestAnimationFrame(tick); return; }
+                    
+                    const t = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
+                    const pos = reverse ? (1 - eased) : eased;
+                    const point = pathEl.getPointAtLength(pos * totalLen);
+                    
+                    circle.setAttribute('cx', point.x);
+                    circle.setAttribute('cy', point.y);
+                    circle.style.opacity = String(Math.max(0, 1 - t));
+                    
+                    if (t < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        circle.remove();
+                    }
+                }
+                
+                requestAnimationFrame(tick);
             }
         }
         

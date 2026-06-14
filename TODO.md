@@ -177,6 +177,19 @@
   > - Instead of holding Shift for x10 or x100, add a "Max" button toggle on the upgrade panel.
   > - Clicking calculates exactly how many levels the player can afford and buys all of them instantly in one click to prevent late-game click fatigue.
 
+- [ ] **QoL & Performance Overhaul** - _Task 46_
+
+  > - **Object Pooling:** Reuse particle and floating text DOM elements instead of creating/destroying them in the `gameLoop` to significantly reduce Garbage Collection stutter.
+  > - **Render Culling:** Stop calculating/drawing nodes and cables that are outside the current viewport to improve framerates on massive late-game networks.
+  > - **Mass Sell/Delete Mode:** Allow players to click and drag to mass-delete/refund cables and nodes, rather than clicking them one by one.
+  > - **DOM Throttling:** Ensure UI stat elements (`innerText`) only update if the string value has actually changed, preventing unnecessary browser reflows.
+  > - **Hotkeys:** Add keyboard shortcuts (1-5 for shop tabs, Space to pause/resume, Shift to upgrade x10).
+
+- [ ] **Visual & Feel Polish** - _Task 47_
+
+  > - **Network Pulse Animation:** A visible pulse of light that travels along cables from the Router outward every few seconds, showing data flow direction. Pure eye candy that makes the network feel alive.
+  > - **Node Level-Up VFX:** When a node levels up, a brief burst of energy radiates outward along its connected cables. Makes upgrading feel satisfying.
+  > - **Mini-Map:** A small overview in the corner showing the entire network layout as colored dots. Useful for huge late-game networks where the player is zoomed in.
 
 
 - [x] **Server-Side Validation & Anti-Cheat (Cloud Saves)** - _Task 43_
